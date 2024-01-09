@@ -1,8 +1,8 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.PostReviewResponse;
-import com.example.mocu.Dto.PostReviewRequest;
+import com.example.mocu.Dto.review.PostReviewResponse;
+import com.example.mocu.Dto.review.PostReviewRequest;
 import com.example.mocu.Service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
