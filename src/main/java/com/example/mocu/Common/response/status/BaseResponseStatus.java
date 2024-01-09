@@ -48,12 +48,17 @@ public enum BaseResponseStatus implements ResponseStatus {
     EMAIL_NOT_FOUND(4006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
 
     /**
-     * 6000 : Store 오류
+     * 6000 : Review 오류
      */
     INVALID_STORE_VALUE(6000, HttpStatus.BAD_REQUEST.value(), "가게 등록 요청에서 잘못된 값이 존재합니다."),
 
-    DUPLICATE_STORENAME(6001, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 가게 이름입니다."),
-    INVALID_STORE_STATUS(6002, HttpStatus.BAD_REQUEST.value(), "잘못된 가게 status 값입니다.");
+    IS_NOT_STAMPED(6001, HttpStatus.BAD_REQUEST.value(), "리뷰를 등록할 수 없습니다."),
+    IS_NOT_VALIDATED_USERID(6002, HttpStatus.BAD_REQUEST.value(), "유효하지 않은 유저 ID입니다."),
+    IS_NOT_VALIDATED_1(6003, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 가게 이름입니다."),
+    IS_NOT_VALIDATED_2(6004, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 가게 이름입니다."),
+    IS_NOT_VALIDATED_3(6005, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 가게 이름입니다."),
+
+    INVALID_STORE_STATUS(6006, HttpStatus.BAD_REQUEST.value(), "잘못된 가게 status 값입니다.");
 
 
     private final int code;
