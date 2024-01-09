@@ -1,4 +1,4 @@
-package com.example.mocu.Dto;
+package com.example.mocu.Dto.review;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

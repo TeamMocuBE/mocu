@@ -1,4 +1,4 @@
-package com.example.mocu.Exception;
+package com.example.mocu.Common.exception;
 
 import com.example.mocu.Common.response.status.ResponseStatus;
 import lombok.Getter;
