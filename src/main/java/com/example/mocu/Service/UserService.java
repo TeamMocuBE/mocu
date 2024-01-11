@@ -1,7 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.UserDao;
-import com.example.mocu.Dto.GetUserResponse;
+import com.example.mocu.Dto.user.GetUserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

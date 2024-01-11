@@ -1,7 +1,7 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.GetUserResponse;
+import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Exception.UserException;
 import com.example.mocu.Service.UserService;
 import lombok.RequiredArgsConstructor;
