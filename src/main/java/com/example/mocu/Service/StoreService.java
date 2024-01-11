@@ -1,14 +1,20 @@
 package com.example.mocu.Service;
 
-import com.example.mocu.Common.exception.StoreException;
+import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
+import com.example.mocu.Dto.store.GetStoreReviewsResponse;
+import com.example.mocu.Exception.StoreException;
 import com.example.mocu.Dao.StoreDao;
 import com.example.mocu.Dto.store.GetDetailedStoreResponse;
+import com.example.mocu.Dto.store.GetStoreImagesResponse;
+import com.example.mocu.Exception.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import static com.example.mocu.Common.response.status.BaseResponseStatus.STORE_NOT_FOUND;
+import java.util.List;
+
+import static com.example.mocu.Common.response.status.BaseResponseStatus.*;
 
 @Service
 @Slf4j
@@ -18,10 +24,33 @@ public class StoreService {
     public GetDetailedStoreResponse getDetailedStore(long storeId) {
         log.info("[StoreService.getDetailed]");
 
-        try{
-            return storeDao.getDetailedStore(storeId);
-        } catch (EmptyResultDataAccessException e){
-            throw new StoreException(STORE_NOT_FOUND);
+        return storeDao.getDetailedStore(storeId);
+    }
+
+    public List<GetStoreImagesResponse> getStoreImages(long storeId) {
+        log.info("[StoreService.getStoreImages]");
+
+        return storeDao.getStoreImages(storeId);
+    }
+
+    public GetNumberOfStampStoreResponse getStoreStamps(long storeId, long userId) {
+        log.info("[StoreService.getStoreStamps]");
+
+        return storeDao.getStoreStamps(storeId, userId);
+    }
+
+    public List<GetStoreReviewsResponse> getStoreReviews(long storeId, String orderType) {
+        log.info("[StoreService.getStoreReviews]");
+
+        switch (orderType){
+            case "time":
+                return storeDao.getStoreReviewsOrderByTime(storeId);
+
+            case "rate":
+                return storeDao.getStoreReviewsOrderByRate(storeId);
+
+            default:
+                throw new StoreException(INVALID_STORE_REVIEW_REQUEST_VALUE);
         }
     }
 }

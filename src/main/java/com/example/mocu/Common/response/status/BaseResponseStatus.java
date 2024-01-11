@@ -63,11 +63,11 @@ public enum BaseResponseStatus implements ResponseStatus {
     /**
      * 7000: Store 오류
      */
-    INVALID_USER_VALUE1(7000, HttpStatus.BAD_REQUEST.value(), "회원가입 요청에서 잘못된 값이 존재합니다."),
+    INVALID_STORE_REVIEW_REQUEST_VALUE(7000, HttpStatus.BAD_REQUEST.value(), "가게의 리뷰 조회 요청에서 잘못된 값이 존재합니다."),
     DUPLICATE_EMAIL1(7001, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 이메일입니다."),
     DUPLICATE_NICKNAME1(7002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 닉네임입니다."),
     STORE_NOT_FOUND(7003, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 가게입니다."),
-    PASSWORD_NO_MATCH1(7004, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
+    STORE_NOT_FOUND1(7004, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
     INVALID_USER_STATUS1(7005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
     EMAIL_NOT_FOUND1(7006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다.");
 
