@@ -11,9 +11,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetUserResponse {
+    private Long userId;
     private String nickname;
     private String email;
     private String userImage;
     private String status;
-    private OAuthProvider oAuthProvider;
+    private String oAuthProvider;
 }
