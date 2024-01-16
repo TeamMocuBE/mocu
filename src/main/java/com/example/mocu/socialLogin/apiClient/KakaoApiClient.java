@@ -20,10 +20,10 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoApiClient implements OAuthApiClient {
     private static final String GRANT_TYPE = "authorization_code";
 
-    @Value("${spring.security.oauth2.client.provider.kakao.authorization-url}")
+    @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
     private String authUrl;
 
-    @Value("${spring.security.oauth2.client.provider.kakao.user-info-url}")
+    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String apiUrl;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
