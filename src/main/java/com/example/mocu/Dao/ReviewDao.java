@@ -9,6 +9,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -28,19 +29,8 @@ public class ReviewDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
-    /*
-    public boolean isNotStamped(long storeId, long userId) {
 
-    }
 
-     */
-
-    /*
-    public boolean isNotSatisfiedReviewLength(String content) {
-
-    }
-
-     */
 
 
 }

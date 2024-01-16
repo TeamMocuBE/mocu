@@ -1,5 +1,7 @@
 package com.example.mocu.Dao;
 
+import com.example.mocu.Dto.stamp.PutStampRequest;
+import com.example.mocu.Dto.stamp.PutStampResponse;
 import com.example.mocu.Dto.store.GetDetailedStoreResponse;
 import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
 import com.example.mocu.Dto.store.GetStoreImagesResponse;
@@ -23,13 +25,12 @@ public class StoreDao {
     }
 
     public GetDetailedStoreResponse getDetailedStore(long storeId) {
-        String sql = "select category, name, phone, maxStamp, reward, rating from Stores where storeId=:storeId and status='active'";
+        String sql = "select category, name, maxStamp, reward, rating from Stores where storeId=:storeId and status='active'";
         Map<String, Object> param = Map.of("storeId", storeId);
         return jdbcTemplate.queryForObject(sql, param,
                 (rs, rowNum) -> new GetDetailedStoreResponse(
                         rs.getString("category"),
                         rs.getString("name"),
-                        rs.getString("phone"),
                         rs.getInt("maxStamp"),
                         rs.getString("reward"),
                         rs.getFloat("rating")
@@ -69,4 +70,13 @@ public class StoreDao {
                         rs.getString("content")
                 ));
     }
+
+    // 스탬프를 적립한 적이 있는 가게인지 check
+    public boolean isNotFirstStamp(long storeId, long userId) {
+        String sql = "select exists(select stampId from Coupons where storeId=:storeId and userId=:userId)";
+        Map<String, Object> param = Map.of("storeId", storeId, "userId", userId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, param, boolean.class));
+    }
+
+
 }

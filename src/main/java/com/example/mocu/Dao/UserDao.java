@@ -24,6 +24,7 @@ public class UserDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
+
     public List<GetUserResponse> getUsers(String name, String email, String status) {
         String sql = "select name, email, userImage, status from Users" +
                 "where name like :name and email like :email and status like :status";
@@ -43,7 +44,9 @@ public class UserDao {
                         rs.getString("oAuthProvider")
                 )
         );
+
     }
+
 
     public long getUserIdByEmail(String email) {
         String sql = "select userId from Users where email=:email and status='active'";

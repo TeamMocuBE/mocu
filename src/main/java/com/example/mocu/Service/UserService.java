@@ -14,8 +14,11 @@ import java.util.List;
 public class UserService {
     private final UserDao userDao;
 
+    /*
     public List<GetUserResponse> getUsers(String name, String email, String status) {
         log.info("[UserService.getUsers]");
         return userDao.getUsers(name, email, status);
     }
+
+     */
 }

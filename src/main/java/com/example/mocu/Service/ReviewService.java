@@ -21,28 +21,22 @@ public class ReviewService {
 
         /**
          * TODO : 리뷰등록 가능여부 검사
-         * 해당 user가 해당 가게에 적립을 했는지, content 길이가 20자 이상인지 검사
          */
-        //validateReview(postReviewReqeust.getStoreId(), postReviewReqeust.getUserId(), postReviewReqeust.getContent());
+        validateReview(postReviewReqeust);
 
         long reviewId = reviewDao.createReview(postReviewReqeust);
         return new PostReviewResponse(reviewId);
     }
 
-    private void validateReview(long storeId, long userId, String content) {
-        // TODO 1. 해당 user가 해당 가게에 적립을 했는지 검사
-        /*
-        if(reviewDao.isNotStamped(storeId, userId)){
-            throw new ReviewException(IS_NOT_STAMPED);
-        }
+    private void validateReview(PostReviewRequest postReviewReqeust) {
+        long storeId = postReviewReqeust.getStoreId();
+        long userId = postReviewReqeust.getUserId();
+        String content = postReviewReqeust.getContent();
 
-        // TODO 2. 리뷰 글자수가 20자 이상인지 검사
-        if(reviewDao.isNotSatisfiedReviewLength(content)){
+        // TODO 1. 리뷰 글자수가 10자 이상인지 검사
+        if(content.length() < 10){
             throw new ReviewException(INVALID_REVIEW_LENGTH);
         }
-
-         */
     }
-
 
 }

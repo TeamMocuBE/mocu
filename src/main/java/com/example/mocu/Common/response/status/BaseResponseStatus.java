@@ -50,7 +50,7 @@ public enum BaseResponseStatus implements ResponseStatus {
     /**
      * 6000 : Review 오류
      */
-    INVALID_STORE_VALUE(6000, HttpStatus.BAD_REQUEST.value(), "가게 등록 요청에서 잘못된 값이 존재합니다."),
+    INVALID_(6000, HttpStatus.BAD_REQUEST.value(), "가게 등록 요청에서 잘못된 값이 존재합니다."),
 
     IS_NOT_STAMPED(6001, HttpStatus.BAD_REQUEST.value(), "스탬프 적립하지 않은 가게에는 리뷰를 등록할 수 없습니다."),
     INVALID_REVIEW_LENGTH(6002, HttpStatus.BAD_REQUEST.value(), "리뷰 글자수가 부족합니다."),
