@@ -5,7 +5,7 @@ import com.example.mocu.socialLogin.util.OAuthProvider;
 public interface OAuthInfoResponse {
     String getEmail();
 
-    String getNickname();
+    String getName();
 
     String getProfileImageUrl();
 

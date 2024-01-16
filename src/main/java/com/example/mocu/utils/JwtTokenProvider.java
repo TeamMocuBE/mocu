@@ -10,10 +10,10 @@ import java.security.Key;
 import java.util.Date;
 
 @Component
-public class JwtProvider {
+public class JwtTokenProvider {
     private final Key key;
 
-    public JwtProvider(@Value("${spring.security.oauth2.jwt.secret-key}") String secretKey) {
+    public JwtTokenProvider(@Value("${spring.security.oauth2.jwt.secret-key}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }

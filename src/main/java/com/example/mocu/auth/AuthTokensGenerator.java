@@ -1,6 +1,6 @@
 package com.example.mocu.auth;
 
-import com.example.mocu.utils.JwtProvider;
+import com.example.mocu.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ public class AuthTokensGenerator {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;            // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
-    private final JwtProvider jwtProvider;
+    private final JwtTokenProvider jwtProvider;
 
     public AuthTokens generate(Long memberId) {
         long now = (new Date()).getTime();
