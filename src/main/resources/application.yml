@@ -22,3 +22,9 @@ spring:
             user-name-attribute: id
       jwt:
         secret-key: Z29nby10bS1zZXJ2ZXItZGxyamVvYW9yb3JodG9kZ290c3Atam9vbmdhbmduaW0teWVvbHNpbWhpaGFsZ2VveW8K
+
+  datasource:
+    url: jdbc:mysql://192.168.61.39:3306/mocu
+    username: seongjin
+    password: tjdwls1234!
+    driver-class-name: com.mysql.cj.jdbc.Driver
