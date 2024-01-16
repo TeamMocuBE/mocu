@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetNumberOfStampStoreResponse {
     // 해당 유저가 해당 가게에 적립한 스탬프 수
-    private int numOfStamp;
+    private int numOfStamps;
 }

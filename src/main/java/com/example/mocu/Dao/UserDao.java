@@ -18,6 +18,7 @@ public class UserDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
+    /*
     public List<GetUserResponse> getUsers(String name, String email, String status) {
         String sql = "select name, email, userImage, status from Users" +
                 "where name like :name and email like :email and status like :status";
@@ -34,5 +35,8 @@ public class UserDao {
                         rs.getString("profile_image"),
                         rs.getString("status"))
         );
+
     }
+
+     */
 }

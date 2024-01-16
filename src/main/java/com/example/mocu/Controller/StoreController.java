@@ -1,6 +1,8 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dto.stamp.PutStampRequest;
+import com.example.mocu.Dto.stamp.PutStampResponse;
 import com.example.mocu.Dto.store.GetDetailedStoreResponse;
 import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
 import com.example.mocu.Dto.store.GetStoreImagesResponse;
@@ -8,6 +10,7 @@ import com.example.mocu.Dto.store.GetStoreReviewsResponse;
 import com.example.mocu.Service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,8 +44,9 @@ public class StoreController {
 
     /**
      * 해당가게에 적립한 스탬프 수 조회
+     * 적립한 적이 없는 가게이면 numberOfStamp = 0
      */
-    @GetMapping("/detail/stamp?storeId={storeId}&userId={userId}")
+    @GetMapping("/stamp?storeId={storeId}&userId={userId}")
     public BaseResponse<GetNumberOfStampStoreResponse> getStoreStamps(@RequestParam("storeId") long storeId, @RequestParam("userId") long userId){
         log.info("[StoreController.getStoreStamps]");
 
@@ -52,11 +56,12 @@ public class StoreController {
     /**
      * 가게 리뷰 리스트 조회(최신순, 평점순)
      */
-    @GetMapping("/detail/reviews?storeId={storeId}&sort-by={orderType}")
+    @GetMapping("/reviews?storeId={storeId}&sort-by={orderType}")
     public BaseResponse<List<GetStoreReviewsResponse>> getStoreReviews(@RequestParam("storeId") long storeId, @RequestParam("sort-by") String orderType){
         log.info("[StoreController.getStoreReviews]");
 
         return new BaseResponse<>(storeService.getStoreReviews(storeId, orderType));
     }
+
 
 }

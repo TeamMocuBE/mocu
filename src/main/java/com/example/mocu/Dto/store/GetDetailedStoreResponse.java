@@ -15,7 +15,6 @@ public class GetDetailedStoreResponse {
      */
     private String category;
     private String storeName;
-    private String phoneNumber;
     private int maxStamp;
     private String reward;
     private float rating;
