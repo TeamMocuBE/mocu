@@ -2,6 +2,7 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dao.StoreDao;
+import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
 import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
 import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
 import com.example.mocu.Dto.owner.PostOwnerStoreResponse;
@@ -11,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABASE_ERROR;
 
 @Slf4j
@@ -19,7 +22,6 @@ import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABAS
 @RequiredArgsConstructor
 public class OwnerService {
     private final OwnerDao ownerDao;
-    private final StoreDao storeDao;
 
     public PostOwnerStoreResponse registerStore(PostOwnerStoreRequest postOwnerStoreRequest) {
         log.info("[OwnerService.registerStore]");
@@ -34,19 +36,12 @@ public class OwnerService {
         ownerDao.modifyStoreInfo(storeId, patchOwnerStoreRequest);
     }
 
+    public List<GetOwnerStampNotAcceptResponse> getStampsNotAccept(long storeId) {
+        log.info("[OwnerService.getStampsNotAccept]");
 
-    /*
-    public PutStampResponse registerStamp(PutStampRequest putStampRequest) {
-        log.info("[StoreService.registerStamp]");
-
-        long StampId;
-        // TODO 1. 스탬프 적립이 처음이면 스탬프 create, 아니면 스탬프 add
-        if(!storeDao.isNotFirstStamp(putStampRequest.getStoreId(), putStampRequest.getUserId())){
-            StampId = return ownerDao.createStamp(putStampRequest);
-        }
-        return ownerDao.addStamp(putStampRequest);
+        return ownerDao.getStampsNotAccept(storeId);
     }
 
-     */
+
 
 }

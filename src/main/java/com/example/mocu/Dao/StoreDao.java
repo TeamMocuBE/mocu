@@ -1,13 +1,10 @@
 package com.example.mocu.Dao;
 
-import com.example.mocu.Dto.stamp.PutStampRequest;
-import com.example.mocu.Dto.stamp.PutStampResponse;
 import com.example.mocu.Dto.store.GetDetailedStoreResponse;
 import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
 import com.example.mocu.Dto.store.GetStoreImagesResponse;
 import com.example.mocu.Dto.store.GetStoreReviewsResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 

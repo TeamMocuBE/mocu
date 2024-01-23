@@ -1,6 +1,7 @@
 package com.example.mocu.Dao;
 
 import com.example.mocu.Dto.menu.MenuInfo;
+import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
 import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
 import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -127,14 +130,25 @@ public class OwnerDao {
 
     }
 
-    /*
-    // 스탬프 생성
-    public PutStampResponse createStamp(PutStampRequest putStampRequest) {
-        String sql = ""
+    public List<GetOwnerStampNotAcceptResponse> getStampsNotAccept(long storeId) {
+        String sql = "select u.name as userName, sr.createdDate as createdDate, sr.status as status " +
+                "from StampsRequest sr inner join Users u on sr.userId=u.userId " +
+                "where sr.storeId=:storeId and sr.status='not-accept'";
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetOwnerStampNotAcceptResponse(
+                rs.getString("userName"),
+                timestampToString(rs.getTimestamp("createdDate")),
+                rs.getString("status"))
+        );
     }
 
-    // 스탬프 추가
-    public PutStampResponse addStamp(PutStampRequest putStampRequest) {
+    private String timestampToString(Timestamp timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return (timestamp != null) ? dateFormat.format(timestamp) : null;
     }
-     */
+
+
 }

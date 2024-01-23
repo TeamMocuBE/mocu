@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.review;
+package com.example.mocu.Dto.stamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostReviewResponse {
-    private long reviewId;
+public class StampInfo {
+    private long stampId;
+    private int numOfStamp;
 }

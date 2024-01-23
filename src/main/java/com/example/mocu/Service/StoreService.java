@@ -1,7 +1,5 @@
 package com.example.mocu.Service;
 
-import com.example.mocu.Dto.stamp.PutStampRequest;
-import com.example.mocu.Dto.stamp.PutStampResponse;
 import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
 import com.example.mocu.Dto.store.GetStoreReviewsResponse;
 import com.example.mocu.Exception.StoreException;
