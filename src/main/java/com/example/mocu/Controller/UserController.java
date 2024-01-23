@@ -25,7 +25,6 @@ public class UserController {
     /**
      * 회원 목록 조회
      */
-    /*
     @GetMapping("")
     public BaseResponse<List<GetUserResponse>> getUsers(
             @RequestParam(required = false, defaultValue = "") String nickname,
@@ -37,6 +36,4 @@ public class UserController {
         }
         return new BaseResponse<>(userService.getUsers(nickname, email, status));
     }
-
-     */
 }

@@ -1,5 +1,6 @@
 package com.example.mocu.Dao;
 
+import com.example.mocu.Dto.review.GetAvailableReviewCountResponse;
 import com.example.mocu.Dto.review.PostReviewRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -30,7 +31,13 @@ public class ReviewDao {
     }
 
 
+    public GetAvailableReviewCountResponse getAvailableReviewCount(Long userId) {
+        String sql = "select COUNT(*) from reviews where userId = :userId and status = '작성 이전'";
 
+        Map<String, Object> params = Map.of("userId", userId);
 
+        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
 
+        return new GetAvailableReviewCountResponse(count);
+    }
 }

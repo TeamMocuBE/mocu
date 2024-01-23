@@ -24,7 +24,6 @@ public class UserDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-
     public List<GetUserResponse> getUsers(String name, String email, String status) {
         String sql = "select name, email, userImage, status from Users" +
                 "where name like :name and email like :email and status like :status";
@@ -44,9 +43,7 @@ public class UserDao {
                         rs.getString("oAuthProvider")
                 )
         );
-
     }
-
 
     public long getUserIdByEmail(String email) {
         String sql = "select userId from Users where email=:email and status='active'";
@@ -55,8 +52,8 @@ public class UserDao {
     }
 
     public long createUser(PostUserRequest postUserRequest) {
-        String sql = "insert into user(email, password, phone_number, nickname, profile_image) " +
-                "values(:email, :password, :phoneNumber, :nickname, :profileImage)";
+        String sql = "insert into user(email, name, provider, profile_image) " +
+                "values(:email, :name, :provider, :profileImage)";
 
         SqlParameterSource param = new BeanPropertySqlParameterSource(postUserRequest);
         KeyHolder keyHolder = new GeneratedKeyHolder();
