@@ -9,11 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PutStampResponse {
+public class StampInfoAfterCouponUse {
     private long stampId;
-
-    // 스탬프 적립 후 보유 스탬프 수
-    private int numberOfStamps;
-    // 스탬프 적립 후 보유 쿠폰 수
-    private int numberOfCoupons;
+    private int numOfStamp;
+    private int numOfCouponAvailable;
 }

@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.review;
+package com.example.mocu.Dto.coupon;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostReviewResponse {
-    private long reviewId;
+public class PostCouponAcceptRequest {
+    private long userId;
+    private long storeId;
+    private long couponRequestId;
 }

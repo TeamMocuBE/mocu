@@ -1,6 +1,7 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
 import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
 import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
 import com.example.mocu.Dto.owner.PostOwnerStoreResponse;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -17,19 +20,17 @@ import org.springframework.web.bind.annotation.*;
 public class OwnerController {
     private final OwnerService ownerService;
 
-
     /**
-     * 스탬프 적립 요청 처리
-     * 점주 어플에서 스탬프 적립 요청 수락하는 경우
+     * 미수락 스탬프 적립 요청 목록 조회
      */
-    /*
-    @PutMapping("/stamp")
-    public BaseResponse<PutStampResponse> registerStamp(@Validated @RequestBody PutStampRequest putStampRequest){
-        log.info("[OwnerController.registerStamp]");
+    @GetMapping("/{storeId}/stamp/not-accept")
+    public BaseResponse<List<GetOwnerStampNotAcceptResponse>> getStampsNotAccept(
+            @PathVariable long storeId){
+        log.info("[OwnerController.getStampNotAccept]");
 
-        return new BaseResponse<>(ownerService.registerStamp(putStampRequest));
+        return new BaseResponse<>(ownerService.getStampsNotAccept(storeId));
     }
-    */
+
 
 
     /**

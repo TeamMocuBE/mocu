@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PutStampRequest {
+public class PostStampAcceptRequest {
     private long userId;
     private long storeId;
-    private int numberOfStamp;          // 적립허용 스탬프 수
+    private long stampRequestId;
+    private int numOfStamp;
 }
