@@ -6,6 +6,7 @@ import com.example.mocu.socialLogin.params.OAuthLoginParams;
 import com.example.mocu.socialLogin.tokens.KakaoTokens;
 import com.example.mocu.socialLogin.util.OAuthProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KakaoApiClient implements OAuthApiClient {
@@ -29,6 +31,16 @@ public class KakaoApiClient implements OAuthApiClient {
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
 
+
+    /*@Value("${oauth.kakao.url.auth}")
+    private String authUrl;
+
+    @Value("${oauth.kakao.url.api}")
+    private String apiUrl;
+
+    @Value("${oauth.kakao.client-id}")
+    private String clientId;*/
+
     private final RestTemplate restTemplate;
 
     @Override
@@ -38,6 +50,7 @@ public class KakaoApiClient implements OAuthApiClient {
 
     @Override
     public String requestAccessToken(OAuthLoginParams params) {
+        log.info("KakaoApiClient.requestAccessToken");
         String url = authUrl + "/oauth/token";
 
         HttpHeaders httpHeaders = new HttpHeaders();

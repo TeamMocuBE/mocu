@@ -23,6 +23,7 @@ public class AuthService {
     private final RequestOAuthInfoService requestOAuthInfoService;
 
     public AuthTokens login(OAuthLoginParams params) {
+        log.info("AuthService.login");
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
         Long userId = findOrCreateMember(oAuthInfoResponse);
 
@@ -30,7 +31,7 @@ public class AuthService {
     }
 
     private Long findOrCreateMember(OAuthInfoResponse oAuthInfoResponse) {
-        List<GetUserResponse> users = userDao.getUsers(oAuthInfoResponse.getName(), oAuthInfoResponse.getEmail(), "active");
+        List<GetUserResponse> users = userDao.getUsers(oAuthInfoResponse.getNickname(), oAuthInfoResponse.getEmail(), "active");
         if (!users.isEmpty()) {
             return users.get(0).getUserId();
         } else {
@@ -41,9 +42,8 @@ public class AuthService {
     private Long createUser(OAuthInfoResponse oAuthInfoResponse) {
         PostUserRequest postUserRequest = new PostUserRequest();
         postUserRequest.setEmail(oAuthInfoResponse.getEmail());
-        postUserRequest.setName(oAuthInfoResponse.getName());
+        postUserRequest.setName(oAuthInfoResponse.getNickname());
         postUserRequest.setProvider(oAuthInfoResponse.getOAuthProvider().toString());
-        postUserRequest.setNickname(oAuthInfoResponse.getName());
         postUserRequest.setProfileImage(oAuthInfoResponse.getProfileImageUrl());
 
         return userDao.createUser(postUserRequest);
