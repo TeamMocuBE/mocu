@@ -22,8 +22,5 @@ public class PostUserRequest {
     private String provider;
 
     @Nullable
-    private String nickname;
-
-    @Nullable
     private String profileImage;
 }

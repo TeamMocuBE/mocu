@@ -18,6 +18,11 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /*public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey) {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
+    }*/
+
     public String generate(String subject, Date expiredAt) {
         return Jwts.builder()
                 .setSubject(subject)

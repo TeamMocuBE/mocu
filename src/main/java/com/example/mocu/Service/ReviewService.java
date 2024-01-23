@@ -1,6 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.ReviewDao;
+import com.example.mocu.Dto.review.GetAvailableReviewCountResponse;
 import com.example.mocu.Dto.review.PostReviewRequest;
 import com.example.mocu.Dto.review.PostReviewResponse;
 import com.example.mocu.Exception.ReviewException;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static com.example.mocu.Common.response.status.BaseResponseStatus.INVALID_REVIEW_LENGTH;
-import static com.example.mocu.Common.response.status.BaseResponseStatus.IS_NOT_STAMPED;
 
 @Slf4j
 @Service
@@ -39,4 +39,9 @@ public class ReviewService {
         }
     }
 
+    public GetAvailableReviewCountResponse getAvailableReviewCount(Long userId) {
+        log.info("[ReviewService.getAvailableReviewCount]");
+
+        return reviewDao.getAvailableReviewCount(userId);
+    }
 }

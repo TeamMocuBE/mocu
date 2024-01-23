@@ -1,9 +1,11 @@
 package com.example.mocu.socialLogin.params;
 
 import com.example.mocu.socialLogin.util.OAuthProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+@Slf4j
 public class KakaoLoginParams implements OAuthLoginParams {
     private String authorizationCode;
 
@@ -14,6 +16,7 @@ public class KakaoLoginParams implements OAuthLoginParams {
 
     @Override
     public MultiValueMap<String, String> makeBody() {
+        log.info("KakaoLoginParams.makeBody");
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("code", authorizationCode);
         return body;
