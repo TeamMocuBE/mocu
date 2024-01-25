@@ -36,6 +36,7 @@ public class UserController {
         return new BaseResponse<>(userService.getUsers(nickname, email, status));
     }
 
+
     @GetMapping("/{userId}/mypage")
     public BaseResponse<GetMyPageResponse> getMypage(@PathVariable Long userId) {
         log.info("[UserController.getMypage] - userId: {}", userId);

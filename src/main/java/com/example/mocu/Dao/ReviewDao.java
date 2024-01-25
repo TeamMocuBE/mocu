@@ -17,7 +17,6 @@ import java.util.Objects;
 @Repository
 public class ReviewDao {
     private final NamedParameterJdbcTemplate jdbcTemplate;
-
     public ReviewDao(NamedParameterJdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }

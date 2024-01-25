@@ -5,6 +5,7 @@ import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Dto.user.PostUserRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -64,6 +65,7 @@ public class UserDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
+
     public GetMyPageResponse getMypage(Long userId) {
         String sqlUsableCoupon = "SELECT SUM(numOfCouponAvailable) FROM Stamps " +
                 "WHERE userId = :userId AND status = 'active'";
@@ -117,5 +119,10 @@ public class UserDao {
                 availableReviewCount != null ? availableReviewCount : 0,
                 missionStampCount != null ? missionStampCount : 0
         );
+
+    public List<Long> getAllUserIds() {
+        String sql = "select userId from Users";
+
+        return jdbcTemplate.queryForList(sql, new MapSqlParameterSource(), Long.class);
     }
 }

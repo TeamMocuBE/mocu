@@ -23,6 +23,12 @@ spring:
       jwt:
         secret-key: Z29nby10bS1zZXJ2ZXItZGxyamVvYW9yb3JodG9kZ290c3Atam9vbmdhbmduaW0teWVvbHNpbWhpaGFsZ2VveW8K
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/mocu
+    username: root
+    password: tjdwns1105!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   #jwt:
   #  secret-key: Z29nby10bS1zZXJ2ZXItZGxyamVvYW9yb3JodG9kZ290c3Atam9vbmdhbmduaW0teWVvbHNpbWhpaGFsZ2VveW8K
 
@@ -41,10 +47,3 @@ spring:
   #    driver-class-name: com.mysql.cj.jdbc.Driver
 
   #spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/mocu
-    username: root
-    password: smartsj@0907
-    driver-class-name: com.mysql.cj.jdbc.Driver
-server:
-  port: 9000
