@@ -1,5 +1,6 @@
 package com.example.mocu.Dao;
 
+import com.example.mocu.Dto.address.GetAddressResponse;
 import com.example.mocu.Dto.address.PostAddressRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -11,6 +12,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -38,5 +41,19 @@ public class AddressDao {
 
         // 생성된 주소의 ID 반환
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public List<GetAddressResponse> getAddress(Long userId) {
+        String sql = "select name, address from Addresses " +
+                "where userId like :userId";
+
+        Map<String, Object> param = Map.of(
+                "userId", "%" + userId + "%");
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetAddressResponse(
+                        rs.getString("name"),
+                        rs.getString("address")
+                ));
     }
 }

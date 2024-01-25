@@ -1,6 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.UserDao;
+import com.example.mocu.Dto.user.GetMyPageResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,5 +18,10 @@ public class UserService {
     public List<GetUserResponse> getUsers(String name, String email, String status) {
         log.info("[UserService.getUsers]");
         return userDao.getUsers(name, email, status);
+    }
+
+    public GetMyPageResponse getMypage(Long userId) {
+        log.info(("[UserService.getMypage]"));
+        return userDao.getMypage(userId);
     }
 }

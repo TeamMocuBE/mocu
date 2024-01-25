@@ -1,11 +1,14 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.AddressDao;
+import com.example.mocu.Dto.address.GetAddressResponse;
 import com.example.mocu.Dto.address.PostAddressRequest;
 import com.example.mocu.Dto.address.PostAddressResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -19,5 +22,11 @@ public class AddressService {
 
         long addressId = addressDao.createAddress(userId, postAddressRequest);
         return new PostAddressResponse(addressId);
+    }
+
+    public List<GetAddressResponse> getAddress(Long userId) {
+        log.info("AddressService.getAddress");
+
+        return addressDao.getAddress(userId);
     }
 }

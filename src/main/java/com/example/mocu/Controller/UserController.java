@@ -1,15 +1,14 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dto.user.GetMyPageResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Exception.UserException;
 import com.example.mocu.Service.UserService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,9 +26,9 @@ public class UserController {
      */
     @GetMapping("")
     public BaseResponse<List<GetUserResponse>> getUsers(
-            @RequestParam(required = false, defaultValue = "") String nickname,
-            @RequestParam(required = false, defaultValue = "") String email,
-            @RequestParam(required = false, defaultValue = "active") String status) {
+            @RequestParam(name = "nickname", required = false, defaultValue = "") String nickname,
+            @RequestParam(name = "email", required = false, defaultValue = "") String email,
+            @RequestParam(name = "status", required = false, defaultValue = "active") String status) {
         log.info("[UserController.getUsers]");
         if (!status.equals("active") && !status.equals("dormant") && !status.equals("deleted")) {
             throw new UserException(INVALID_USER_STATUS);
@@ -38,5 +37,11 @@ public class UserController {
     }
 
 
+    @GetMapping("/{userId}/mypage")
+    public BaseResponse<GetMyPageResponse> getMypage(@PathVariable Long userId) {
+        log.info("[UserController.getMypage] - userId: {}", userId);
+        //TODO: userID 검증 로직
 
+        return new BaseResponse<>(userService.getMypage(userId));
+    }
 }
