@@ -19,10 +19,17 @@ public class ReviewService {
     public PostReviewResponse register(PostReviewRequest postReviewReqeust) {
         log.info("[ReviewService.createReview]");
 
-        /**
-         * TODO : 리뷰등록 가능여부 검사
-         */
+        // TODO 1. 리뷰등록 가능여부 검사
         validateReview(postReviewReqeust);
+
+        // TODO 2. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
+
+
+        // TODO 3. 오늘의 미션 스탬프가 적립되었는지 체크
+
+
+        // TODO 4. todo 2, todo 3 모두 통과할 경우 오늘의 미션 스탬프 1개 적립
+
 
         long reviewId = reviewDao.createReview(postReviewReqeust);
         return new PostReviewResponse(reviewId);
@@ -33,7 +40,7 @@ public class ReviewService {
         long userId = postReviewReqeust.getUserId();
         String content = postReviewReqeust.getContent();
 
-        // TODO 1. 리뷰 글자수가 10자 이상인지 검사
+        // 리뷰 글자수가 10자 이상인지 검사
         if(content.length() < 10){
             throw new ReviewException(INVALID_REVIEW_LENGTH);
         }

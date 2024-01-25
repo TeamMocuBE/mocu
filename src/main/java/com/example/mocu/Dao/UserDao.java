@@ -4,6 +4,7 @@ import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Dto.user.PostUserRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -60,5 +61,11 @@ public class UserDao {
         jdbcTemplate.update(sql, param, keyHolder);
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public List<Long> getAllUserIds() {
+        String sql = "select userId from Users";
+
+        return jdbcTemplate.queryForList(sql, new MapSqlParameterSource(), Long.class);
     }
 }
