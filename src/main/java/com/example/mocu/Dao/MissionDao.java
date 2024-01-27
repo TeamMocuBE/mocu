@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -70,4 +71,32 @@ public class MissionDao {
             jdbcTemplate.update(insertSql, insertParams);
         }
     }
+
+
+    public boolean isReviewAssignedTodayMission(long userId) {
+        String sql = "select count(*) from TodayMissions tm join Missions m on tm.missionId=m.missionId " +
+                "where tm.userId=:userId and m.content='리뷰 작성하기'";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+
+        return jdbcTemplate.queryForObject(sql, params, Integer.class) > 0;
+    }
+
+    public int getTodayMissionPerformed(long userId) {
+        String sql = "select count(*) from TodayMissions where userId=:userId and status='done'";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+
+        return jdbcTemplate.queryForObject(sql, params, Integer.class);
+    }
+
+    public void updateTodayMissionToDone(long userId) {
+        String sql = "update TodayMissions set status='done' where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+
+        jdbcTemplate.update(sql, params);
+    }
+
+
 }

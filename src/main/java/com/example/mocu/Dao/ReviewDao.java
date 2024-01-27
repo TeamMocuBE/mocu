@@ -24,11 +24,17 @@ public class ReviewDao {
     }
 
     public long createReview(PostReviewRequest postReviewRequest) {
-        String sql = "insert into Review(userId, storeId, rate, content) " + "values(:userId, :storeId, :rate, :content)";
-        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(postReviewRequest);
+        String sql = "insert into Reviews(userId, storeId, rate, content) values (:userId, :storeId, :rate, :content)";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", postReviewRequest.getUserId())
+                .addValue("storeId", postReviewRequest.getStoreId())
+                .addValue("rate", postReviewRequest.getRate())
+                .addValue("content", postReviewRequest.getContent());
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, parameterSource, keyHolder);
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        jdbcTemplate.update(sql, params, keyHolder);
+
+        return keyHolder.getKey().longValue();
     }
 
 
