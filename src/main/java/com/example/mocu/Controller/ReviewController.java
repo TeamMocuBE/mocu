@@ -2,6 +2,7 @@ package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dto.review.GetAvailableReviewCountResponse;
+import com.example.mocu.Dto.review.PatchReviewReportToTrueRequest;
 import com.example.mocu.Dto.review.PostReviewResponse;
 import com.example.mocu.Dto.review.PostReviewRequest;
 import com.example.mocu.Service.ReviewService;
@@ -36,4 +37,21 @@ public class ReviewController {
 
         return new BaseResponse<>(reviewService.getAvailableReviewCount(userId));
     }
+
+    /**
+     * 리뷰 신고 처리
+     */
+    @PatchMapping("/update/report-true")
+    public BaseResponse<String> updateReviewReportToTrue(@Validated @RequestBody PatchReviewReportToTrueRequest patchReviewReportToTrueRequest){
+        log.info("[ReviewController.updateReviewReportToTrue]");
+
+        try {
+            reviewService.updateReviewReportToTrue(patchReviewReportToTrueRequest);
+            return new BaseResponse<>("신고처리 되었습니다.");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("신고처리 과정 중 오류 발생");
+        }
+    }
+
+
 }

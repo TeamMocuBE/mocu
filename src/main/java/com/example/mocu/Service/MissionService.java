@@ -26,7 +26,7 @@ public class MissionService {
     }
 
     /**
-     * 매일 자정마다 미션 목록 중 오늘의 미션 5개를 선택
+     * 매일 자정마다 미션 목록 중 오늘의 미션 2개를 선택
      * @Scheduled(cron = "0 0 0 * * ?")는 매일 자정에 실행되도록 스케줄링됩니다.
      */
     @Scheduled(cron = "0 0 0 * * ?")
@@ -34,8 +34,8 @@ public class MissionService {
         // TODO 1. 모든 MISSIONS TABLE의 TUPLE들 상태를 "not-select"으로 update
         missionDao.updateAllmissionsStatus();
 
-        // TODO 2. 5개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
-        List<Long> selectedMissionIds = missionDao.getRandomMissionIds(5);
+        // TODO 2. 2개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
+        List<Long> selectedMissionIds = missionDao.getRandomMissionIds(2);
         missionDao.updateMissionsStatusToSelect(selectedMissionIds);
 
         // TODO 3. Users table의 모든 유저들의 userId 목록 조회
@@ -46,9 +46,6 @@ public class MissionService {
             missionDao.updateTodayMissionsForUser(userId, selectedMissionIds);
         }
     }
-
-
-
 
 
 }

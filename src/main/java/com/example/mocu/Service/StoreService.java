@@ -1,11 +1,10 @@
 package com.example.mocu.Service;
 
-import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
-import com.example.mocu.Dto.store.GetStoreReviewsResponse;
+import com.example.mocu.Dto.review.ReviewForUser;
+import com.example.mocu.Dto.stamp.UserStampInfo;
+import com.example.mocu.Dto.store.*;
 import com.example.mocu.Exception.StoreException;
 import com.example.mocu.Dao.StoreDao;
-import com.example.mocu.Dto.store.GetDetailedStoreResponse;
-import com.example.mocu.Dto.store.GetStoreImagesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,27 +18,37 @@ import static com.example.mocu.Common.response.status.BaseResponseStatus.*;
 @RequiredArgsConstructor
 public class StoreService {
     private final StoreDao storeDao;
-    public GetDetailedStoreResponse getDetailedStore(long storeId) {
+    public GetDetailedStoreResponse getDetailedStore(long storeId, long userId) {
         log.info("[StoreService.getDetailed]");
 
-        return storeDao.getDetailedStore(storeId);
-    }
+        // TODO 1. GET 가게 이미지 URL LIST
+        List<String> storeImages = storeDao.getStoreImages(storeId);
 
-    public List<GetStoreImagesResponse> getStoreImages(long storeId) {
-        log.info("[StoreService.getStoreImages]");
+        // TODO 2. GET 가게 정보
+        // storeName, category, maxStamp, reward, rating
+        StoreInfo storeInfo = storeDao.getStoreInfo(storeId);
 
-        return storeDao.getStoreImages(storeId);
-    }
+        // TODO 3. GET USER 스탬프 정보
+        // 처음 방문하는 user는 numOfStamp와 numOfCouponAvailable 값을 0으로 세팅
+        UserStampInfo userStampInfo = storeDao.getUserStampInfo(storeId, userId);
 
-    public GetNumberOfStampStoreResponse getStoreStamps(long storeId, long userId) {
-        log.info("[StoreService.getStoreStamps]");
 
-        // TODO 1. 스탬프 적립이 처음인지 체크
-        if(!storeDao.isNotFirstStamp(storeId, userId)){
-            return new GetNumberOfStampStoreResponse(0);
-        }
+        // TODO 4. GET ReviewForUser List
+        // 가게에 등록된 리뷰가 없을 경우 empty list return
+        List<ReviewForUser> reviews = storeDao.getReviews(storeId, userId);
 
-        return storeDao.getStoreStamps(storeId, userId);
+        // TODO 5. GetDetailedStoreResponse 형식 맞추기
+        return new GetDetailedStoreResponse(
+                storeImages,
+                storeInfo.getCategory(),
+                storeInfo.getStoreName(),
+                userStampInfo.getNumOfStamp(),
+                userStampInfo.getNumOfCouponAvailable(),
+                storeInfo.getMaxStamp(),
+                storeInfo.getReward(),
+                storeInfo.getRating(),
+                reviews
+        );
     }
 
     public List<GetStoreReviewsResponse> getStoreReviews(long storeId, String orderType) {

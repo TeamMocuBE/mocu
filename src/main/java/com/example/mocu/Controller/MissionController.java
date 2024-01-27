@@ -30,6 +30,18 @@ public class MissionController {
         return new BaseResponse<>(missionService.getTodayMissionsForUser(userId));
     }
 
+    /**
+     * 오늘의 미션 update
+     */
+    public BaseResponse<String> updateTodayMissions(){
+        log.info("[MissionController.updateTodayMissions]");
+        try {
+            missionService.updateTodayMissions();
+            return new BaseResponse<>("오늘의 미션 update 완료.");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("오늘의 미션 update 중 오류 발생");
+        }
+    }
 
 
 }

@@ -1,14 +1,17 @@
 package com.example.mocu.Dao;
 
-import com.example.mocu.Dto.store.GetDetailedStoreResponse;
-import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
-import com.example.mocu.Dto.store.GetStoreImagesResponse;
-import com.example.mocu.Dto.store.GetStoreReviewsResponse;
+import com.example.mocu.Dto.review.ReviewForUser;
+import com.example.mocu.Dto.stamp.UserStampInfo;
+import com.example.mocu.Dto.store.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -21,30 +24,13 @@ public class StoreDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public GetDetailedStoreResponse getDetailedStore(long storeId) {
-        String sql = "select category, name, maxStamp, reward, rating from Stores where storeId=:storeId and status='active'";
-        Map<String, Object> param = Map.of("storeId", storeId);
-        return jdbcTemplate.queryForObject(sql, param,
-                (rs, rowNum) -> new GetDetailedStoreResponse(
-                        rs.getString("category"),
-                        rs.getString("name"),
-                        rs.getInt("maxStamp"),
-                        rs.getString("reward"),
-                        rs.getFloat("rating")
-                ));
-    }
 
-    public List<GetStoreImagesResponse> getStoreImages(long storeId) {
+    public List<String> getStoreImages(long storeId) {
         String sql = "select imageUrl from StoreImage where storeId=:storeId and status='active'";
         Map<String, Object> param = Map.of("storeId", storeId);
-        return jdbcTemplate.query(sql, param, (rs, rowNum) -> new GetStoreImagesResponse(rs.getString("imageUrl")));
+        return jdbcTemplate.queryForList(sql, param, String.class);
     }
 
-    public GetNumberOfStampStoreResponse getStoreStamps(long storeId, long userId) {
-        String sql = "select numOfStamp from Coupons where storeId=:storeId and userId=:userId and status='active'";
-        Map<String, Object> param = Map.of("storeId", storeId, "userId", userId);
-        return jdbcTemplate.queryForObject(sql, param, (rs, rowNum) -> new GetNumberOfStampStoreResponse(rs.getInt("numOfStamp")));
-    }
 
     // 최신순 정렬
     public List<GetStoreReviewsResponse> getStoreReviewsOrderByTime(long storeId) {
@@ -68,12 +54,37 @@ public class StoreDao {
                 ));
     }
 
-    // 스탬프를 적립한 적이 있는 가게인지 check
-    public boolean isNotFirstStamp(long storeId, long userId) {
-        String sql = "select exists(select stampId from Coupons where storeId=:storeId and userId=:userId)";
-        Map<String, Object> param = Map.of("storeId", storeId, "userId", userId);
-        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(sql, param, boolean.class));
+    public StoreInfo getStoreInfo(long storeId) {
+        String sql = "select name as storeName, category, reward, maxStamp, rating from Stores where storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        return jdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(StoreInfo.class));
     }
 
+    public UserStampInfo getUserStampInfo(long storeId, long userId) {
+        String sql = "select numOfStamp, numOfCouponAvailable from Stamps where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
 
+        try {
+            return jdbcTemplate.queryForObject(sql, params, new BeanPropertyRowMapper<>(UserStampInfo.class));
+        } catch (EmptyResultDataAccessException e){
+            // Return default UserStampInfo with numOfStamp and numOfCouponAvailable set to 0
+            return new UserStampInfo();
+        }
+    }
+
+    public List<ReviewForUser> getReviews(long storeId, long userId) {
+        String sql = "select rate, content, modifiedDate from Reviews where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
+        try {
+            return jdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(ReviewForUser.class));
+        } catch (EmptyResultDataAccessException e){
+            // Return an empty list
+            return Collections.emptyList();
+        }
+    }
 }
