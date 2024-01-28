@@ -1,12 +1,18 @@
 package com.example.mocu.Dao;
 
+import com.example.mocu.Dto.mission.GetMissionMapResponse;
 import com.example.mocu.Dto.mission.GetTodayMissionResponse;
+import com.example.mocu.Dto.mission.PatchMissionMapCompleteRequest;
+import com.example.mocu.Dto.mission.PatchMissionMapCompleteResponse;
+import com.example.mocu.MocuApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -100,4 +106,61 @@ public class MissionDao {
     }
 
 
+    public boolean isNotThereMissionMapForThatUser(long userId) {
+        String sql = "select count(*) from MissionStamps where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        return jdbcTemplate.queryForObject(sql, params, Integer.class) == 0;
+    }
+
+    public void insertMissionMap(long userId) {
+        String sql = "insert into MissionStamps (userId, reward) values (:userId, :reward)";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("reward", "스타벅스 2만원권");
+
+        jdbcTemplate.update(sql, params);
+    }
+
+    public GetMissionMapResponse getMissionMapForUser(long userId) {
+        String sql = "select numOfStamp, reward, createdDate, complete from MissionStamps where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+
+        return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
+                new GetMissionMapResponse(
+                        rs.getInt("numOfStamp"),
+                        rs.getString("reward"),
+                        timestampToString(rs.getTimestamp("createdDate")),
+                        rs.getBoolean("complete")
+                )
+        );
+    }
+
+    private String timestampToString(Timestamp timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return (timestamp != null) ? dateFormat.format(timestamp) : null;
+    }
+
+    public void updateMissionMapToComplete(long userId) {
+        String sql = "update MissionStamps set complete=true where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        jdbcTemplate.update(sql, params);
+    }
+
+    public String getRewardForMissionMap(long userId) {
+        String sql = "select reward from MissionStamps where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+
+        return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
+
+
+    public void updateMissionMapForUser(Long userId) {
+        String sql = "update MissionStamps set numOfStamp=0, complete=false where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        jdbcTemplate.update(sql, params);
+    }
 }

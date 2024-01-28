@@ -9,10 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetMissionMapResponse {
-    // user가 모은 미션스탬프 개수, 보상, 미션맵 생성시각, 미션맵 완료 여부
-    private int numOfStamp;
+public class PatchMissionMapCompleteResponse {
     private String reward;
-    private String createdDate;
-    private boolean complete;
 }

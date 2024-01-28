@@ -2,7 +2,10 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.UserDao;
+import com.example.mocu.Dto.mission.GetMissionMapResponse;
 import com.example.mocu.Dto.mission.GetTodayMissionResponse;
+import com.example.mocu.Dto.mission.PatchMissionMapCompleteRequest;
+import com.example.mocu.Dto.mission.PatchMissionMapCompleteResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,6 +49,48 @@ public class MissionService {
         // TODO 4. 모든 user 들의 오늘의 미션 목록 update
         for(Long userId : userIds){
             missionDao.updateTodayMissionsForUser(userId, selectedMissionIds);
+        }
+    }
+
+
+    public GetMissionMapResponse getMissionMapForUser(long userId) {
+        log.info("[MissionService.getMissionMapForUser]");
+
+        // TODO 1. 해당 userId값을 가지는 tuple이 MissionStamps table내에 존재하는지 체크
+        // 없으면 해당 userId값을 가지는 tuple을 MissionStamps table에 insert
+        if(missionDao.isNotThereMissionMapForThatUser(userId)){
+            missionDao.insertMissionMap(userId);
+        }
+
+        return missionDao.getMissionMapForUser(userId);
+    }
+
+    public PatchMissionMapCompleteResponse completeMissionMap(PatchMissionMapCompleteRequest patchMissionMapCompleteRequest) {
+        log.info("[MissionService.completeMissionMap]");
+
+        // TODO 1. MissionStamps table의 complete 값을 true로 변경
+        missionDao.updateMissionMapToComplete(patchMissionMapCompleteRequest.getUserId());
+
+        // TODO 2. reward 조회
+        String reward = missionDao.getRewardForMissionMap(patchMissionMapCompleteRequest.getUserId());
+
+        return new PatchMissionMapCompleteResponse(reward);
+    }
+
+    /**
+     * 매달 첫째날 00시에 미션맵 update
+     * the method will be scheduled to run at 00:00 (midnight) on the first day of every month.
+     */
+    @Scheduled(cron = "0 0 0 1 * ?")
+    public void updateMissionMap() {
+        log.info("[MissionService.updateMissionMap]");
+
+        // TODO 1. Users table의 모든 유저들의 userId 목록 조회
+        List<Long> userIds = userDao.getAllUserIds();
+
+        // TODO 2. 모든 USER 들의 미션 맵 update
+        for(Long userId : userIds){
+            missionDao.updateMissionMapForUser(userId);
         }
     }
 

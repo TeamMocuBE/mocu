@@ -1,7 +1,10 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dto.mission.GetMissionMapResponse;
 import com.example.mocu.Dto.mission.GetTodayMissionResponse;
+import com.example.mocu.Dto.mission.PatchMissionMapCompleteRequest;
+import com.example.mocu.Dto.mission.PatchMissionMapCompleteResponse;
 import com.example.mocu.Service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +39,7 @@ public class MissionController {
         log.info("[MissionController.updateTodayMissions]");
         try {
             missionService.updateTodayMissions();
-            return new BaseResponse<>("오늘의 미션 update 완료.");
+            return new BaseResponse<>("오늘의 미션 update 완료");
         } catch (RuntimeException e){
             return new BaseResponse<>("오늘의 미션 update 중 오류 발생");
         }
@@ -48,6 +51,7 @@ public class MissionController {
      */
 
 
+
     /**
      * 미션 맵 현황 조회
      */
@@ -55,9 +59,33 @@ public class MissionController {
     public BaseResponse<GetMissionMapResponse> getMissionMapForUser(@PathVariable long userId){
         log.info("[MissionController.getMissionMapForUser]");
 
-        return new BaseResponse<GetMissionMapResponse>(missionService.getMissionMapForUser(userId));
+        return new BaseResponse<>(missionService.getMissionMapForUser(userId));
     }
 
+    /**
+     * 미션 맵 완료(최종 보상 수령)
+     */
+    @PatchMapping("/mission-map/complete")
+    public BaseResponse<PatchMissionMapCompleteResponse> completeMissionMap(@RequestBody PatchMissionMapCompleteRequest patchMissionMapCompleteRequest){
+        log.info("[MissionController.completeMissionMap]");
+
+        return new BaseResponse<>(missionService.completeMissionMap(patchMissionMapCompleteRequest));
+    }
+
+    /**
+     * 미션 맵 update
+     * 한달에 한번 미션 맵 update
+     */
+    public BaseResponse<String> updateMissionMap(){
+        log.info("[MissionController.updateMissionMap]");
+
+        try {
+            missionService.updateMissionMap();
+            return new BaseResponse<>("미션 맵 update 완료");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("미션 맵 update 중 오류 발생");
+        }
+    }
 
 
 }
