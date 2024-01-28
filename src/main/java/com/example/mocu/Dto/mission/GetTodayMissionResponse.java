@@ -10,7 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetTodayMissionResponse {
-    // 오늘의 미션으로 선택된 미션의 content, 해당 미션의 수행 여부
+    // 오늘의 미션으로 선택된 미션의 content, 해당 미션의 완료 여부
+    // status가 'not-done' 이면 '미션 수행하기' 버튼으로 표시
+    // status가 'done' 이면 '미션 완료하기' 버튼 활성화
     private String content;
     private String status;
 }

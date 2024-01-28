@@ -17,7 +17,7 @@ public class MissionController {
     private final MissionService missionService;
 
     /**
-     * 오늘의 미션 목록 조회
+     * 오늘의 미션 페이지 조회
      */
     @GetMapping("/{userId}/today-mission")
     public BaseResponse<List<GetTodayMissionResponse>> getTodayMissionsForUser(
@@ -29,7 +29,7 @@ public class MissionController {
 
     /**
      * 오늘의 미션 update
-     * '출석하기' 는 고정 미션
+     * 'MOCU앱 출석하기' 는 고정 미션
      * 추가로 2개가 랜덤으로 뽑혀짐
      */
     public BaseResponse<String> updateTodayMissions(){
@@ -44,7 +44,20 @@ public class MissionController {
 
     /**
      * '미션 완료하기' 버튼 요청 처리
+     * 하루에 미션 스탬프 최대 2개까지 적립가능
      */
+
+
+    /**
+     * 미션 맵 현황 조회
+     */
+    @GetMapping("/{userId}/mission-map")
+    public BaseResponse<GetMissionMapResponse> getMissionMapForUser(@PathVariable long userId){
+        log.info("[MissionController.getMissionMapForUser]");
+
+        return new BaseResponse<GetMissionMapResponse>(missionService.getMissionMapForUser(userId));
+    }
+
 
 
 }

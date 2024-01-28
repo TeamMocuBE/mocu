@@ -31,10 +31,12 @@ public class MissionService {
      */
     @Scheduled(cron = "0 0 0 * * ?")
     public void updateTodayMissions(){
-        // TODO 1. 모든 MISSIONS TABLE의 TUPLE들 상태를 "not-select"으로 update
-        missionDao.updateAllmissionsStatus();
+        log.info("[MissionService.updateTodayMissions]");
 
-        // TODO 2. 2개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
+        // TODO 1. 'MOCU앱 출석하기' 미션을 제외한 모든 MISSIONS TABLE의 TUPLE들 상태를 "not-select"으로 update
+        missionDao.updateAllmissionsStatusWithoutAttendanceMission();
+
+        // TODO 2. 'MOCU 앱 출석하기' 를 제외한 2개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
         List<Long> selectedMissionIds = missionDao.getRandomMissionIds(2);
         missionDao.updateMissionsStatusToSelect(selectedMissionIds);
 

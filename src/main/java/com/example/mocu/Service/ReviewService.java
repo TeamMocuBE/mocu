@@ -32,23 +32,17 @@ public class ReviewService {
         // TODO 3. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
         // 오늘의 미션 중 '리뷰 작성하기' 가 있는지 체크
         boolean isTodayMission = false;
-        if(missionDao.isReviewAssignedTodayMission(postReviewRequest.getUserId())){
+        if(missionDao.isTodayMissionAssigned(postReviewRequest.getUserId(), "리뷰 작성하기")){
             isTodayMission = true;
         }
 
-        // TODO 4. 오늘의 미션 중 몇개를 수행했는지를 체크
-        // 이미 오늘의 미션중 2개를 수행했으면, 추가로 오늘의 미션을 수행하더라도 스탬프 적립 X
-        boolean isMissionComplete = false;
-        int todayMissionPerformed = missionDao.getTodayMissionPerformed(postReviewRequest.getUserId());
-
-        // TODO 5. todo 3, todo 4 모두 통과할 경우 '미션 완료' 처리
-        if(isTodayMission && todayMissionPerformed < 2){
-            isMissionComplete = true;
+        // TODO 4. todo 3 통과할 경우 '미션 완료' 처리
+        if(isTodayMission){
             missionDao.updateTodayMissionToDone(postReviewRequest.getUserId());
         }
 
-        // TODO 6. return 형식 맞추기
-        return new PostReviewResponse(reviewId, isTodayMission, isMissionComplete);
+        // TODO 5. return
+        return new PostReviewResponse(reviewId);
     }
 
     private void validateReview(PostReviewRequest postReviewRequest) {

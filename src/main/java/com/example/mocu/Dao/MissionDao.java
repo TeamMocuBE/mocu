@@ -32,13 +32,13 @@ public class MissionDao {
         );
     }
 
-    public void updateAllmissionsStatus() {
-        String sql = "update Missions set status='not-select'";
+    public void updateAllmissionsStatusWithoutAttendanceMission() {
+        String sql = "update Missions set status='not-select' where content!='MOCU앱 출석하기'";
         jdbcTemplate.update(sql, new MapSqlParameterSource());
     }
 
     public List<Long> getRandomMissionIds(int count) {
-        String sql = "select missionId from Missions order by rand() limit :count";
+        String sql = "select missionId from Missions where content!='MOCU앱 출석하기' order by rand() limit :count";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("count", count);
@@ -47,7 +47,7 @@ public class MissionDao {
     }
 
     public void updateMissionsStatusToSelect(List<Long> selectedMissionIds) {
-        String sql = "update Missions set status=:'select' where missionId in (:selectedMissionIds)";
+        String sql = "update Missions set status='select' where missionId in (:selectedMissionIds)";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("selectedMissionIds", selectedMissionIds);
@@ -73,11 +73,12 @@ public class MissionDao {
     }
 
 
-    public boolean isReviewAssignedTodayMission(long userId) {
+    public boolean isTodayMissionAssigned(long userId, String content) {
         String sql = "select count(*) from TodayMissions tm join Missions m on tm.missionId=m.missionId " +
-                "where tm.userId=:userId and m.content='리뷰 작성하기'";
+                "where tm.userId=:userId and m.content=:content";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
+        params.addValue("content", content);
 
         return jdbcTemplate.queryForObject(sql, params, Integer.class) > 0;
     }

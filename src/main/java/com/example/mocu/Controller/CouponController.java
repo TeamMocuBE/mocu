@@ -43,4 +43,7 @@ public class CouponController {
         return new BaseResponse<>(couponService.couponRequestAccept(postCouponAcceptRequest));
     }
 
+
+
+
 }
