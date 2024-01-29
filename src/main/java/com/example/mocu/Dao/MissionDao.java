@@ -123,7 +123,7 @@ public class MissionDao {
     }
 
     public GetMissionMapResponse getMissionMapForUser(long userId) {
-        String sql = "select numOfStamp, reward, createdDate, complete from MissionStamps where userId=:userId";
+        String sql = "select numOfStamp, reward, createdDate, status from MissionStamps where userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
 
         return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
@@ -131,7 +131,7 @@ public class MissionDao {
                         rs.getInt("numOfStamp"),
                         rs.getString("reward"),
                         timestampToString(rs.getTimestamp("createdDate")),
-                        rs.getBoolean("complete")
+                        rs.getString("status")
                 )
         );
     }
@@ -141,8 +141,8 @@ public class MissionDao {
         return (timestamp != null) ? dateFormat.format(timestamp) : null;
     }
 
-    public void updateMissionMapToComplete(long userId) {
-        String sql = "update MissionStamps set complete=true where userId=:userId";
+    public void updateMissionMapStatusToDone(long userId) {
+        String sql = "update MissionStamps set status='done' where userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         jdbcTemplate.update(sql, params);
@@ -158,7 +158,7 @@ public class MissionDao {
 
 
     public void updateMissionMapForUser(Long userId) {
-        String sql = "update MissionStamps set numOfStamp=0, complete=false where userId=:userId";
+        String sql = "update MissionStamps set numOfStamp=0, status='not-done' where userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         jdbcTemplate.update(sql, params);

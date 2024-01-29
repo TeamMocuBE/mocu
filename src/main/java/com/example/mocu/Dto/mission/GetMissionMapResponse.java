@@ -14,5 +14,5 @@ public class GetMissionMapResponse {
     private int numOfStamp;
     private String reward;
     private String createdDate;
-    private boolean complete;
+    private String status;
 }

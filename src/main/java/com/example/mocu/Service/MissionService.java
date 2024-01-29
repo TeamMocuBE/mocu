@@ -68,8 +68,8 @@ public class MissionService {
     public PatchMissionMapCompleteResponse completeMissionMap(PatchMissionMapCompleteRequest patchMissionMapCompleteRequest) {
         log.info("[MissionService.completeMissionMap]");
 
-        // TODO 1. MissionStamps table의 complete 값을 true로 변경
-        missionDao.updateMissionMapToComplete(patchMissionMapCompleteRequest.getUserId());
+        // TODO 1. MissionStamps table의 status 값을 "done" 으로 변경
+        missionDao.updateMissionMapStatusToDone(patchMissionMapCompleteRequest.getUserId());
 
         // TODO 2. reward 조회
         String reward = missionDao.getRewardForMissionMap(patchMissionMapCompleteRequest.getUserId());
