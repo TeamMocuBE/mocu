@@ -67,4 +67,11 @@ public class StoreService {
     }
 
 
+    public List<GetSearchedStoreResponse> getSearchedStore(long userId, String query, String sort, String category, String option) {
+        log.info("[StoreService.getSearchedStore");
+
+        //TODO: 올바른 검색인지 체크 (필요한가?)
+
+        return storeDao.getSearchedStore(userId, query, sort, category, option);
+    }
 }

@@ -1,10 +1,7 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.store.GetDetailedStoreResponse;
-import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
-import com.example.mocu.Dto.store.GetStoreImagesResponse;
-import com.example.mocu.Dto.store.GetStoreReviewsResponse;
+import com.example.mocu.Dto.store.*;
 import com.example.mocu.Service.StoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +39,17 @@ public class StoreController {
     }
 
     /**
-     * 가게 평점 update
+     * 가게 검색
      */
+    @GetMapping("/store-search/{userId}")
+    public BaseResponse<List<GetSearchedStoreResponse>> getSearchedStore(
+            @PathVariable("userId") long userId,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false, defaultValue = "defaultSort") String sort,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String option) {
+        log.info("[StoreController.getSearchedStore] Search Query: {}", query);
 
-
+        return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, option));
+    }
 }
