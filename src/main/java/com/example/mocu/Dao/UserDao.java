@@ -31,7 +31,7 @@ public class UserDao {
         String sql = "select userId, name, email, userImage, status, oAuthProvider from Users " +
                 "where name like :name and email like :email and status like :status";
 
-        Map<String, Object> param =Map.of(
+        Map<String, Object> param = Map.of(
                 "name", "%" + name + "%",
                 "email", "%" + email + "%",
                 "status", status);
@@ -119,6 +119,7 @@ public class UserDao {
                 availableReviewCount != null ? availableReviewCount : 0,
                 missionStampCount != null ? missionStampCount : 0
         );
+    }
 
     public List<Long> getAllUserIds() {
         String sql = "select userId from Users";
