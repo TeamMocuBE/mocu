@@ -9,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostReviewResponse {
-    // 작성한 review의 reviewId
-    private long reviewId;
+public class ReviewForUser {
+    // 평점, 리뷰내용, 최종 수정 시각
+    private int rate;
+    private int content;
+    private String modifiedDate;
 }

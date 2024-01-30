@@ -1,6 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.CouponDao;
+import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.StampDao;
 import com.example.mocu.Dto.coupon.PostCouponAcceptRequest;
 import com.example.mocu.Dto.coupon.PostCouponAcceptResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CouponService {
     private final CouponDao couponDao;
     private final StampDao stampDao;
+    private final MissionDao missionDao;
 
     public PostCouponResponse couponRequestRegister(PostCouponRequest postCouponRequest) {
         log.info("[CouponService.couponRequestRegister]");
@@ -49,7 +51,19 @@ public class CouponService {
         // TODO 5. 쿠폰 사용 후 쿠폰 사용 임박 여부 체크
         boolean isCouponImminent = checkCouponImminent(stampInfoAfterCouponUse, postCouponAcceptRequest.getStoreId());
 
-        // TODO 6. RETURN 형식 맞추기
+        // TODO 6. '쿠폰 사용하기' 가 오늘의 미션에 해당하는지 체크
+        // 오늘의 미션 중 '쿠폰 사용하기' 가 있는지 체크
+        boolean isTodayMission = false;
+        if(missionDao.isTodayMissionAssigned(postCouponAcceptRequest.getUserId(), "쿠폰 사용하기")){
+            isTodayMission = true;
+        }
+
+        // TODO 7. TODO 6 통과할 경우 '미션 완료' 처리
+        if(isTodayMission){
+            missionDao.updateTodayMissionToDone(postCouponAcceptRequest.getUserId());
+        }
+
+        // TODO 8. RETURN 형식 맞추기
         return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward);
     }
 

@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostReviewResponse {
-    // 작성한 review의 reviewId
+public class PatchReviewReportToTrueRequest {
     private long reviewId;
 }

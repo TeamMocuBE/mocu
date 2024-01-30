@@ -5,6 +5,7 @@ import com.example.mocu.Dto.user.GetMyPageResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Exception.UserException;
 import com.example.mocu.Service.UserService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,4 +45,19 @@ public class UserController {
 
         return new BaseResponse<>(userService.getMypage(userId));
     }
+
+    /**
+     * 단골 설정 요청 처리
+     */
+    /*
+    @PostMapping("/regular-request")
+    public BaseResponse<PostUserRegularResponse> createRegular
+    */
+
+
+    /**
+     * 가게 검색 페이지의 추천 가게 목록 조회
+     */
+
+
 }

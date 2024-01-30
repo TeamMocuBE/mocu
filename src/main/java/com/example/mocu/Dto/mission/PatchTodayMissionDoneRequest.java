@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.review;
+package com.example.mocu.Dto.mission;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostReviewResponse {
-    // 작성한 review의 reviewId
-    private long reviewId;
+public class PatchTodayMissionDoneRequest {
+    private long todayMissionId;
+    private long userId;
 }
