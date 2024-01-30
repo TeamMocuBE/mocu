@@ -1,10 +1,7 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.mission.GetMissionMapResponse;
-import com.example.mocu.Dto.mission.GetTodayMissionResponse;
-import com.example.mocu.Dto.mission.PatchMissionMapCompleteRequest;
-import com.example.mocu.Dto.mission.PatchMissionMapCompleteResponse;
+import com.example.mocu.Dto.mission.*;
 import com.example.mocu.Service.MissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +45,16 @@ public class MissionController {
     /**
      * '미션 완료하기' 버튼 요청 처리
      * 하루에 미션 스탬프 최대 2개까지 적립가능
+     * 미션 스탬프 적립 가능한 경우 : 미션 스탬프 +1, 수행한 오늘의 미션 content 값을 return
+     * 미션 스탬프 적립 가능하지 않은 경우 : "이미 2개의 미션 스탬프를 획득하였습니다." return
      */
+    @PatchMapping("/today-mission/done")
+    public BaseResponse<PatchTodayMissionDoneResponse> todayMissionDone(@RequestBody PatchTodayMissionDoneRequest patchTodayMissionDoneRequest){
+        log.info("[MissionController.todayMissionDone]");
 
+        return new BaseResponse<>(missionService.todayMissionDone(patchTodayMissionDoneRequest));
+    }
+    
 
 
     /**

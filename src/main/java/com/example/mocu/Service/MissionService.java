@@ -2,10 +2,8 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.UserDao;
-import com.example.mocu.Dto.mission.GetMissionMapResponse;
-import com.example.mocu.Dto.mission.GetTodayMissionResponse;
-import com.example.mocu.Dto.mission.PatchMissionMapCompleteRequest;
-import com.example.mocu.Dto.mission.PatchMissionMapCompleteResponse;
+import com.example.mocu.Dto.mission.*;
+import com.example.mocu.Exception.MissionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static com.example.mocu.Common.response.status.BaseResponseStatus.IS_NOT_DONE;
 
 @Slf4j
 @RestController
@@ -37,7 +37,7 @@ public class MissionService {
         log.info("[MissionService.updateTodayMissions]");
 
         // TODO 1. 'MOCU앱 출석하기' 미션을 제외한 모든 MISSIONS TABLE의 TUPLE들 상태를 "not-select"으로 update
-        missionDao.updateAllmissionsStatusWithoutAttendanceMission();
+        missionDao.updateAllMissionsStatusWithoutAttendanceMission();
 
         // TODO 2. 'MOCU 앱 출석하기' 를 제외한 2개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
         List<Long> selectedMissionIds = missionDao.getRandomMissionIds(2);
@@ -93,6 +93,42 @@ public class MissionService {
             missionDao.updateMissionMapForUser(userId);
         }
     }
+
+    public PatchTodayMissionDoneResponse todayMissionDone(PatchTodayMissionDoneRequest patchTodayMissionDoneRequest) {
+        log.info("[MissionService.todayMissionDone]");
+
+        // TODO 1. 해당 userId값을 가지는 tuple이 MissionStamps table내에 존재하는지 체크
+        // 없으면 해당 userId값을 가지는 tuple을 MissionStamps table에 insert
+        if(missionDao.isNotThereMissionMapForThatUser(patchTodayMissionDoneRequest.getUserId())){
+            missionDao.insertMissionMap(patchTodayMissionDoneRequest.getUserId());
+        }
+
+        // TODO 2. 해당 todayMission의 status가 'done'인지 체크
+        boolean isThatDone = missionDao.isTodayMissionPerformed(patchTodayMissionDoneRequest.getTodayMissionId());
+        if(!isThatDone){
+            throw new MissionException(IS_NOT_DONE);
+        }
+
+        // TODO 3. TODO 1 통과할 경우 TodayMissions table에서 해당 userId값을 가진 tuple들의 status값이 'stamped'인 tuple의 개수를 count
+        int stampedTodayMission = missionDao.getTodayMissionStamped(patchTodayMissionDoneRequest.getUserId());
+
+        // TODO 4. TODO 2 의 결과가 1 이하이면, TodayMissions table에서 해당 todayMissionId값을 가진 tuple의 status값을 'stamped'로 변경 & MissionStamps table에서 numOfStamp 값을 1을 더한 값으로 update & Missions table에서 content값을 가져오기
+        // TODO 2 의 결과가 2 이상이면, "이미 2개의 미션 스탬프를 획득하였습니다." 를 PatchTodayMissionDoneResponse 형식에 맞춰서 return
+        if(stampedTodayMission <= 1){
+            missionDao.updateTodayMissionToStamped(patchTodayMissionDoneRequest.getTodayMissionId());
+            missionDao.updateNumOfMissionStamp(patchTodayMissionDoneRequest.getUserId());
+            // 미션 스탬프 개수가 30개에 도달했는지 체크해야 함
+            boolean isPossibleGetReward = missionDao.isPossibleGetReward(patchTodayMissionDoneRequest.getUserId());
+
+            return new PatchTodayMissionDoneResponse(missionDao.getTodayMissionContent(patchTodayMissionDoneRequest.getTodayMissionId()), isPossibleGetReward);
+        }
+        else{
+            return new PatchTodayMissionDoneResponse("이미 2개의 미션 스탬프를 획득하였습니다.", false);
+        }
+    }
+
+
+
 
 
 }

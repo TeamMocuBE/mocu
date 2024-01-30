@@ -6,6 +6,7 @@ import com.example.mocu.Dto.mission.PatchMissionMapCompleteRequest;
 import com.example.mocu.Dto.mission.PatchMissionMapCompleteResponse;
 import com.example.mocu.MocuApplication;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -25,20 +26,15 @@ public class MissionDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
     public List<GetTodayMissionResponse> getTodayMissionsForUser(long userId) {
-        String sql = "select m.content, tm.status from TodayMissions tm join Missions m on tm.missionId=m.missionId " +
+        String sql = "select tm.todayMissionId, m.content, tm.status from TodayMissions tm join Missions m on tm.missionId=m.missionId " +
                 "where tm.userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
 
-        return jdbcTemplate.query(sql, params, (rs, rowNum) ->
-                new GetTodayMissionResponse(
-                        rs.getString("content"),
-                        rs.getString("status")
-                )
-        );
+        return jdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(GetTodayMissionResponse.class));
     }
 
-    public void updateAllmissionsStatusWithoutAttendanceMission() {
+    public void updateAllMissionsStatusWithoutAttendanceMission() {
         String sql = "update Missions set status='not-select' where content!='MOCU앱 출석하기'";
         jdbcTemplate.update(sql, new MapSqlParameterSource());
     }
@@ -87,14 +83,6 @@ public class MissionDao {
         params.addValue("content", content);
 
         return jdbcTemplate.queryForObject(sql, params, Integer.class) > 0;
-    }
-
-    public int getTodayMissionPerformed(long userId) {
-        String sql = "select count(*) from TodayMissions where userId=:userId and status='done'";
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("userId", userId);
-
-        return jdbcTemplate.queryForObject(sql, params, Integer.class);
     }
 
     public void updateTodayMissionToDone(long userId) {
@@ -162,5 +150,55 @@ public class MissionDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         jdbcTemplate.update(sql, params);
+    }
+
+    public boolean isTodayMissionPerformed(long todayMissionId) {
+        String sql = "select status from TodayMissions where todayMissionId=:todayMissionId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("todayMissionId", todayMissionId);
+        String status = jdbcTemplate.queryForObject(sql, params, String.class);
+        return "done".equals(status);
+    }
+
+    public int getTodayMissionStamped(long userId) {
+        String sql = "select count(*) from TodayMissions where userId=:userId and status='stamped'";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        return jdbcTemplate.queryForObject(sql, params, Integer.class);
+    }
+
+    public void updateTodayMissionToStamped(long todayMissionId) {
+        String sql = "update TodayMissions set status='stamped' where todayMissionId=:todayMissionId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("todayMissionId", todayMissionId);
+        jdbcTemplate.update(sql, params);
+    }
+
+    public void updateNumOfMissionStamp(long userId) {
+        String sql = "update MissionStamps set numOfStamp=numOfStamp+1 where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        jdbcTemplate.update(sql, params);
+    }
+
+    public String getTodayMissionContent(long todayMissionId) {
+        String sql = "select content from Missions m join TodayMissions tm on m.missionId=tm.missionId where tm.todayMissionId=:todayMissionId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("todayMissionId", todayMissionId);
+        return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
+
+    public boolean isPossibleGetReward(long userId) {
+        String sql = "select numOfStamp from MissionStamps where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+
+        // 미션 맵 보상 얻을 수 있는 최소 미션 스탬프 개수
+        int stampThreshold = 30;
+
+        Integer numOfStamp = jdbcTemplate.queryForObject(sql, params, Integer.class);
+
+        return numOfStamp != null && numOfStamp >= stampThreshold;
+
     }
 }
