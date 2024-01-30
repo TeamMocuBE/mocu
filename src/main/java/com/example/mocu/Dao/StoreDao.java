@@ -1,9 +1,6 @@
 package com.example.mocu.Dao;
 
-import com.example.mocu.Dto.store.GetDetailedStoreResponse;
-import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
-import com.example.mocu.Dto.store.GetStoreImagesResponse;
-import com.example.mocu.Dto.store.GetStoreReviewsResponse;
+import com.example.mocu.Dto.store.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -11,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 @Slf4j
@@ -76,4 +74,57 @@ public class StoreDao {
     }
 
 
+    public List<GetSearchedStoreResponse> getSearchedStore(long userId, String query, String sort, String category, String option) {
+        String sql = "SELECT s.storeId, s.name, s.reward, s.coordinate, s.rating "
+                + "FROM Stores s LEFT JOIN (SELECT storeId, COUNT(*) as reviewCount FROM Reviews GROUP BY storeId) as rv ON s.storeId = rv.storeId ";
+
+        sql += "WHERE (s.name LIKE CONCAT('%', :query, '%') OR s.category LIKE CONCAT('%', :query, '%')) ";
+
+        if (category != null && !category.isEmpty()) {
+            sql += "AND s.category = :category ";
+        }
+
+        if (Objects.equals(option, "적립 중인 곳만")) {
+            sql += "AND EXISTS (SELECT 1 FROM Stamps st WHERE st.storeId = s.storeId AND st.userId = :userId) ";
+        } else if (Objects.equals(option, "안가본 곳만")) {
+            sql += "AND NOT EXISTS (SELECT 1 FROM Stamps st WHERE st.storeId = s.storeId AND st.userId = :userId) ";
+        } else if (Objects.equals(option, "쿠폰 사용 임박")) {
+            sql += "AND EXISTS (SELECT 1 FROM Stamps st WHERE st.storeId = s.storeId AND st.dueDate = TRUE AND st.userId = :userId) ";
+        } else if (Objects.equals(option, "이벤트 중")) {
+            sql += "AND s.event IS NOT NULL ";
+        }
+
+        if (sort != null && !sort.isEmpty()) {
+            sql += "order by ";
+            switch (sort) {
+                case "별점 높은 순" -> {
+                    sql += "s.rating DESC";
+                    break;
+                }
+                case "리뷰 많은 순" -> {
+                    sql += "rv.reviewCount DESC, ";
+                    break;
+                }
+            }
+        }
+
+        // 마지막에 rv.reviewCount를 제거하여 원래 필요한 컬럼들만 선택
+        sql = "SELECT s.storeId, s.name, s.reward, s.coordinate, s.rating FROM (" + sql + ") as s";
+
+        Map<String, Object> param = Map.of(
+                "userId", "%" + userId + "%",
+                "query", "%" + query + "%",
+                "category", "%" + category + "%"
+        );
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetSearchedStoreResponse(
+                        rs.getString("name"),
+                        rs.getString("reward"),
+                        rs.getString("coordinate"),
+                        rs.getBigDecimal("rating"),
+                        rs.getString("numOfStamp")
+                )
+        );
+    }
 }

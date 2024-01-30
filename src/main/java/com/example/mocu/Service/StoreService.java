@@ -1,11 +1,8 @@
 package com.example.mocu.Service;
 
-import com.example.mocu.Dto.store.GetNumberOfStampStoreResponse;
-import com.example.mocu.Dto.store.GetStoreReviewsResponse;
+import com.example.mocu.Dto.store.*;
 import com.example.mocu.Exception.StoreException;
 import com.example.mocu.Dao.StoreDao;
-import com.example.mocu.Dto.store.GetDetailedStoreResponse;
-import com.example.mocu.Dto.store.GetStoreImagesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -58,4 +55,11 @@ public class StoreService {
     }
 
 
+    public List<GetSearchedStoreResponse> getSearchedStore(long userId, String query, String sort, String category, String option) {
+        log.info("[StoreService.getSearchedStore");
+
+        //TODO: 올바른 검색인지 체크 (필요한가?)
+
+        return storeDao.getSearchedStore(userId, query, sort, category, option);
+    }
 }
