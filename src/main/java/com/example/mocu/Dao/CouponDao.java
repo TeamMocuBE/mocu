@@ -1,12 +1,11 @@
 package com.example.mocu.Dao;
 
+import com.example.mocu.Dto.coupon.GetMyCouponList;
 import com.example.mocu.Dto.coupon.PostCouponAcceptRequest;
 import com.example.mocu.Dto.coupon.PostCouponRequest;
 import com.example.mocu.Dto.coupon.PostCouponResponse;
-import com.example.mocu.Dto.stamp.StampInfo;
 import com.example.mocu.Dto.stamp.StampInfoAfterCouponUse;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Repository
@@ -96,5 +97,51 @@ public class CouponDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("storeId", storeId);
         return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
+
+    public List<GetMyCouponList> myCouponList(long userId, String category, String sort) {
+        String sql = "select s.mainImageUrl, s.name, s.maxStamp, st.numOfStamp, s.reward, s.coordinate, s.event ";
+        sql += "from store s join stamp st on s.storeId = st.storeId and st.userId = :userId ";
+        sql += "where s.status = 'active' ";
+
+        if (category != null && !category.isEmpty()) {
+            sql += "AND s.category = :category ";
+        }
+
+        if (sort != null && !sort.isEmpty()) {
+            sql += "order by ";
+            switch (sort) {
+                case "최신순" -> {
+                    sql += "st.modifiedDate DESC";
+                    break;
+                }
+                case "적립 많이한 순" -> {
+                    sql += "st.numOfStamp";
+                    break;
+                }
+                //TODO: 정렬 조건 추가하기
+                case "흠 또 뭐있지" -> {
+                    sql += "rv.reviewCount DESC, ";
+                    break;
+                }
+            }
+        }
+
+        Map<String, Object> param = Map.of(
+                "userId", "%" + userId + "%",
+                "category", "%" + category + "%",
+                "sort", "%" + sort + "%"
+        );
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetMyCouponList(
+                        rs.getString("mainImageUrl"),
+                        rs.getString("name"),
+                        rs.getInt("maxStamp"),
+                        rs.getInt("numOfStamp"),
+                        rs.getString("reward"),
+                        rs.getString("coordinate"),
+                        rs.getString("event")
+                ));
     }
 }

@@ -1,17 +1,16 @@
 package com.example.mocu.Dao;
 
-import com.example.mocu.Dto.review.GetAvailableReviewCountResponse;
+import com.example.mocu.Dto.review.GetAvailableReviewResponse;
 import com.example.mocu.Dto.review.PatchReviewReportToTrueRequest;
 import com.example.mocu.Dto.review.PostReviewRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -34,18 +33,34 @@ public class ReviewDao {
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder);
 
-        return keyHolder.getKey().longValue();
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
 
-    public GetAvailableReviewCountResponse getAvailableReviewCount(Long userId) {
-        String sql = "select COUNT(*) from reviews where userId = :userId and status = '작성 이전'";
+    public List<GetAvailableReviewResponse> getAvailableReview(Long userId) {
+        String sql = "select s.mainImageUrl, r.createdDate, s.name, s.category, s.maxStamp, st.numOfStamp, s.reward ";
 
-        Map<String, Object> params = Map.of("userId", userId);
+        sql += "from Stores s ";
 
-        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        sql += "join Reviews r on s.storeId = r.storeId ";
 
-        return new GetAvailableReviewCountResponse(count);
+        sql += "join Stamps st on s.storeId = st.storeId and st.userId = :userId ";
+
+        sql += "where r.status = '작성 이전' and s.status = 'active'";
+
+        Map<String, Object> param = Map.of("userId", "%" + userId + "%");
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetAvailableReviewResponse(
+                        rs.getString("mainImageUrl"),
+                        rs.getTimestamp("createdDate").toString(),
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getInt("maxStamp"),
+                        rs.getInt("numOfStamp"),
+                        rs.getString("reward")
+                )
+        );
     }
 
     public void updateReviewReportToTrue(PatchReviewReportToTrueRequest patchReviewReportToTrueRequest) {

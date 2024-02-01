@@ -2,7 +2,7 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.ReviewDao;
-import com.example.mocu.Dto.review.GetAvailableReviewCountResponse;
+import com.example.mocu.Dto.review.GetAvailableReviewResponse;
 import com.example.mocu.Dto.review.PatchReviewReportToTrueRequest;
 import com.example.mocu.Dto.review.PostReviewRequest;
 import com.example.mocu.Dto.review.PostReviewResponse;
@@ -10,6 +10,8 @@ import com.example.mocu.Exception.ReviewException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static com.example.mocu.Common.response.status.BaseResponseStatus.INVALID_REVIEW_LENGTH;
 
@@ -56,10 +58,10 @@ public class ReviewService {
         }
     }
 
-    public GetAvailableReviewCountResponse getAvailableReviewCount(Long userId) {
+    public List<GetAvailableReviewResponse> getAvailableReview(Long userId) {
         log.info("[ReviewService.getAvailableReviewCount]");
 
-        return reviewDao.getAvailableReviewCount(userId);
+        return reviewDao.getAvailableReview(userId);
     }
 
     // 신고하기 처리
