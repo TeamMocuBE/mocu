@@ -31,8 +31,6 @@ public class OwnerController {
         return new BaseResponse<>(ownerService.getStampsNotAccept(storeId));
     }
 
-
-
     /**
      * 가게 정보 등록
      */

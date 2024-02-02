@@ -24,10 +24,10 @@ public class ReviewController {
      * 리뷰 등록
      */
     @PostMapping("")
-    public BaseResponse<PostReviewResponse> register(@Validated @RequestBody PostReviewRequest postReviewReqeust) {
+    public BaseResponse<PostReviewResponse> register(@Validated @RequestBody PostReviewRequest postReviewRequest) {
         log.info("[ReviewController.signUp]");
 
-        return new BaseResponse<>(reviewService.register(postReviewReqeust));
+        return new BaseResponse<>(reviewService.register(postReviewRequest));
     }
 
     /**

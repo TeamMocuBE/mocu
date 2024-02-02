@@ -44,7 +44,7 @@ public class ReviewService {
         }
 
         // TODO 5. return
-        return new PostReviewResponse(reviewId);
+        return new PostReviewResponse(reviewId, isTodayMission);
     }
 
     private void validateReview(PostReviewRequest postReviewRequest) {
