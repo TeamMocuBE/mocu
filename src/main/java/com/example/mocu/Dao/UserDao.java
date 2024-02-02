@@ -1,12 +1,9 @@
 package com.example.mocu.Dao;
 
 import com.example.mocu.Dto.search.Search;
-import com.example.mocu.Dto.store.RecentlyVisitedStoreInfo;
 import com.example.mocu.Dto.store.DueDateStoreInfo;
-import com.example.mocu.Dto.user.GetMyPageResponse;
-import com.example.mocu.Dto.user.GetUserResponse;
-import com.example.mocu.Dto.user.PostUserRegularRequest;
-import com.example.mocu.Dto.user.PostUserRequest;
+import com.example.mocu.Dto.store.RecentlyVisitedStoreInfo;
+import com.example.mocu.Dto.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -213,5 +210,60 @@ public class UserDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
+    }
+
+    /**
+     * 단골 페이지에 나올 가게 리스트
+     */
+    public List<GetRegularResponse> getMyStoreList(long userId, String category, String sort) {
+        String sql = "select s.mainImageUrl, s.name, st.numOfStamp, s.maxStamp, s.reward, s.coordinate, s.event ";
+        sql += "from stores s join stamps st on s.storeId = st.storeId and st.userId = :userId ";
+        sql += "join regulars r on s.storeId = r.storeId and r.userId = :userId ";
+        sql += "where s.status = 'active' and r.status = 'accept' ";
+
+        if (category != null && !category.isEmpty()) {
+            sql += "AND s.category = :category ";
+        }
+
+        if (sort != null && !sort.isEmpty()) {
+            sql += "order by ";
+            switch (sort) {
+                case "최신순" -> {
+                    sql += "st.modifiedDate DESC";
+                    break;
+                }
+                case "적립 많은 순" -> {
+                    sql += "st.numOfStamp";
+                    break;
+                }
+                case "별점 높은 순" -> {
+                    sql += "s.rate";
+                    break;
+                }
+                //TODO: 정렬 조건 추가하기
+            }
+        }
+
+        Map<String, Object> param = Map.of(
+                "userId", "%" + userId + "%",
+                "category", "%" + category + "%",
+                "sort", "%" + sort + "%"
+        );
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetRegularResponse(
+                        rs.getString("mainImageUrl"),
+                        rs.getString("name"),
+                        rs.getInt("numOfStamp"),
+                        rs.getInt("maxStamp"),
+                        rs.getString("reward"),
+                        rs.getString("coordinate")
+                ));
+    }
+
+    public int getRegularsCount(long userId) {
+        String sql = "SELECT COUNT(*) FROM Regulars WHERE userId = :userId AND status = 'request'";
+        Map<String, Object> param = Map.of("userId", "%" + userId + "%");
+        return jdbcTemplate.queryForObject(sql, param, Integer.class);
     }
 }

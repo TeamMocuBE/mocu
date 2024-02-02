@@ -101,7 +101,7 @@ public class CouponDao {
 
     public List<GetMyCouponList> myCouponList(long userId, String category, String sort) {
         String sql = "select s.mainImageUrl, s.name, s.maxStamp, st.numOfStamp, s.reward, s.coordinate, s.event ";
-        sql += "from store s join stamp st on s.storeId = st.storeId and st.userId = :userId ";
+        sql += "from stores s join stamps st on s.storeId = st.storeId and st.userId = :userId ";
         sql += "where s.status = 'active' ";
 
         if (category != null && !category.isEmpty()) {
@@ -115,8 +115,12 @@ public class CouponDao {
                     sql += "st.modifiedDate DESC";
                     break;
                 }
-                case "적립 많이한 순" -> {
+                case "적립 많은 순" -> {
                     sql += "st.numOfStamp";
+                    break;
+                }
+                case "별점 높은 순" -> {
+                    sql += "s.rate";
                     break;
                 }
                 //TODO: 정렬 조건 추가하기

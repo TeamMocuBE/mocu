@@ -2,10 +2,7 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.UserDao;
-import com.example.mocu.Dto.user.GetMyPageResponse;
-import com.example.mocu.Dto.user.GetUserResponse;
-import com.example.mocu.Dto.user.PostUserRegularRequest;
-import com.example.mocu.Dto.user.PostUserRegularResponse;
+import com.example.mocu.Dto.user.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,5 +47,15 @@ public class UserService {
 
         // TODO 4. RETURN
         return new PostUserRegularResponse(regularId, isTodayMission);
+    }
+
+    public GetMyStoreListResponse getMyStoreList(long userId, String category, String sort) {
+        log.info("[UserService.getMyStoreList]");
+
+        List<GetRegularResponse> storeList = userDao.getMyStoreList(userId, category, sort);
+
+        int regularsCount = userDao.getRegularsCount(userId);
+
+        return new GetMyStoreListResponse(regularsCount, storeList);
     }
 }
