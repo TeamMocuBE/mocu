@@ -1,14 +1,9 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.user.GetMyPageResponse;
-import com.example.mocu.Dto.user.GetUserResponse;
-import com.example.mocu.Dto.user.PostUserRegularRequest;
-import com.example.mocu.Dto.user.PostUserRegularResponse;
+import com.example.mocu.Dto.user.*;
 import com.example.mocu.Exception.UserException;
 import com.example.mocu.Service.UserService;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +34,9 @@ public class UserController {
         return new BaseResponse<>(userService.getUsers(nickname, email, status));
     }
 
-
+    /**
+     * my page 조회
+     */
     @GetMapping("/{userId}/mypage")
     public BaseResponse<GetMyPageResponse> getMypage(@PathVariable Long userId) {
         log.info("[UserController.getMypage] - userId: {}", userId);
@@ -54,13 +51,21 @@ public class UserController {
      * 단골 설정 no -> status = "not-accept"
      */
     @PostMapping("/regular-request")
-    public BaseResponse<PostUserRegularResponse> handleRegularRequest(@RequestBody PostUserRegularRequest postUserRegularRequest){
+    public BaseResponse<PostUserRegularResponse> handleRegularRequest(@RequestBody PostUserRegularRequest postUserRegularRequest) {
         log.info("[UserController.handleRegularRequest]");
 
         return new BaseResponse<>(userService.handleRegularRequest(postUserRegularRequest));
     }
 
+    /**
+     * 단골 페이지 조회
+     */
+    @GetMapping("/{userId}/my-storelist")
+    public BaseResponse<GetMyStoreListResponse> getMyStoreList(@PathVariable long userId,
+                                                                 @RequestParam(required = false) String category,
+                                                                 @RequestParam(required = false, defaultValue = "최신순") String sort) {
+        log.info("[UserController.getMyStoreList]");
 
-
-
+        return new BaseResponse<>(userService.getMyStoreList(userId, category, sort));
+    }
 }
