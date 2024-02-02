@@ -55,9 +55,5 @@ public class UserController {
     */
 
 
-    /**
-     * 가게 검색 페이지의 추천 가게 목록 조회
-     */
-
 
 }
