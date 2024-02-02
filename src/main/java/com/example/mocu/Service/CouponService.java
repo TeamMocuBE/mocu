@@ -3,16 +3,14 @@ package com.example.mocu.Service;
 import com.example.mocu.Dao.CouponDao;
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.StampDao;
-import com.example.mocu.Dto.coupon.PostCouponAcceptRequest;
-import com.example.mocu.Dto.coupon.PostCouponAcceptResponse;
-import com.example.mocu.Dto.coupon.PostCouponRequest;
-import com.example.mocu.Dto.coupon.PostCouponResponse;
-import com.example.mocu.Dto.stamp.StampInfo;
+import com.example.mocu.Dto.coupon.*;
 import com.example.mocu.Dto.stamp.StampInfoAfterCouponUse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -93,6 +91,9 @@ public class CouponService {
     }
 
 
+    public List<GetMyCouponList> myCouponList(long userId, String category, String sort) {
+        log.info("[CouponService.myCouponList]");
 
-
+        return couponDao.myCouponList(userId, category, sort);
+    }
 }
