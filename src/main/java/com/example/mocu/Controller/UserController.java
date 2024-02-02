@@ -3,6 +3,8 @@ package com.example.mocu.Controller;
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dto.user.GetMyPageResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
+import com.example.mocu.Dto.user.PostUserRegularRequest;
+import com.example.mocu.Dto.user.PostUserRegularResponse;
 import com.example.mocu.Exception.UserException;
 import com.example.mocu.Service.UserService;
 import com.fasterxml.jackson.databind.ser.Serializers;
@@ -48,11 +50,16 @@ public class UserController {
 
     /**
      * 단골 설정 요청 처리
+     * 단골 설청 ok -> status = "accept"
+     * 단골 설정 no -> status = "not-accept"
      */
-    /*
     @PostMapping("/regular-request")
-    public BaseResponse<PostUserRegularResponse> createRegular
-    */
+    public BaseResponse<PostUserRegularResponse> handleRegularRequest(@RequestBody PostUserRegularRequest postUserRegularRequest){
+        log.info("[UserController.handleRegularRequest]");
+
+        return new BaseResponse<>(userService.handleRegularRequest(postUserRegularRequest));
+    }
+
 
 
 

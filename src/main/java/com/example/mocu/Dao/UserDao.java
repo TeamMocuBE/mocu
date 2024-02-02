@@ -5,6 +5,7 @@ import com.example.mocu.Dto.store.RecentlyVisitedStoreInfo;
 import com.example.mocu.Dto.store.DueDateStoreInfo;
 import com.example.mocu.Dto.user.GetMyPageResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
+import com.example.mocu.Dto.user.PostUserRegularRequest;
 import com.example.mocu.Dto.user.PostUserRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -194,4 +195,23 @@ public class UserDao {
     }
 
 
+    public long handleRegularRequest(PostUserRegularRequest postUserRegularRequest) {
+        String sql = "insert into Regulars (userId, storeId, status) values (:userId, :storeId, :status)";
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("userId", postUserRegularRequest.getUserId())
+                .addValue("storeId", postUserRegularRequest.getStoreId())
+                .addValue("status", postUserRegularRequest.isRequest() ? "accept" : "not-accept");
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sql, params, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+    public boolean isRegular(long regularId) {
+        String sql = "select count(*) from Regulars where regularId=:regularId and status='accept'";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+        return count != null && count > 0;
+    }
 }

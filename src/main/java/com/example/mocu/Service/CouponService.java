@@ -62,10 +62,10 @@ public class CouponService {
         }
 
         // TODO 8. RETURN 형식 맞추기
-        return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward);
+        return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward, isTodayMission);
     }
 
-    private PostCouponAcceptResponse buildPostCouponAcceptResponse(PostCouponAcceptRequest postCouponAcceptRequest, StampInfoAfterCouponUse stampInfoAfterCouponUse, int maxStamp, boolean isCouponImminent, String reward) {
+    private PostCouponAcceptResponse buildPostCouponAcceptResponse(PostCouponAcceptRequest postCouponAcceptRequest, StampInfoAfterCouponUse stampInfoAfterCouponUse, int maxStamp, boolean isCouponImminent, String reward, boolean isTodayMission) {
         String storeName = stampDao.getStoreName(postCouponAcceptRequest.getStoreId());
 
         return new PostCouponAcceptResponse(
@@ -75,7 +75,8 @@ public class CouponService {
                 storeName,
                 reward,
                 isCouponImminent,
-                stampInfoAfterCouponUse.getNumOfCouponAvailable()
+                stampInfoAfterCouponUse.getNumOfCouponAvailable(),
+                isTodayMission
         );
     }
 
