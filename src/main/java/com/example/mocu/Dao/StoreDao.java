@@ -142,4 +142,26 @@ public class StoreDao {
                 )
         );
     }
+
+    public List<StoreInEventInfo> getStoreInEventInfoList(int limit) {
+        String sql = "select name as storeName, mainImageUrl from Stores where event is not null " +
+                "order by rand() limit :limit";
+        // 일단은 랜덤하게 고르는 로직 사용
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("limit", limit);
+
+        List<StoreInEventInfo> storeInEventInfoList = jdbcTemplate.query(sql, params, (rs, rowNul) -> {
+            StoreInEventInfo storeInEventInfo = new StoreInEventInfo();
+            storeInEventInfo.setStoreName(rs.getString("storeName"));
+            storeInEventInfo.setMainImageUrl(rs.getString("mainImageUrl"));
+            return storeInEventInfo;
+        });
+
+        // return null if the list is empty
+        return storeInEventInfoList.isEmpty() ? null : storeInEventInfoList;
+    }
+
+
+
 }

@@ -41,7 +41,7 @@ public class StoreController {
     /**
      * 가게 검색
      */
-    @GetMapping("/store-search/{userId}")
+    @GetMapping("/store-search-result/{userId}")
     public BaseResponse<List<GetSearchedStoreResponse>> getSearchedStore(
             @PathVariable("userId") long userId,
             @RequestParam(required = false) String query,
@@ -52,4 +52,15 @@ public class StoreController {
 
         return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, option));
     }
+
+    /**
+     * 가게 검색 페이지 조회
+     */
+    @GetMapping("/store-search/userId={userId}")
+    public BaseResponse<GetStoreSearchResponse> getStoreSearch(@PathVariable("userId") long userId){
+        log.info("[StoreController.getStoreSearch]");
+
+        return new BaseResponse<>(storeService.getStoreSearch(userId));
+    }
+
 }
