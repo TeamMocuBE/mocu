@@ -13,8 +13,14 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class GetSearchedStoreResponse {
     private String name;
+
     private String reward;
-    private String coordinate;
+
+    private double distance;
+
     private BigDecimal rating;
-    private String numOfStamp;
+
+    private int maxStamp;
+
+    private int numOfStamp;
 }

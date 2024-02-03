@@ -74,12 +74,11 @@ public class StoreService {
     }
 
 
-    public List<GetSearchedStoreResponse> getSearchedStore(long userId, String query, String sort, String category, String option) {
-        log.info("[StoreService.getSearchedStore");
+    public List<GetSearchedStoreResponse> getSearchedStore(long userId, String query, String sort, String category, boolean savingOnly, boolean notVisitedOnly, boolean couponImminent, boolean eventOnly, double userLatitude, double userLongitude) {
+        log.info("[StoreService.getSearchedStore]");
 
-        //TODO: 올바른 검색인지 체크 (필요한가?)
-
-        return storeDao.getSearchedStore(userId, query, sort, category, option);
+        // 검색 조건에 따라 DAO 메소드 호출
+        return storeDao.getSearchedStore(userId, query, sort, category, savingOnly, notVisitedOnly, couponImminent, eventOnly, userLatitude, userLongitude);
     }
 
     public GetStoreSearchResponse getStoreSearch(long userId) {
