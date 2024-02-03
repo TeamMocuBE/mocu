@@ -36,7 +36,7 @@ public class UserService {
         // 오늘의 미션 중 '단골 맺기' 가 있는지 &  체크
         boolean isTodayMission = false;
         if(missionDao.isTodayMissionAssigned(patchUserRegularRequest.getUserId(), "단골 맺기") &&
-        userDao.isRegular(patchUserRegularRequest.getRegularId())){
+        userDao.isRegular(patchUserRegularRequest.getUserId(), patchUserRegularRequest.getStoreId())){
             isTodayMission = true;
         }
 
@@ -46,7 +46,8 @@ public class UserService {
         }
 
         // TODO 4. RETURN
-        return new PatchUserRegularResponse(patchUserRegularRequest.getRegularId(), isTodayMission);
+        long regularId= userDao.getRegularId(patchUserRegularRequest.getUserId(), patchUserRegularRequest.getStoreId());
+        return new PatchUserRegularResponse(regularId, isTodayMission);
     }
 
     public GetMyStoreListResponse getMyStoreList(long userId, String category, String sort) {

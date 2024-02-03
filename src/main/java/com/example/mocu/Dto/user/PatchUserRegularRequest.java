@@ -10,8 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchUserRegularRequest {
-    // regularId, userId, storeId, 단골로 등록할지 말지 여부(status 값)
-    private long regularId;
+    // userId, storeId, 단골로 등록할지 말지 여부(status 값)
     private long userId;
     private long storeId;
     private boolean request;
