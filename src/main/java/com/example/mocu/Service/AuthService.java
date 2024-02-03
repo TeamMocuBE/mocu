@@ -1,6 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.UserDao;
+import com.example.mocu.Dto.user.AuthResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Dto.user.PostUserRequest;
 import com.example.mocu.auth.AuthTokens;
@@ -22,12 +23,14 @@ public class AuthService {
     private final AuthTokensGenerator authTokensGenerator;
     private final RequestOAuthInfoService requestOAuthInfoService;
 
-    public AuthTokens login(OAuthLoginParams params) {
+    public AuthResponse login(OAuthLoginParams params) {
         log.info("[AuthService.login]");
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
         Long userId = findOrCreateMember(oAuthInfoResponse);
 
-        return authTokensGenerator.generate(userId);
+        AuthTokens authTokens = authTokensGenerator.generate(userId);
+
+        return new AuthResponse(userId, authTokens);
     }
 
     private Long findOrCreateMember(OAuthInfoResponse oAuthInfoResponse) {

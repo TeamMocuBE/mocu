@@ -1,7 +1,7 @@
 package com.example.mocu.Controller;
 
+import com.example.mocu.Dto.user.AuthResponse;
 import com.example.mocu.Service.AuthService;
-import com.example.mocu.auth.AuthTokens;
 import com.example.mocu.socialLogin.params.KakaoLoginParams;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +19,10 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/kakao")
-    public ResponseEntity<AuthTokens> loginKakao(@RequestBody KakaoLoginParams params) {
+    public ResponseEntity<AuthResponse> loginKakao(@RequestBody KakaoLoginParams params) {
         log.info("[AuthController.loginKakao] params: {}", params);
+        AuthResponse authResponse = authService.login(params);
 
-        return ResponseEntity.ok(authService.login(params));
+        return ResponseEntity.ok(authResponse);
     }
 }
