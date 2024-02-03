@@ -26,27 +26,27 @@ public class UserService {
         return userDao.getMypage(userId);
     }
 
-    public PostUserRegularResponse handleRegularRequest(PostUserRegularRequest postUserRegularRequest) {
+    public PatchUserRegularResponse handleRegularRequest(PatchUserRegularRequest patchUserRegularRequest) {
         log.info("[UserService.handleRegularRequest]");
 
-        // TODO 1. Regular table에 tuple insert
-        long regularId = userDao.handleRegularRequest(postUserRegularRequest);
+        // TODO 1. Regular table에서 tuple의 status update
+        userDao.updateRegularStatus(patchUserRegularRequest);
 
         // TODO 2. '단골 맺기' 가 오늘의 미션에 해당되는지 & '단골 맺기'의 상태가 'accept' 인지 체크
         // 오늘의 미션 중 '단골 맺기' 가 있는지 &  체크
         boolean isTodayMission = false;
-        if(missionDao.isTodayMissionAssigned(postUserRegularRequest.getUserId(), "단골 맺기") &&
-        userDao.isRegular(regularId)){
+        if(missionDao.isTodayMissionAssigned(patchUserRegularRequest.getUserId(), "단골 맺기") &&
+        userDao.isRegular(patchUserRegularRequest.getRegularId())){
             isTodayMission = true;
         }
 
         // TODO 3. TODO 2 통과할 경우 '미션 완료' 처리
         if(isTodayMission){
-            missionDao.updateTodayMissionToDone(postUserRegularRequest.getUserId());
+            missionDao.updateTodayMissionToDone(patchUserRegularRequest.getUserId());
         }
 
         // TODO 4. RETURN
-        return new PostUserRegularResponse(regularId, isTodayMission);
+        return new PatchUserRegularResponse(patchUserRegularRequest.getRegularId(), isTodayMission);
     }
 
     public GetMyStoreListResponse getMyStoreList(long userId, String category, String sort) {

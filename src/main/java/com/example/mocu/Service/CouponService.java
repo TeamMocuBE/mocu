@@ -3,6 +3,7 @@ package com.example.mocu.Service;
 import com.example.mocu.Dao.CouponDao;
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.StampDao;
+import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.coupon.*;
 import com.example.mocu.Dto.stamp.StampInfoAfterCouponUse;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class CouponService {
     private final CouponDao couponDao;
     private final StampDao stampDao;
     private final MissionDao missionDao;
+    private final UserDao userDao;
 
     public PostCouponResponse couponRequestRegister(PostCouponRequest postCouponRequest) {
         log.info("[CouponService.couponRequestRegister]");
@@ -49,23 +51,26 @@ public class CouponService {
         // TODO 5. 쿠폰 사용 후 쿠폰 사용 임박 여부 체크
         boolean isCouponImminent = checkCouponImminent(stampInfoAfterCouponUse, postCouponAcceptRequest.getStoreId());
 
-        // TODO 6. '쿠폰 사용하기' 가 오늘의 미션에 해당하는지 체크
+        // TODO 6. Regular table에 tuple insert (status = "requset")
+        long regularId = userDao.createRegularId(postCouponAcceptRequest.getStoreId(), postCouponAcceptRequest.getUserId());
+
+        // TODO 7. '쿠폰 사용하기' 가 오늘의 미션에 해당하는지 체크
         // 오늘의 미션 중 '쿠폰 사용하기' 가 있는지 체크
         boolean isTodayMission = false;
         if(missionDao.isTodayMissionAssigned(postCouponAcceptRequest.getUserId(), "쿠폰 사용하기")){
             isTodayMission = true;
         }
 
-        // TODO 7. TODO 6 통과할 경우 '미션 완료' 처리
+        // TODO 8. TODO 6 통과할 경우 '미션 완료' 처리
         if(isTodayMission){
             missionDao.updateTodayMissionToDone(postCouponAcceptRequest.getUserId());
         }
 
-        // TODO 8. RETURN 형식 맞추기
-        return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward, isTodayMission);
+        // TODO 9. RETURN 형식 맞추기
+        return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward, isTodayMission, regularId);
     }
 
-    private PostCouponAcceptResponse buildPostCouponAcceptResponse(PostCouponAcceptRequest postCouponAcceptRequest, StampInfoAfterCouponUse stampInfoAfterCouponUse, int maxStamp, boolean isCouponImminent, String reward, boolean isTodayMission) {
+    private PostCouponAcceptResponse buildPostCouponAcceptResponse(PostCouponAcceptRequest postCouponAcceptRequest, StampInfoAfterCouponUse stampInfoAfterCouponUse, int maxStamp, boolean isCouponImminent, String reward, boolean isTodayMission, long regularId) {
         String storeName = stampDao.getStoreName(postCouponAcceptRequest.getStoreId());
 
         return new PostCouponAcceptResponse(
@@ -76,7 +81,8 @@ public class CouponService {
                 reward,
                 isCouponImminent,
                 stampInfoAfterCouponUse.getNumOfCouponAvailable(),
-                isTodayMission
+                isTodayMission,
+                regularId
         );
     }
 

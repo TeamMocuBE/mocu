@@ -50,11 +50,11 @@ public class UserController {
      * 단골 설청 ok -> status = "accept"
      * 단골 설정 no -> status = "not-accept"
      */
-    @PostMapping("/regular-request")
-    public BaseResponse<PostUserRegularResponse> handleRegularRequest(@RequestBody PostUserRegularRequest postUserRegularRequest) {
+    @PatchMapping("/regular-request")
+    public BaseResponse<PatchUserRegularResponse> handleRegularRequest(@RequestBody PatchUserRegularRequest patchUserRegularRequest) {
         log.info("[UserController.handleRegularRequest]");
 
-        return new BaseResponse<>(userService.handleRegularRequest(postUserRegularRequest));
+        return new BaseResponse<>(userService.handleRegularRequest(patchUserRegularRequest));
     }
 
     /**
