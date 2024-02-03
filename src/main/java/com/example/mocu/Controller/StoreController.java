@@ -47,10 +47,15 @@ public class StoreController {
             @RequestParam(required = false) String query,
             @RequestParam(required = false, defaultValue = "defaultSort") String sort,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String option) {
+            @RequestParam(defaultValue = "false") boolean savingOption,
+            @RequestParam(defaultValue = "false") boolean notVisitedOption,
+            @RequestParam(defaultValue = "false") boolean couponImminentOption,
+            @RequestParam(defaultValue = "false") boolean eventOption,
+            @RequestParam double userLatitude,
+            @RequestParam double userLongitude) {
         log.info("[StoreController.getSearchedStore] Search Query: {}", query);
 
-        return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, option));
+        return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, savingOption, notVisitedOption, couponImminentOption, eventOption, userLatitude, userLongitude));
     }
 
     /**
