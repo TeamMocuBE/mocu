@@ -43,6 +43,7 @@ public class OwnerController {
 
     /**
      * 가게 정보 수정
+     * -> url 수정해야함 (PatchOwnerStoreRequest에 storeId까지 같이 넣어야함)
      */
     @PatchMapping("/store/{storeId}")
     public BaseResponse<String> modifyStoreInfo(@PathVariable long storeId, @Validated @RequestBody PatchOwnerStoreRequest patchOwnerStoreRequest){

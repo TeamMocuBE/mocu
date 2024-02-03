@@ -191,19 +191,16 @@ public class UserDao {
         return dueDateStoreInfoList.isEmpty() ? null : dueDateStoreInfoList;
     }
 
+    public void updateRegularStatus(PatchUserRegularRequest patchUserRegularRequest) {
+        String sql = "update Regulars set status=:status where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("status", patchUserRegularRequest.isRequest() ? "accept" : "not-accept");
+        params.addValue("userId", patchUserRegularRequest.getUserId());
+        params.addValue("storeId", patchUserRegularRequest.getStoreId());
 
-    public long handleRegularRequest(PostUserRegularRequest postUserRegularRequest) {
-        String sql = "insert into Regulars (userId, storeId, status) values (:userId, :storeId, :status)";
-        MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", postUserRegularRequest.getUserId())
-                .addValue("storeId", postUserRegularRequest.getStoreId())
-                .addValue("status", postUserRegularRequest.isRequest() ? "accept" : "not-accept");
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, params, keyHolder);
-
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        jdbcTemplate.update(sql, params);
     }
+
 
     public boolean isRegular(long regularId) {
         String sql = "select count(*) from Regulars where regularId=:regularId and status='accept'";
@@ -266,4 +263,18 @@ public class UserDao {
         Map<String, Object> param = Map.of("userId", "%" + userId + "%");
         return jdbcTemplate.queryForObject(sql, param, Integer.class);
     }
+
+    public long createRegularId(long storeId, long userId) {
+        String sql = "insert into Regulars (storeId, userId) values (:storeId, :userId)";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("userId", userId);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sql, params, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
+
+
 }

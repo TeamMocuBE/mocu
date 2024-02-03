@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostUserRegularRequest {
-    // userId, storeId, 단골로 등록할지 말지 여부
+public class PatchUserRegularRequest {
+    // regularId, userId, storeId, 단골로 등록할지 말지 여부(status 값)
+    private long regularId;
     private long userId;
     private long storeId;
     private boolean request;
