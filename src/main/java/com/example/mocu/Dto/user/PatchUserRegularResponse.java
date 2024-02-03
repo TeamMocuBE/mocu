@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchUserRegularResponse {
-    // regularId return
+    // regularId
     // '단골 맺기'가 오늘의 미션인지 check
     // missionComplete = false : '리뷰 작성하기'가 오늘의 미션 X
     //                 = true : '리뷰 작성하기'가 오늘의 미션 O

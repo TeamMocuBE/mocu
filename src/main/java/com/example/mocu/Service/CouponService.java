@@ -51,8 +51,31 @@ public class CouponService {
         // TODO 5. 쿠폰 사용 후 쿠폰 사용 임박 여부 체크
         boolean isCouponImminent = checkCouponImminent(stampInfoAfterCouponUse, postCouponAcceptRequest.getStoreId());
 
-        // TODO 6. Regular table에 tuple insert (status = "requset")
-        long regularId = userDao.createRegularId(postCouponAcceptRequest.getStoreId(), postCouponAcceptRequest.getUserId());
+        // TODO 6. '단골 등록' 팝업창 띄울지 말지 체크
+        boolean regularPopUp;
+        // 1. regularId 존재하는지 체크
+        if(userDao.isExistRegularId(postCouponAcceptRequest.getUserId(), postCouponAcceptRequest.getStoreId())){
+            // 존재하면 status 체크
+            String status = userDao.getRegularStatus(postCouponAcceptRequest.getUserId(), postCouponAcceptRequest.getStoreId());
+            switch (status){
+                case "request" :
+                    regularPopUp = true;
+                    break;
+                case "not-accept" :
+                case "accept" :
+                    regularPopUp = false;
+                    break;
+                // Handle unexpected status value (optional)
+                default:
+                    regularPopUp = false;
+                    break;
+            }
+        }
+        else{
+            // 존재하지 않으면 regularId 생성
+            userDao.createRegularId(postCouponAcceptRequest.getUserId(), postCouponAcceptRequest.getStoreId());
+            regularPopUp = true;
+        }
 
         // TODO 7. '쿠폰 사용하기' 가 오늘의 미션에 해당하는지 체크
         // 오늘의 미션 중 '쿠폰 사용하기' 가 있는지 체크
@@ -67,10 +90,10 @@ public class CouponService {
         }
 
         // TODO 9. RETURN 형식 맞추기
-        return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward, isTodayMission, regularId);
+        return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward, isTodayMission, regularPopUp);
     }
 
-    private PostCouponAcceptResponse buildPostCouponAcceptResponse(PostCouponAcceptRequest postCouponAcceptRequest, StampInfoAfterCouponUse stampInfoAfterCouponUse, int maxStamp, boolean isCouponImminent, String reward, boolean isTodayMission, long regularId) {
+    private PostCouponAcceptResponse buildPostCouponAcceptResponse(PostCouponAcceptRequest postCouponAcceptRequest, StampInfoAfterCouponUse stampInfoAfterCouponUse, int maxStamp, boolean isCouponImminent, String reward, boolean isTodayMission, boolean regularPopUp) {
         String storeName = stampDao.getStoreName(postCouponAcceptRequest.getStoreId());
 
         return new PostCouponAcceptResponse(
@@ -82,7 +105,7 @@ public class CouponService {
                 isCouponImminent,
                 stampInfoAfterCouponUse.getNumOfCouponAvailable(),
                 isTodayMission,
-                regularId
+                regularPopUp
         );
     }
 

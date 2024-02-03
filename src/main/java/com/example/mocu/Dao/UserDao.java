@@ -194,17 +194,20 @@ public class UserDao {
     public void updateRegularStatus(PatchUserRegularRequest patchUserRegularRequest) {
         String sql = "update Regulars set status=:status where userId=:userId and storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("status", patchUserRegularRequest.isRequest() ? "accept" : "not-accept");
+        params.addValue("status", patchUserRegularRequest.isRequest() ? "accept" : "request");
         params.addValue("userId", patchUserRegularRequest.getUserId());
         params.addValue("storeId", patchUserRegularRequest.getStoreId());
 
         jdbcTemplate.update(sql, params);
     }
 
-
-    public boolean isRegular(long regularId) {
-        String sql = "select count(*) from Regulars where regularId=:regularId and status='accept'";
+    
+    public boolean isRegular(long userId, long storeId) {
+        String sql = "select count(*) from Regulars where userId=:userId and storeId=:storeId and status='accept'";
         MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
+        
         Integer count = jdbcTemplate.queryForObject(sql, params, Integer.class);
         return count != null && count > 0;
     }
@@ -264,17 +267,42 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, param, Integer.class);
     }
 
-    public long createRegularId(long storeId, long userId) {
-        String sql = "insert into Regulars (storeId, userId) values (:storeId, :userId)";
+    public void createRegularId(long userId, long storeId) {
+        String sql = "insert into Regulars (userId, storeId) values (:userId, :storeId)";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("storeId", storeId);
         params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
 
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(sql, params, keyHolder);
-
-        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        jdbcTemplate.update(sql, params);
     }
 
 
+    public boolean isExistRegularId(long userId, long storeId) {
+        String sql = "select count(*) from Regulars where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
+
+        int count = jdbcTemplate.queryForObject(sql, params, Integer.class);
+
+        return count > 0;
+    }
+
+    public String getRegularStatus(long userId, long storeId) {
+        String sql = "select status from Regulars where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
+
+        return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
+
+    public long getRegularId(long userId, long storeId) {
+        String sql = "select regularId from Regulars where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
+
+        return jdbcTemplate.queryForObject(sql, params, long.class);
+    }
 }

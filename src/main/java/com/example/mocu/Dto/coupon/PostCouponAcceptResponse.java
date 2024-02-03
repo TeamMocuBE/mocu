@@ -16,8 +16,8 @@ public class PostCouponAcceptResponse {
     // '쿠폰 사용하기'가 오늘의 미션인지 check
     // missionComplete = false : '리뷰 작성하기'가 오늘의 미션 X
     //                 = true : '리뷰 작성하기'가 오늘의 미션 O
-    // regularId -> 쿠폰 사용시 regularId 생성 & 추후에 단골로 설정할지 말지 결정하면 status 변경
-
+    // regularPopUp -> '이 가게를 단골로 설정하시겠습니까' 팝업창 띄울지 말지 결정
+    // -> true : 팝업창 띄우기 , false : 팝업창 띄우지 않기
     private long stampId;
     private int numOfStamp;
     private int maxStamp;
@@ -26,5 +26,5 @@ public class PostCouponAcceptResponse {
     private boolean dueDate;
     private int numOfCouponAvailable;
     private boolean missionComplete;
-    private long regularId;
+    private boolean regularPopUp;
 }
