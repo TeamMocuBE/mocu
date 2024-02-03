@@ -29,13 +29,13 @@ public class UserDao {
     }
 
     public List<GetUserResponse> getUsers(String name, String email, String status) {
-        String sql = "select userId, name, email, userImage, status, oAuthProvider from Users " +
+        String sql = "select userId, name, email, userImage, status, provider from Users " +
                 "where name like :name and email like :email and status like :status";
 
         Map<String, Object> param = Map.of(
                 "name", "%" + name + "%",
                 "email", "%" + email + "%",
-                "status", status);
+                "status", "%" + status + "%");
 
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetUserResponse(
@@ -44,7 +44,7 @@ public class UserDao {
                         rs.getString("email"),
                         rs.getString("userImage"),
                         rs.getString("status"),
-                        rs.getString("oAuthProvider")
+                        rs.getString("provider")
                 )
         );
     }
@@ -56,7 +56,7 @@ public class UserDao {
     }
 
     public long createUser(PostUserRequest postUserRequest) {
-        String sql = "insert into user(email, name, provider, profile_image) " +
+        String sql = "insert into users(email, name, provider, userImage) " +
                 "values(:email, :name, :provider, :profileImage)";
 
         SqlParameterSource param = new BeanPropertySqlParameterSource(postUserRequest);

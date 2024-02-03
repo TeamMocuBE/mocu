@@ -22,24 +22,24 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoApiClient implements OAuthApiClient {
     private static final String GRANT_TYPE = "authorization_code";
 
-    @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
+    /*@Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
     private String authUrl;
 
     @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String apiUrl;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String clientId;
+    private String clientId;*/
 
 
-    /*@Value("${oauth.kakao.url.auth}")
+    @Value("${oauth.kakao.url.auth}")
     private String authUrl;
 
     @Value("${oauth.kakao.url.api}")
     private String apiUrl;
 
     @Value("${oauth.kakao.client-id}")
-    private String clientId;*/
+    private String clientId;
 
     private final RestTemplate restTemplate;
 
