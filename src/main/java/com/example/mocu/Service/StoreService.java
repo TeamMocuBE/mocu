@@ -84,6 +84,9 @@ public class StoreService {
 
     public GetStoreSearchResponse getStoreSearch(long userId) {
         log.info("[StoreService.getStoreSearch]");
+        /**
+         * 유저의 현재 설정한 위치를 기준으로 근방의 가게들을 return하는 방식으로 수정해야 할 듯
+         */
 
         // 5개 제한
         int limit = 5;
