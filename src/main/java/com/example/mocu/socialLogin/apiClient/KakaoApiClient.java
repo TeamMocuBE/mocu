@@ -22,24 +22,24 @@ import org.springframework.web.client.RestTemplate;
 public class KakaoApiClient implements OAuthApiClient {
     private static final String GRANT_TYPE = "authorization_code";
 
-    @Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
+    /*@Value("${spring.security.oauth2.client.provider.kakao.authorization-uri}")
     private String authUrl;
 
     @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String apiUrl;
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
-    private String clientId;
+    private String clientId;*/
 
 
-    /*@Value("${oauth.kakao.url.auth}")
+    @Value("${oauth.kakao.url.auth}")
     private String authUrl;
 
     @Value("${oauth.kakao.url.api}")
     private String apiUrl;
 
     @Value("${oauth.kakao.client-id}")
-    private String clientId;*/
+    private String clientId;
 
     private final RestTemplate restTemplate;
 
@@ -50,7 +50,7 @@ public class KakaoApiClient implements OAuthApiClient {
 
     @Override
     public String requestAccessToken(OAuthLoginParams params) {
-        log.info("[KakaoApiClient.requestAccessToken]");
+        log.info("[KakaoApiClient.requestAccessToken] params: {}", params);
         String url = authUrl + "/oauth/token";
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -59,6 +59,8 @@ public class KakaoApiClient implements OAuthApiClient {
         MultiValueMap<String, String> body = params.makeBody();
         body.add("grant_type", GRANT_TYPE);
         body.add("client_id", clientId);
+
+        log.info("body: {}", body);
 
         HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
 
