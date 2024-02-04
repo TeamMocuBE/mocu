@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -85,10 +86,10 @@ public class MissionDao {
         return jdbcTemplate.queryForObject(sql, params, Integer.class) > 0;
     }
 
-    public void updateTodayMissionToDone(long userId) {
-        String sql = "update TodayMissions set status='done' where userId=:userId";
+    public void updateTodayMissionToDone(long todayMissionId) {
+        String sql = "update TodayMissions set status='done' where todayMissionId=:todayMissionId";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("userId", userId);
+        params.addValue("todayMissionId", todayMissionId);
 
         jdbcTemplate.update(sql, params);
     }
@@ -200,5 +201,15 @@ public class MissionDao {
 
         return numOfStamp != null && numOfStamp >= stampThreshold;
 
+    }
+
+    public long getTodayMissionId(long userId, String content) {
+        String sql = "select todayMissionId from Missions m join TodayMissions tm on m.missionId=tm.missionId " +
+                "where tm.userId=:userId and m.content=:content";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("content", content);
+
+        return jdbcTemplate.queryForObject(sql, params, long.class);
     }
 }

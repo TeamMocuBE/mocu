@@ -38,14 +38,13 @@ public class UserService {
         if(missionDao.isTodayMissionAssigned(patchUserRegularRequest.getUserId(), "단골 맺기") &&
         userDao.isRegular(patchUserRegularRequest.getUserId(), patchUserRegularRequest.getStoreId())){
             isTodayMission = true;
+            // 1. get '단골 맺기' 의 todayMissionId
+            long todayMissionId = missionDao.getTodayMissionId(patchUserRegularRequest.getUserId(), "단골 맺기");
+            // 2. 해당 todayMissionId 를 '미션 완료' 처리
+            missionDao.updateTodayMissionToDone(todayMissionId);
         }
 
-        // TODO 3. TODO 2 통과할 경우 '미션 완료' 처리
-        if(isTodayMission){
-            missionDao.updateTodayMissionToDone(patchUserRegularRequest.getUserId());
-        }
-
-        // TODO 4. RETURN
+        // TODO 3. RETURN
         long regularId= userDao.getRegularId(patchUserRegularRequest.getUserId(), patchUserRegularRequest.getStoreId());
         return new PatchUserRegularResponse(regularId, isTodayMission);
     }
