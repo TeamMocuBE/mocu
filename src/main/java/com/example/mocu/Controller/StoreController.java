@@ -52,10 +52,11 @@ public class StoreController {
             @RequestParam(defaultValue = "false") boolean couponImminentOption,
             @RequestParam(defaultValue = "false") boolean eventOption,
             @RequestParam double userLatitude,
-            @RequestParam double userLongitude) {
+            @RequestParam double userLongitude,
+            @RequestParam int page) {
         log.info("[StoreController.getSearchedStore] Search Query: {}", query);
 
-        return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, savingOption, notVisitedOption, couponImminentOption, eventOption, userLatitude, userLongitude));
+        return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, savingOption, notVisitedOption, couponImminentOption, eventOption, userLatitude, userLongitude, page));
     }
 
     /**
