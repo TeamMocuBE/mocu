@@ -1,9 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.AddressDao;
-import com.example.mocu.Dto.address.GetAddressResponse;
-import com.example.mocu.Dto.address.PostAddressRequest;
-import com.example.mocu.Dto.address.PostAddressResponse;
+import com.example.mocu.Dto.address.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,5 +26,13 @@ public class AddressService {
         log.info("AddressService.getAddress");
 
         return addressDao.getAddress(userId);
+    }
+
+    public PatchUserAddressResponse modifyAddress(Long userId, PatchUserAddressRequest patchUserAddressRequest) {
+        log.info("[AddressService.modifyAddress]");
+
+        //TODO. 수정 가능한 내용인지 검사
+
+        return new PatchUserAddressResponse(addressDao.modifyAddress(userId, patchUserAddressRequest));
     }
 }

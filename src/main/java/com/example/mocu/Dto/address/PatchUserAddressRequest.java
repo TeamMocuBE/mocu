@@ -9,6 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostAddressResponse {
-    private Long addressId;
+public class PatchUserAddressRequest {
+    private String name;
+    private String address;
+    private String latitude;
+    private String longitude;
 }

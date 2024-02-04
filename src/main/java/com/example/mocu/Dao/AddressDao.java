@@ -1,6 +1,7 @@
 package com.example.mocu.Dao;
 
 import com.example.mocu.Dto.address.GetAddressResponse;
+import com.example.mocu.Dto.address.PatchUserAddressRequest;
 import com.example.mocu.Dto.address.PostAddressRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -48,12 +49,35 @@ public class AddressDao {
                 "where userId like :userId";
 
         Map<String, Object> param = Map.of(
-                "userId", "%" + userId + "%");
+                "userId", userId);
 
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetAddressResponse(
                         rs.getString("name"),
                         rs.getString("address")
                 ));
+    }
+
+    public long modifyAddress(Long userId, PatchUserAddressRequest patchUserAddressRequest) {
+        String sql = "UPDATE Users SET address = :address, latitude = :latitude, longitude = :longitude WHERE userId = :userId";
+
+        Map<String, Object> param = Map.of(
+                "userId", userId,
+                "name", patchUserAddressRequest.getName(),
+                "address", patchUserAddressRequest.getAddress(),
+                "latitude", patchUserAddressRequest.getLatitude(),
+                "longitude", patchUserAddressRequest.getLongitude()
+        );
+
+        int updatedRows = jdbcTemplate.update(sql, param);
+
+        if (updatedRows > 0) {
+            // 성공적으로 주소가 업데이트된 경우
+            return userId;
+        } else {
+            // 업데이트가 실패한 경우 (예: 해당 userId가 없는 경우)
+            // 적절한 예외 처리를 수행하거나, 실패를 나타내는 특정 값을 반환
+            throw new RuntimeException("주소 업데이트 실패");
+        }
     }
 }
