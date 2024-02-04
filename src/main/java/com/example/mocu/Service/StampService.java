@@ -1,6 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.StampDao;
 import com.example.mocu.Dto.stamp.*;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class StampService {
     private final StampDao stampDao;
+    private final MissionDao missionDao;
 
     public PostStampResponse stampRequestRegister(PostStampRequest postStampRequest) {
         log.info("[StampService.stampRequestRegister]");
@@ -49,11 +51,28 @@ public class StampService {
         // TODO 5. 적립 후 쿠폰 활성화 여부 체크
         int updatedNumOfCouponAvailable = updateCouponAvailability(stampInfo, postStampAcceptRequest.getStoreId());
 
-        // TODO 6. RETURN 형식 맞추기
-        return buildPostStampAcceptResponse(postStampAcceptRequest, stampInfo, isCouponImminent, updatedNumOfCouponAvailable);
+        // TODO 6. '이벤트 중인 가게에서 적립하기' 또는 '단골가게에서 적립하기' 가 오늘의 미션에 해당하는지 체크
+        boolean isTodayMission = false;
+        if(missionDao.isTodayMissionAssigned(postStampAcceptRequest.getUserId(), "이벤트 중인 가게에서 적립하기")){
+            isTodayMission = true;
+            // 1. get '이벤트 중인 가게에서 적립하기' 의 todayMissionId
+            long todayMissionId = missionDao.getTodayMissionId(postStampAcceptRequest.getUserId(), "이벤트 중인 가게에서 적립하기");
+            // 2. 해당 todayMissionId 를 '미션 완료' 처리
+            missionDao.updateTodayMissionToDone(todayMissionId);
+        }
+        else if(missionDao.isTodayMissionAssigned(postStampAcceptRequest.getUserId(), "단골가게에서 적립하기")){
+            isTodayMission = true;
+            // 1. get '단골가게에서 적립하기' 의 todayMissionId
+            long todayMissionId = missionDao.getTodayMissionId(postStampAcceptRequest.getUserId(), "단골가게에서 적립하기");
+            // 2. 해당 todayMissionId 를 '미션 완료' 처리
+            missionDao.updateTodayMissionToDone(todayMissionId);
+        }
+
+        // TODO 7. RETURN 형식 맞추기
+        return buildPostStampAcceptResponse(postStampAcceptRequest, stampInfo, isCouponImminent, updatedNumOfCouponAvailable, isTodayMission);
     }
 
-    private PostStampAcceptResponse buildPostStampAcceptResponse(PostStampAcceptRequest postStampAcceptRequest, StampInfo stampInfo, boolean isCouponImminent, int updatedNumOfCouponAvailable) {
+    private PostStampAcceptResponse buildPostStampAcceptResponse(PostStampAcceptRequest postStampAcceptRequest, StampInfo stampInfo, boolean isCouponImminent, int updatedNumOfCouponAvailable, boolean isTodayMission) {
         String storeName = stampDao.getStoreName(postStampAcceptRequest.getStoreId());
         int maxStamp = stampDao.getMaxStampValue(postStampAcceptRequest.getStoreId());
 
@@ -63,7 +82,8 @@ public class StampService {
                 maxStamp,
                 storeName,
                 isCouponImminent,
-                updatedNumOfCouponAvailable
+                updatedNumOfCouponAvailable,
+                isTodayMission
         );
     }
 

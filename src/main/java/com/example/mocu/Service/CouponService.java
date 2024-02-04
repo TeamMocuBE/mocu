@@ -82,14 +82,13 @@ public class CouponService {
         boolean isTodayMission = false;
         if(missionDao.isTodayMissionAssigned(postCouponAcceptRequest.getUserId(), "쿠폰 사용하기")){
             isTodayMission = true;
+            // 1. get '쿠폰 사용하기' 의 todayMissionId
+            long todayMissionId = missionDao.getTodayMissionId(postCouponAcceptRequest.getUserId(), "쿠폰 사용하기");
+            // 2. 해당 todayMissionId 를 '미션 완료' 처리
+            missionDao.updateTodayMissionToDone(todayMissionId);
         }
 
-        // TODO 8. TODO 6 통과할 경우 '미션 완료' 처리
-        if(isTodayMission){
-            missionDao.updateTodayMissionToDone(postCouponAcceptRequest.getUserId());
-        }
-
-        // TODO 9. RETURN 형식 맞추기
+        // TODO 8. RETURN 형식 맞추기
         return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward, isTodayMission, regularPopUp);
     }
 

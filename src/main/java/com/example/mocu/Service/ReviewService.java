@@ -36,14 +36,13 @@ public class ReviewService {
         boolean isTodayMission = false;
         if(missionDao.isTodayMissionAssigned(postReviewRequest.getUserId(), "리뷰 작성하기")){
             isTodayMission = true;
+            // 1. get '리뷰 작성하기' 의 todayMissionId
+            long todayMissionId = missionDao.getTodayMissionId(postReviewRequest.getUserId(), "리뷰 작성하기");
+            // 2. 해당 todayMissionId 를 '미션 완료' 처리
+            missionDao.updateTodayMissionToDone(todayMissionId);
         }
 
-        // TODO 4. todo 3 통과할 경우 '미션 완료' 처리
-        if(isTodayMission){
-            missionDao.updateTodayMissionToDone(postReviewRequest.getUserId());
-        }
-
-        // TODO 5. return
+        // TODO 4. return
         return new PostReviewResponse(reviewId, isTodayMission);
     }
 
