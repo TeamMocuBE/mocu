@@ -111,7 +111,10 @@ public class StoreDao {
         return storeInEventInfoList.isEmpty() ? null : storeInEventInfoList;
     }
 
-    public List<GetSearchedStoreResponse> getSearchedStore(long userId, String query, String sort, String category, boolean savingOnly, boolean notVisitedOnly, boolean couponImminent, boolean eventOnly, double userLatitude, double userLongitude) {
+    public List<GetSearchedStoreResponse> getSearchedStore(long userId, String query, String sort, String category, boolean savingOnly, boolean notVisitedOnly, boolean couponImminent, boolean eventOnly, double userLatitude, double userLongitude, int page) {
+        int limit = 10;
+        int offset = page * limit;
+
         String sql = "SELECT s.name, s.reward, s.latitude, s.longitude, s.rating, s.maxStamp, ST_Distance_Sphere(point(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) AS distance "
                 + "COALESCE(st.numOfStamp, 0) AS numOfStamp "
                 + "FROM Stores s "
@@ -147,7 +150,7 @@ public class StoreDao {
         }
 
         if (sort != null && !sort.isEmpty()) {
-            sql += "order by ";
+            sql += " order by ";
             switch (sort) {
                 case "별점 높은 순" -> {
                     sql += "s.rating DESC";
@@ -164,12 +167,16 @@ public class StoreDao {
             }
         }
 
+        sql += " limit :limit offset :offset";
+
         Map<String, Object> param = Map.of(
                 "userId", "%" + userId + "%",
                 "query", query != null ? "%" + query + "%" : "%",
                 "category", category != null ? category : "%",
                 "userLatitude", "%" + userLatitude + "%",
-                "userLongitude", "%" + userLongitude + "%"
+                "userLongitude", "%" + userLongitude + "%",
+                "limit", "%" + limit + "%",
+                "offset", "%" + offset + "%"
         );
 
         return jdbcTemplate.query(sql, param,

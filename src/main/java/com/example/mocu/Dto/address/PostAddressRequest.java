@@ -12,4 +12,6 @@ import lombok.Setter;
 public class PostAddressRequest {
     private String name;
     private String address;
+    private String latitude;
+    private String longitude;
 }
