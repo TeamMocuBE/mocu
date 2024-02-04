@@ -2,6 +2,7 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.ReviewDao;
+import com.example.mocu.Dto.mission.IsTodayMission;
 import com.example.mocu.Dto.review.GetAvailableReviewResponse;
 import com.example.mocu.Dto.review.PatchReviewReportToTrueRequest;
 import com.example.mocu.Dto.review.PostReviewRequest;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.mocu.Common.response.status.BaseResponseStatus.INVALID_REVIEW_LENGTH;
@@ -33,9 +35,11 @@ public class ReviewService {
 
         // TODO 3. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
         // 오늘의 미션 중 '리뷰 작성하기' 가 있는지 체크
-        boolean isTodayMission = false;
+        List<IsTodayMission> todayMissionList = new ArrayList<>();
         if(missionDao.isTodayMissionAssigned(postReviewRequest.getUserId(), "리뷰 작성하기")){
-            isTodayMission = true;
+            IsTodayMission todayMission = new IsTodayMission("리뷰 작성하기", true);
+            todayMissionList.add(todayMission);
+
             // 1. get '리뷰 작성하기' 의 todayMissionId
             long todayMissionId = missionDao.getTodayMissionId(postReviewRequest.getUserId(), "리뷰 작성하기");
             // 2. 해당 todayMissionId 를 '미션 완료' 처리
@@ -43,7 +47,7 @@ public class ReviewService {
         }
 
         // TODO 4. return
-        return new PostReviewResponse(reviewId, isTodayMission);
+        return new PostReviewResponse(reviewId, todayMissionList);
     }
 
     private void validateReview(PostReviewRequest postReviewRequest) {

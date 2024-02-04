@@ -68,4 +68,10 @@ public class UserController {
 
         return new BaseResponse<>(userService.getMyStoreList(userId, category, sort));
     }
+
+    /**
+     * 유저 현 위치 변경
+     */
+
+
 }

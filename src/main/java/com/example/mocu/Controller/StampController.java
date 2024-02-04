@@ -40,5 +40,9 @@ public class StampController {
         return new BaseResponse<>(stampService.stampRequestAccept(postStampAcceptRequest));
     }
 
+    /**
+     * 홈화면의 '적립' 페이지 조회
+     * 유저의 현재 설정 위치 근방의 쿠폰 적립/사용가능한 가게들 return
+     */
 
 }

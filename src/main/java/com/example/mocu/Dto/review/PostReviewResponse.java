@@ -1,9 +1,12 @@
 package com.example.mocu.Dto.review;
 
+import com.example.mocu.Dto.mission.IsTodayMission;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,9 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PostReviewResponse {
     // 작성한 review의 reviewId
-    // '리뷰 작성하기'가 오늘의 미션에 해당하는지를 check
-    // missionComplete = false : '리뷰 작성하기'가 오늘의 미션 X
-    //                 = true : '리뷰 작성하기'가 오늘의 미션 O
+    // 오늘의 미션에 해당하는 리뷰 작성 기능 List return
     private long reviewId;
-    private boolean missionComplete;
+    private List<IsTodayMission> todayMissionList;
 }

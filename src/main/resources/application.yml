@@ -47,5 +47,12 @@ oauth:
 #    password: tjdwls1234!
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
+#spring:
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/mocu
+#    username: root
+#    password: tjdwns1105!
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
 server:
   port: 9000

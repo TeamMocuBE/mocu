@@ -192,5 +192,24 @@ public class StoreDao {
     }
 
 
+    public boolean isStoreInEvent(long storeId) {
+        String sql = "select event from Stores where storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
 
+        String event = jdbcTemplate.queryForObject(sql, params, String.class);
+
+        return event != null;
+    }
+
+    public boolean isDueDateStore(long userId, long storeId) {
+        String sql = "select dueDate from Stamps where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
+
+        Boolean dueDate = jdbcTemplate.queryForObject(sql, params, Boolean.class);
+
+        return dueDate;
+    }
 }
