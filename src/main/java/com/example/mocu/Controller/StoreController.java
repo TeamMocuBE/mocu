@@ -53,7 +53,7 @@ public class StoreController {
             @RequestParam(defaultValue = "false") boolean eventOption,
             @RequestParam double userLatitude,
             @RequestParam double userLongitude,
-            @RequestParam int page) {
+            @RequestParam(defaultValue = "0") int page) {
         log.info("[StoreController.getSearchedStore] Search Query: {}", query);
 
         return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, savingOption, notVisitedOption, couponImminentOption, eventOption, userLatitude, userLongitude, page));
