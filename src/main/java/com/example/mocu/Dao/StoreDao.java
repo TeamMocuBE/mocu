@@ -170,13 +170,13 @@ public class StoreDao {
         sql += " limit :limit offset :offset";
 
         Map<String, Object> param = Map.of(
-                "userId", "%" + userId + "%",
+                "userId", userId,
                 "query", query != null ? "%" + query + "%" : "%",
                 "category", category != null ? category : "%",
-                "userLatitude", "%" + userLatitude + "%",
-                "userLongitude", "%" + userLongitude + "%",
-                "limit", "%" + limit + "%",
-                "offset", "%" + offset + "%"
+                "userLatitude", userLatitude,
+                "userLongitude", userLongitude,
+                "limit", limit,
+                "offset", offset
         );
 
         return jdbcTemplate.query(sql, param,

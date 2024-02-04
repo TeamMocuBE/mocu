@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -99,13 +100,33 @@ public class CouponDao {
         return jdbcTemplate.queryForObject(sql, params, String.class);
     }
 
-    public List<GetMyCouponList> myCouponList(long userId, String category, String sort) {
+    public List<GetMyCouponList> myCouponList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, boolean isStoreRegular, boolean isCouponCloseToCompletion) {
         String sql = "select s.mainImageUrl, s.name, s.maxStamp, st.numOfStamp, s.reward, s.coordinate, s.event ";
         sql += "from stores s join stamps st on s.storeId = st.storeId and st.userId = :userId ";
+
+        if (isStoreRegular) {
+            sql += "join regulars r on s.storeId = r.storeId and r.userId = :userId and r.status = 'accept' ";
+        }
+
         sql += "where s.status = 'active' ";
 
         if (category != null && !category.isEmpty()) {
             sql += "AND s.category = :category ";
+        }
+
+        List<String> conditions = new ArrayList<>();
+        if (isEventTrue) {
+            conditions.add("s.event IS NOT NULL");
+        }
+        if (isCouponUsable) {
+            conditions.add("st.numOfCouponAvailable > 0");
+        }
+        if (isCouponCloseToCompletion) {
+            conditions.add("");
+        }
+
+        if (!conditions.isEmpty()) {
+            sql += "AND " + String.join(" AND ", conditions);
         }
 
         if (sort != null && !sort.isEmpty()) {
@@ -125,16 +146,17 @@ public class CouponDao {
                 }
                 //TODO: 정렬 조건 추가하기
                 case "흠 또 뭐있지" -> {
-                    sql += "rv.reviewCount DESC, ";
+                    sql += " ";
                     break;
                 }
             }
         }
 
+        assert sort != null;
         Map<String, Object> param = Map.of(
-                "userId", "%" + userId + "%",
-                "category", "%" + category + "%",
-                "sort", "%" + sort + "%"
+                "userId", userId,
+                "category", (category != null) ? category : "",
+                "sort", sort
         );
 
         return jdbcTemplate.query(sql, param,

@@ -1,9 +1,7 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.address.GetAddressResponse;
-import com.example.mocu.Dto.address.PostAddressRequest;
-import com.example.mocu.Dto.address.PostAddressResponse;
+import com.example.mocu.Dto.address.*;
 import com.example.mocu.Service.AddressService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,5 +34,15 @@ public class AddressController {
         log.info("[AddressControlelr.getAddress");
 
         return new BaseResponse<>(addressService.getAddress(userId));
+    }
+
+    /**
+     * 주소 수정
+     */
+    @PatchMapping("/{userId}/modify-address")
+    public BaseResponse<PatchUserAddressResponse> modifyAddress(@PathVariable Long userId, @RequestBody PatchUserAddressRequest patchUserAddressRequest) {
+        log.info("[AddressController.modifyAddress]");
+
+        return new BaseResponse<>(addressService.modifyAddress(userId, patchUserAddressRequest));
     }
 }

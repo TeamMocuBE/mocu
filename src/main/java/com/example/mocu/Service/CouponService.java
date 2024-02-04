@@ -120,9 +120,9 @@ public class CouponService {
     }
 
 
-    public List<GetMyCouponList> myCouponList(long userId, String category, String sort) {
+    public List<GetMyCouponList> myCouponList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, boolean isStoreRegular, boolean isCouponCloseToCompletion) {
         log.info("[CouponService.myCouponList]");
 
-        return couponDao.myCouponList(userId, category, sort);
+        return couponDao.myCouponList(userId, category, sort, isEventTrue, isCouponUsable, isStoreRegular, isCouponCloseToCompletion);
     }
 }
