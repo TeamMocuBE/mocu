@@ -122,7 +122,7 @@ public class CouponDao {
             conditions.add("st.numOfCouponAvailable > 0");
         }
         if (isCouponCloseToCompletion) {
-            conditions.add("");
+            conditions.add("st.dueDate = true");
         }
 
         if (!conditions.isEmpty()) {

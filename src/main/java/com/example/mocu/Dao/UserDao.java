@@ -215,6 +215,7 @@ public class UserDao {
     /**
      * 단골 페이지에 나올 가게 리스트
      */
+    //TODO. 옵션값 추가하기
     public List<GetRegularResponse> getMyStoreList(long userId, String category, String sort) {
         String sql = "select s.mainImageUrl, s.name, st.numOfStamp, s.maxStamp, s.reward, s.coordinate, s.event ";
         sql += "from stores s join stamps st on s.storeId = st.storeId and st.userId = :userId ";
