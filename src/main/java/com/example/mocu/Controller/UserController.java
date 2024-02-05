@@ -62,11 +62,15 @@ public class UserController {
      */
     @GetMapping("/{userId}/my-storelist")
     public BaseResponse<GetMyStoreListResponse> getMyStoreList(@PathVariable long userId,
-                                                                 @RequestParam(required = false) String category,
-                                                                 @RequestParam(required = false, defaultValue = "최신순") String sort) {
+                                                               @RequestParam(required = false) String category,
+                                                               @RequestParam(required = false, defaultValue = "최신순") String sort,
+                                                               @RequestParam(defaultValue = "false") boolean isEventTrue,
+                                                               @RequestParam(defaultValue = "false") boolean isCouponUsable,
+                                                               @RequestParam double userLatitude,
+                                                               @RequestParam double userLongitude) {
         log.info("[UserController.getMyStoreList]");
 
-        return new BaseResponse<>(userService.getMyStoreList(userId, category, sort));
+        return new BaseResponse<>(userService.getMyStoreList(userId, category, sort, isEventTrue, isCouponUsable, userLatitude, userLongitude));
     }
 
     /**

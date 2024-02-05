@@ -216,11 +216,23 @@ public class UserDao {
      * 단골 페이지에 나올 가게 리스트
      */
     //TODO. 옵션값 추가하기
-    public List<GetRegularResponse> getMyStoreList(long userId, String category, String sort) {
+    public List<GetRegularResponse> getMyStoreList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, double userLatitude, double userLongitude) {
         String sql = "select s.mainImageUrl, s.name, st.numOfStamp, s.maxStamp, s.reward, s.coordinate, s.event ";
-        sql += "from stores s join stamps st on s.storeId = st.storeId and st.userId = :userId ";
+        sql += "ST_Distance_Sphere(point(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) AS distance ";
+        sql += "from stores s ";
+        sql += "join stamps st on s.storeId = st.storeId and st.userId = :userId ";
         sql += "join regulars r on s.storeId = r.storeId and r.userId = :userId ";
         sql += "where s.status = 'active' and r.status = 'accept' ";
+
+        // 이벤트가 있는 상점만 필터링
+        if (isEventTrue) {
+            sql += "AND s.event IS NOT NULL ";
+        }
+
+        // 사용 가능한 쿠폰이 있는 상점만 필터링
+        if (isCouponUsable) {
+            sql += "AND st.numOfCouponAvailable > 0 ";
+        }
 
         if (category != null && !category.isEmpty()) {
             sql += "AND s.category = :category ";
@@ -241,14 +253,21 @@ public class UserDao {
                     sql += "s.rate";
                     break;
                 }
+                case "거리순" -> {
+                    sql += "distance";
+                    break;
+                }
                 //TODO: 정렬 조건 추가하기
             }
         }
 
+        assert sort != null;
         Map<String, Object> param = Map.of(
-                "userId", "%" + userId + "%",
-                "category", "%" + category + "%",
-                "sort", "%" + sort + "%"
+                "userId", userId,
+                "category", category != null ? category : "",
+                "sort", sort,
+                "userLatitude", userLatitude,
+                "userLongitude", userLongitude
         );
 
         return jdbcTemplate.query(sql, param,
