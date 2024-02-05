@@ -1,6 +1,7 @@
 package com.example.mocu.Dao;
 
 import com.example.mocu.Dto.review.GetAvailableReviewResponse;
+import com.example.mocu.Dto.review.GetMyReviewResponse;
 import com.example.mocu.Dto.review.PatchReviewReportToTrueRequest;
 import com.example.mocu.Dto.review.PostReviewRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +49,7 @@ public class ReviewDao {
 
         sql += "where r.status = '작성 이전' and s.status = 'active'";
 
-        Map<String, Object> param = Map.of("userId", "%" + userId + "%");
+        Map<String, Object> param = Map.of("userId", userId);
 
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetAvailableReviewResponse(
@@ -69,5 +70,43 @@ public class ReviewDao {
         params.addValue("reviewId", patchReviewReportToTrueRequest.getReviewId());
 
         jdbcTemplate.update(sql, params);
+    }
+
+    public List<GetMyReviewResponse> getMyReview(Long userId, String sort) {
+        String sql = "select s.mainImageUrl, s.name, r.rate, r.createdDate, r.content ";
+        sql += "from Stores s ";
+        sql += "join Reviews r on s.storeId = r.storeId and r.userId = :userId ";
+        sql += "where r.status 'active' and r.report = true ";
+
+        if (sort != null && !sort.isEmpty()) {
+            sql += "order by ";
+            switch (sort) {
+                case "최신순":
+                    sql += "st.modifiedDate DESC";
+                    break;
+                case "별점 높은 순":
+                    sql += "s.rating DESC";
+                    break;
+                // 추가적인 정렬 조건
+                case "흠 또 뭐있지":
+                    sql += "rv.reviewCount DESC";
+                    break;
+            }
+        }
+
+        assert sort != null;
+        Map<String, Object> param = Map.of(
+                "userId", userId,
+                "sort", sort
+        );
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetMyReviewResponse(
+                        rs.getString("mainImageUrl"),
+                        rs.getTimestamp("name").toString(),
+                        rs.getInt("rate"),
+                        rs.getString("createdDate"),
+                        rs.getString("content")
+                ));
     }
 }

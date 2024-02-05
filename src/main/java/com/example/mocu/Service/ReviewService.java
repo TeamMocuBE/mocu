@@ -3,10 +3,7 @@ package com.example.mocu.Service;
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.ReviewDao;
 import com.example.mocu.Dto.mission.IsTodayMission;
-import com.example.mocu.Dto.review.GetAvailableReviewResponse;
-import com.example.mocu.Dto.review.PatchReviewReportToTrueRequest;
-import com.example.mocu.Dto.review.PostReviewRequest;
-import com.example.mocu.Dto.review.PostReviewResponse;
+import com.example.mocu.Dto.review.*;
 import com.example.mocu.Exception.ReviewException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,5 +69,11 @@ public class ReviewService {
         log.info("[ReviewService.updateReviewReportToTrue]");
 
         reviewDao.updateReviewReportToTrue(patchReviewReportToTrueRequest);
+    }
+
+    public List<GetMyReviewResponse> getMyReview(Long userId, String sort) {
+        log.info("ReviewService.GeyMyReview");
+
+        return reviewDao.getMyReview(userId, sort);
     }
 }
