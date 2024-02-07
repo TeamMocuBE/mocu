@@ -1,10 +1,7 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
-import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
-import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
-import com.example.mocu.Dto.owner.PostOwnerStoreResponse;
+import com.example.mocu.Dto.owner.*;
 import com.example.mocu.Service.OwnerService;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +31,7 @@ public class OwnerController {
     /**
      * 가게 정보 등록
      */
-    @PostMapping("/store")
+    @PostMapping("/store-register")
     public BaseResponse<PostOwnerStoreResponse> registerStore(@Validated @RequestBody PostOwnerStoreRequest postOwnerStoreRequest){
         log.info("[OwnerController.registerStore]");
 
@@ -43,15 +40,23 @@ public class OwnerController {
 
     /**
      * 가게 정보 수정
-     * -> url 수정해야함 (PatchOwnerStoreRequest에 storeId까지 같이 넣어야함)
      */
-    @PatchMapping("/store/{storeId}")
-    public BaseResponse<String> modifyStoreInfo(@PathVariable long storeId, @Validated @RequestBody PatchOwnerStoreRequest patchOwnerStoreRequest){
+    @PatchMapping("/store-edit")
+    public BaseResponse<String> modifyStoreInfo(@Validated @RequestBody PatchOwnerStoreRequest patchOwnerStoreRequest){
         log.info("[OwnerController.modifyStoreInfo]");
 
-        ownerService.modifyStoreInfo(storeId, patchOwnerStoreRequest);
-        return new BaseResponse<>("가게 정보 수정 완료.");
+        ownerService.modifyStoreInfo(patchOwnerStoreRequest);
+        return new BaseResponse<>("가게 정보 수정 완료");
     }
 
+    /**
+     * 가게 정보 조회
+     */
+    @GetMapping("/store-info/storeId={storeId}")
+    public BaseResponse<GetOwnerStoreInfoResponse> getStoreInfoForOwner(@PathVariable("storeId") long storeId){
+        log.info("[OwnerController.getStoreInfoForOwner]");
+
+        return new BaseResponse<>(ownerService.getStoreInfoForOwner(storeId));
+    }
 
 }
