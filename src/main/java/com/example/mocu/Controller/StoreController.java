@@ -19,6 +19,8 @@ public class StoreController {
     /**
      * 가게 상세정보 페이지
      * 리뷰는 최신순 정렬이 default
+     * 가게 리뷰 리스트 조회 api와 합쳐야함
+     * + 무한스크롤 구현
      */
     @GetMapping("/detail?storeId={storeId}&userId={userId}")
     public BaseResponse<GetDetailedStoreResponse> getDetailedStore(@RequestParam("storeId") long storeId, @RequestParam("userId") long userId){
