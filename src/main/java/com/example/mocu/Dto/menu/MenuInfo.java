@@ -11,5 +11,5 @@ import lombok.Setter;
 public class MenuInfo {
     private String name;
     private int price;
-    private String menuImageUrl;
+    private String imageUrl;              // null 가능
 }

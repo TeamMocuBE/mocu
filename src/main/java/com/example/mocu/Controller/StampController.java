@@ -43,6 +43,7 @@ public class StampController {
     /**
      * 홈화면의 '적립' 페이지 조회
      * 유저의 현재 설정 위치 근방의 쿠폰 적립/사용가능한 가게들 return
+     * 작업 중 ,,,
      */
     @GetMapping("/stores-around/userId={userId}?latitude={latitude}&longitude={longitude}")
     public BaseResponse<List<GetStampStoreAroundResponse>> getStampStoreAroundList(@PathVariable long userId, @RequestParam double latitude, @RequestParam double longitude){

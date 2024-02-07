@@ -83,9 +83,9 @@ public enum BaseResponseStatus implements ResponseStatus {
     hsEMAIL_NOT_FOUND1(8006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
 
     /**
-     * 9000: Store 오류
+     * 9000: Owner 오류
      */
-    aefaINVALID_STORE_REVIEW_REQUEST_VALUE(9000, HttpStatus.BAD_REQUEST.value(), "가게의 리뷰 조회 요청에서 잘못된 값이 존재합니다."),
+    INVALID_OWNER_USER_REQUEST_VALUE(9000, HttpStatus.BAD_REQUEST.value(), "가게의 UsersRequest 목록 요청에서 잘못된 값이 존재합니다."),
     dfsDUPLICATE_EMAIL1(9001, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 이메일입니다."),
     dfsDUPLICATE_NICKNAME1(9002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 닉네임입니다."),
     dfsSTORE_NOT_FOUND(9003, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 가게입니다."),

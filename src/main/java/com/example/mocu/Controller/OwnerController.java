@@ -1,11 +1,9 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
-import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
-import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
-import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
-import com.example.mocu.Dto.owner.PostOwnerStoreResponse;
+import com.example.mocu.Dto.owner.*;
 import com.example.mocu.Service.OwnerService;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -20,21 +18,32 @@ import java.util.List;
 public class OwnerController {
     private final OwnerService ownerService;
 
-    /**
-     * 미수락 스탬프 적립 요청 목록 조회
-     */
-    @GetMapping("/{storeId}/stamp/not-accept")
-    public BaseResponse<List<GetOwnerStampNotAcceptResponse>> getStampsNotAccept(
-            @PathVariable long storeId){
-        log.info("[OwnerController.getStampNotAccept]");
 
-        return new BaseResponse<>(ownerService.getStampsNotAccept(storeId));
+    /**
+     * 고객 요청관리 조회
+     * 점주 앱 고객 요청 관리 페이지
+     * 필터링, 무한스크롤 구현
+     */
+    @GetMapping("/store-request/storeId={storeId}")
+    public BaseResponse<List<GetUserRequestForOwner>> getUserRequestListForOwner(
+            @PathVariable("storeId") long storeId,
+            @RequestParam(required = false, defaultValue = "false") boolean notAcceptRequest,
+            @RequestParam(required = false, defaultValue = "true") boolean bothRequest,
+            @RequestParam(required = false, defaultValue = "false") boolean rewardRequest,
+            @RequestParam(required = false, defaultValue = "false") boolean stampRequest,
+            @RequestParam(defaultValue = "0") int page){
+        // -> page의 defaulValue 1이어야 하지 않나??
+
+        log.info("[OwnerController.getUserRequestListForOwner]");
+
+        return new BaseResponse<>(ownerService.getUserRequestListForOwner(storeId, notAcceptRequest, bothRequest, rewardRequest, stampRequest, page));
     }
+
 
     /**
      * 가게 정보 등록
      */
-    @PostMapping("/store")
+    @PostMapping("/store-register")
     public BaseResponse<PostOwnerStoreResponse> registerStore(@Validated @RequestBody PostOwnerStoreRequest postOwnerStoreRequest){
         log.info("[OwnerController.registerStore]");
 
@@ -43,15 +52,23 @@ public class OwnerController {
 
     /**
      * 가게 정보 수정
-     * -> url 수정해야함 (PatchOwnerStoreRequest에 storeId까지 같이 넣어야함)
      */
-    @PatchMapping("/store/{storeId}")
-    public BaseResponse<String> modifyStoreInfo(@PathVariable long storeId, @Validated @RequestBody PatchOwnerStoreRequest patchOwnerStoreRequest){
+    @PatchMapping("/store-edit")
+    public BaseResponse<String> modifyStoreInfo(@Validated @RequestBody PatchOwnerStoreRequest patchOwnerStoreRequest){
         log.info("[OwnerController.modifyStoreInfo]");
 
-        ownerService.modifyStoreInfo(storeId, patchOwnerStoreRequest);
-        return new BaseResponse<>("가게 정보 수정 완료.");
+        ownerService.modifyStoreInfo(patchOwnerStoreRequest);
+        return new BaseResponse<>("가게 정보 수정 완료");
     }
 
+    /**
+     * 가게 정보 조회
+     */
+    @GetMapping("/store-info/storeId={storeId}")
+    public BaseResponse<GetOwnerStoreInfoResponse> getStoreInfoForOwner(@PathVariable("storeId") long storeId){
+        log.info("[OwnerController.getStoreInfoForOwner]");
+
+        return new BaseResponse<>(ownerService.getStoreInfoForOwner(storeId));
+    }
 
 }
