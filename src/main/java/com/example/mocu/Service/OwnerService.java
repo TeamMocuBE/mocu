@@ -4,6 +4,7 @@ import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dao.StoreDao;
 import com.example.mocu.Dto.owner.*;
 import com.example.mocu.Exception.DatabaseException;
+import com.example.mocu.Exception.OwnerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABASE_ERROR;
+import static com.example.mocu.Common.response.status.BaseResponseStatus.INVALID_OWNER_USER_REQUEST_VALUE;
 
 @Slf4j
 @RestController
@@ -48,16 +50,57 @@ public class OwnerService {
         ownerDao.updateMenus(patchOwnerStoreRequest.getStoreId(), patchOwnerStoreRequest.getMenus());
     }
 
-    public List<GetOwnerStampNotAcceptResponse> getStampsNotAccept(long storeId) {
-        log.info("[OwnerService.getStampsNotAccept]");
-
-        return ownerDao.getStampsNotAccept(storeId);
-    }
-
 
     public GetOwnerStoreInfoResponse getStoreInfoForOwner(long storeId) {
         log.info("[OwnerService.getStoreInfoForOwner]");
 
         return ownerDao.getStoreInfoForOwner(storeId);
     }
+
+    public List<GetUserRequestForOwner> getUserRequestListForOwner(long storeId, boolean notAcceptRequest, boolean bothRequest, boolean rewardRequest, boolean stampRequest, int page) {
+        log.info("[OwnerService.getUserRequestListForOwner]");
+
+        // TODO 1. notAcceptRequest 체크
+        // TODO 2. reward / stamp / both 체크
+        if(notAcceptRequest){
+            // '수락 안 한 요청만' : true
+            if(rewardRequest){
+                // '보상만'
+                return ownerDao.getNotAcceptedCouponRequests(storeId, page);
+            }
+            else if(stampRequest){
+                // '적립만'
+                return ownerDao.getNotAcceptedStampRequests(storeId, page);
+            }
+            else if(bothRequest){
+                // '보상 + 적립 전체'
+                return ownerDao.getNotAcceptedBothRequests(storeId, page);
+            }
+            else{
+                // 클라이언트에게 인자 잘못 전달받음 -> 에외처리
+                throw new OwnerException(INVALID_OWNER_USER_REQUEST_VALUE);
+            }
+        }
+        else{
+            // '수락 안 한 요청만' : false
+            if(rewardRequest){
+                // '보상만'
+                return ownerDao.getAllCouponRequests(storeId, page);
+            }
+            else if(stampRequest){
+                // '적립만'
+                return ownerDao.getAllStampRequests(storeId, page);
+            }
+            else if(bothRequest){
+                // '보상 + 적립 전체'
+                return ownerDao.getAllBothRequests(storeId, page);
+            }
+            else{
+                // 예외처리
+                throw new OwnerException(INVALID_OWNER_USER_REQUEST_VALUE);
+            }
+        }
+    }
+
+
 }

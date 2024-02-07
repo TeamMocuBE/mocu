@@ -1,10 +1,7 @@
 package com.example.mocu.Dao;
 
 import com.example.mocu.Dto.menu.MenuInfo;
-import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
-import com.example.mocu.Dto.owner.GetOwnerStoreInfoResponse;
-import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
-import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
+import com.example.mocu.Dto.owner.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -140,33 +137,148 @@ public class OwnerDao {
     }
 
 
-
-
-
-
-
-
-
-    public List<GetOwnerStampNotAcceptResponse> getStampsNotAccept(long storeId) {
-        String sql = "select u.name as userName, sr.createdDate as createdDate, sr.status as status " +
-                "from StampsRequest sr inner join Users u on sr.userId=u.userId " +
-                "where sr.storeId=:storeId and sr.status='not-accept'";
-
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("storeId", storeId);
-
-        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetOwnerStampNotAcceptResponse(
-                rs.getString("userName"),
-                timestampToString(rs.getTimestamp("createdDate")),
-                rs.getString("status"))
-        );
-    }
-
     private String timestampToString(Timestamp timestamp) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         return (timestamp != null) ? dateFormat.format(timestamp) : null;
     }
 
 
+    public List<GetUserRequestForOwner> getNotAcceptedCouponRequests(long storeId, int page) {
+        int limit = 5;
+        int offset = page * limit;
 
+        String sql = "select u.name, cr.status as acceptOption, 'reward' as StampOrReward, cr.modifiedDate " +
+                "from Users u join CouponsRequest cr on u.userId=cr.userId where cr.storeId=:storeId and cr.status='not-accept' " +
+                "order by cr.modifiedDate desc limit :limit offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetUserRequestForOwner(
+                rs.getString("name"),
+                rs.getString("acceptOption"),
+                rs.getString("StampOrReward"),
+                timestampToString(rs.getTimestamp("modifiedDate"))
+            )
+        );
+    }
+
+    public List<GetUserRequestForOwner> getNotAcceptedStampRequests(long storeId, int page) {
+        int limit = 5;
+        int offset = page * limit;
+
+        String sql = "select u.name, sr.status as acceptOption, 'stamp' as StampOrReward, sr.modifiedDate " +
+                "from Users u join StampsRequest sr on u.userId=sr.userId where sr.storeId=:storeId and sr.status='not-accept' " +
+                "order by sr.modifiedDate desc limit :limit offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetUserRequestForOwner(
+                rs.getString("name"),
+                rs.getString("acceptOption"),
+                rs.getString("StampOrReward"),
+                timestampToString(rs.getTimestamp("modifiedDate"))
+            )
+        );
+    }
+
+    public List<GetUserRequestForOwner> getNotAcceptedBothRequests(long storeId, int page) {
+        int limit = 5;
+        int offset = page * limit;
+
+        String sql = "select name, acceptOption, StampOrReward, modifiedDate from (" +
+                "(select u.name, cr.status as acceptOption, 'reward' as StampOrReward, cr.modifiedDate " +
+                "from Users u join CouponsRequest cr on u.userId=cr.userId " +
+                "where cr.storeId=:storeId and cr.status='not-accept') " +
+                "union all " +
+                "(select u.name, sr.status as acceptOption, 'stamp' as StampOrReward, sr.modifiedDate " +
+                "from Users u join StampsRequest sr on u.userId=sr.userId " +
+                "where sr.storeId=:storeId and sr.status='not-accept')" +
+                ") as combined order by modifiedDate desc limit :limit offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetUserRequestForOwner(
+                rs.getString("name"),
+                rs.getString("acceptOption"),
+                rs.getString("StampOrReward"),
+                timestampToString(rs.getTimestamp("modifiedDate"))
+            )
+        );
+    }
+
+    public List<GetUserRequestForOwner> getAllCouponRequests(long storeId, int page) {
+        int limit = 5;
+        int offset = page * limit;
+
+        String sql = "select u.name, cr.status as acceptOption, 'reward' as StampOrReward, cr.modifiedDate " +
+                "from Users u join CouponsRequest cr on u.userId=cr.userId " +
+                "where cr.storeId=:storeId order by cr.modifiedDate desc limit :limit, offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetUserRequestForOwner(
+                rs.getString("name"),
+                rs.getString("acceptOption"),
+                rs.getString("StampOrReward"),
+                timestampToString(rs.getTimestamp("modifiedDate"))
+            )
+        );
+    }
+
+    public List<GetUserRequestForOwner> getAllStampRequests(long storeId, int page) {
+        int limit = 5;
+        int offset = page * limit;
+
+        String sql = "select u.name, sr.status as acceptOption, 'stamp' as StampOrReward, sr.modifiedDate " +
+                "from Users u join StampsRequest sr on u.userId=sr.userId " +
+                "where sr.storeId=:storeId order by sr.modifiedDate desc limit :limit offset :offset";
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetUserRequestForOwner(
+                        rs.getString("name"),
+                        rs.getString("acceptOption"),
+                        rs.getString("StampOrReward"),
+                        timestampToString(rs.getTimestamp("modifiedDate"))
+                )
+        );
+    }
+
+    public List<GetUserRequestForOwner> getAllBothRequests(long storeId, int page) {
+        int limit = 5;
+        int offset = page * limit;
+
+        String sql = "select name, acceptOption, StampOrReward, modifiedDate from (" +
+                "(select u.name, cr.status as acceptOption, 'reward' as StampOrReward, cr.modifiedDate " +
+                "from Users u join CouponsRequest cr on u.userId=cr.userId " +
+                "where cr.storeId=:storeId) " +
+                "union all " +
+                "(select u.name, sr.status as acceptOption, 'stamp' as StampOrReward, sr.modifiedDate " +
+                "from Users u join StampsRequest sr on u.userId=sr.userId " +
+                "where sr.storeId=:storeId)" +
+                ") as combined order by modifiedDate desc limit :limit offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetUserRequestForOwner(
+                        rs.getString("name"),
+                        rs.getString("acceptOption"),
+                        rs.getString("StampOrReward"),
+                        timestampToString(rs.getTimestamp("modifiedDate"))
+                )
+        );
+    }
 }
