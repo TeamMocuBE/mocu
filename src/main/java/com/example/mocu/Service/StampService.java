@@ -138,4 +138,9 @@ public class StampService {
     }
 
 
+    public List<GetStampStoreAroundResponse> getStampStoreAroundList(long userId, double latitude, double longitude, int page) {
+        log.info("[StampService.getStampStoreAroundList]");
+
+        return stampDao.getStampStoreAroundList(userId, latitude, longitude, page);
+    }
 }
