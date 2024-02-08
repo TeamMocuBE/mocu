@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,28 +38,6 @@ public class StoreDao {
     }
 
 
-    // 최신순 정렬
-    public List<GetStoreReviewsResponse> getStoreReviewsOrderByTime(long storeId) {
-        String sql = "select rate, content from Reviews where storeId=:storeId and status='작성이후' order by modifiedDate DESC";
-        Map<String, Object> param = Map.of("storeId", storeId);
-        return jdbcTemplate.query(sql, param,
-                (rs, rowNum) -> new GetStoreReviewsResponse(
-                        rs.getInt("rate"),
-                        rs.getString("content")
-                ));
-    }
-
-    // 평점높은순 정렬
-    public List<GetStoreReviewsResponse> getStoreReviewsOrderByRate(long storeId) {
-        String sql = "select rate, content from Reviews where storeId=:storeId and status='작성이후' order by rate DESC";
-        Map<String, Object> param = Map.of("storeId", storeId);
-        return jdbcTemplate.query(sql, param,
-                (rs, rowNum) -> new GetStoreReviewsResponse(
-                        rs.getInt("rate"),
-                        rs.getString("content")
-                ));
-    }
-
     public StoreInfo getStoreInfo(long storeId) {
         String sql = "select name as storeName, category, reward, maxStamp, rating from Stores where storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -79,18 +59,6 @@ public class StoreDao {
         }
     }
 
-    public List<ReviewForUser> getReviews(long storeId, long userId) {
-        String sql = "select rate, content, modifiedDate from Reviews where userId=:userId and storeId=:storeId";
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("userId", userId);
-        params.addValue("storeId", storeId);
-        try {
-            return jdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(ReviewForUser.class));
-        } catch (EmptyResultDataAccessException e){
-            // Return an empty list
-            return Collections.emptyList();
-        }
-    }
   
     public List<StoreInEventInfo> getStoreInEventInfoList(int limit) {
         String sql = "select name as storeName, mainImageUrl from Stores where event is not null " +
@@ -212,4 +180,59 @@ public class StoreDao {
 
         return dueDate;
     }
+
+    public List<ReviewForUser> getReviewsOrderByTime(long storeId, int page) {
+        int limit = 10;
+        int offset = page * limit;
+
+        // 리뷰 '최신순' 정렬
+        String sql = "select u.name, u.userImage, r.rate, r.content, r.modifiedDate " +
+                "from Users u join Reviews r on u.userId=r.userId " +
+                "where r.storeId=:storeId and r.status='작성이후' " +
+                "order by r.modifiedDate desc limit :limit offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
+                rs.getString("name"),
+                rs.getString("userImage"),
+                rs.getInt("rate"),
+                rs.getString("content"),
+                timestampToString(rs.getTimestamp("modifiedDate"))
+                )
+        );
+    }
+
+    public List<ReviewForUser> getReviewsOrderByRate(long storeId, int page) {
+        int limit = 10;
+        int offset = page * limit;
+
+        // 리뷰 '평점순' 정렬
+        String sql = "select u.name, u.userImage, r.rate, r.content, r.modifiedDate " +
+                "from Users u join Reviews r on u.userId=r.userId " +
+                "where r.storeId=:storeId and r.status='작성이후' " +
+                "order by r.rate desc limit :limit offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
+                rs.getString("name"),
+                rs.getString("userImage"),
+                rs.getInt("rate"),
+                rs.getString("content"),
+                timestampToString(rs.getTimestamp("modifiedDate"))
+                )
+        );
+    }
+
+    private String timestampToString(Timestamp timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return (timestamp != null) ? dateFormat.format(timestamp) : null;
+    }
+
+
 }
