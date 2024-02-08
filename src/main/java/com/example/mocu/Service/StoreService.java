@@ -26,7 +26,7 @@ public class StoreService {
     private final UserDao userDao;
     private final RecommendDao recommendDao;
 
-    public GetDetailedStoreResponse getDetailedStore(long storeId, long userId) {
+    public GetDetailedStoreResponse getDetailedStore(long storeId, long userId, boolean timeSort, boolean rateSort, int page) {
         log.info("[StoreService.getDetailed]");
 
         // TODO 1. GET 가게 이미지 URL LIST
@@ -42,7 +42,20 @@ public class StoreService {
 
         // TODO 4. GET ReviewForUser List
         // 가게에 등록된 리뷰가 없을 경우 empty list return
-        List<ReviewForUser> reviews = storeDao.getReviews(storeId, userId);
+        // sort, 무한스크롤 구현
+        List<ReviewForUser> reviews = new ArrayList<>();
+        if(timeSort){
+            // '최신순' 정렬
+            reviews = storeDao.getReviewsOrderByTime(storeId, page);
+        }
+        else if(rateSort){
+            // '평점순' 정렬
+            reviews = storeDao.getReviewsOrderByRate(storeId, page);
+        }
+        else{
+            // 예외 처리
+            throw new StoreException(INVALID_STORE_REVIEW_REQUEST_VALUE);
+        }
 
         // TODO 5. GetDetailedStoreResponse 형식 맞추기
         return new GetDetailedStoreResponse(
@@ -56,21 +69,6 @@ public class StoreService {
                 storeInfo.getRating(),
                 reviews
         );
-    }
-
-    public List<GetStoreReviewsResponse> getStoreReviews(long storeId, String orderType) {
-        log.info("[StoreService.getStoreReviews]");
-
-        switch (orderType){
-            case "time":
-                return storeDao.getStoreReviewsOrderByTime(storeId);
-
-            case "rate":
-                return storeDao.getStoreReviewsOrderByRate(storeId);
-
-            default:
-                throw new StoreException(INVALID_STORE_REVIEW_REQUEST_VALUE);
-        }
     }
 
 
