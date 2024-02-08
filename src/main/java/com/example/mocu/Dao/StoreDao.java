@@ -195,7 +195,7 @@ public class StoreDao {
         params.addValue("limit", limit);
         params.addValue("offset", offset);
 
-        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
+        List<ReviewForUser> reviews = jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
                 rs.getString("name"),
                 rs.getString("userImage"),
                 rs.getInt("rate"),
@@ -203,6 +203,13 @@ public class StoreDao {
                 timestampToString(rs.getTimestamp("modifiedDate"))
                 )
         );
+
+        // 가게에 등록된 리뷰가 없는 경우 빈 리스트 반환
+        if(reviews.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return reviews;
     }
 
     public List<ReviewForUser> getReviewsOrderByRate(long storeId, int page) {
@@ -219,7 +226,7 @@ public class StoreDao {
         params.addValue("limit", limit);
         params.addValue("offset", offset);
 
-        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
+        List<ReviewForUser> reviews = jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
                 rs.getString("name"),
                 rs.getString("userImage"),
                 rs.getInt("rate"),
@@ -227,6 +234,13 @@ public class StoreDao {
                 timestampToString(rs.getTimestamp("modifiedDate"))
                 )
         );
+
+        // 가게에 등록된 리뷰가 없는 경우 빈 리스트 반환
+        if(reviews.isEmpty()){
+            return Collections.emptyList();
+        }
+
+        return reviews;
     }
 
     private String timestampToString(Timestamp timestamp) {

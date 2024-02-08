@@ -325,4 +325,46 @@ public class UserDao {
 
         return jdbcTemplate.queryForObject(sql, params, long.class);
     }
+
+    public List<GetStoreCanBeRegularResponse> getStoreCanBeRegularList(long userId, double userLatitude, double userLongitude, int page) {
+        int limit = 5;
+        int offset = limit * page;
+
+        // Regulars table에서 status = 'request' -> 단골로 설정가능 BUT 아직 단골은 X
+        String sql = "select s.storeId, s.mainImageUrl, s.name as storeName, st.numOfStamp, s.maxStamp, s.reward, s.rating, " +
+                "ST_DISTANCE_SPHERE(POINT(s.longitude, s.latitude), POINT(:userLongitude, :userLatitude)) as distance " +
+                "from Stores s " +
+                "join Stamps st on s.storeId=st.storeId and st.userId=:userId " +
+                "join Regulars r on s.storeId=r.storeId and r.userId=:userId " +
+                "where s.status='active' and r.status='request' " +
+                "order by distance limit :limit offset :offset";
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userLongitude", userLongitude);
+        params.addValue("userLatitude", userLatitude);
+        params.addValue("userId", userId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetStoreCanBeRegularResponse(
+                rs.getLong("storeId"),
+                rs.getString("mainImageUrl"),
+                rs.getString("storeName"),
+                rs.getInt("numOfStamp"),
+                rs.getInt("maxStamp"),
+                rs.getString("reward"),
+                rs.getFloat("rating"),
+                rs.getDouble("distance")
+            )
+        );
+    }
+
+    public int updateRegularStatusToNotAccept(PatchUserRegularRequest patchUserRegularRequest) {
+        String sql = "update Regulars set status='not-accept' where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", patchUserRegularRequest.getUserId());
+        params.addValue("storeId", patchUserRegularRequest.getStoreId());
+
+        return jdbcTemplate.update(sql, params);
+    }
 }
