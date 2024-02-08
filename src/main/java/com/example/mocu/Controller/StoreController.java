@@ -57,6 +57,7 @@ public class StoreController {
 
     /**
      * 가게 검색 페이지 조회
+     * -> 수정 필요(거리순 추천 기능 추가해야함)
      */
     @GetMapping("/store-search/userId={userId}")
     public BaseResponse<GetStoreSearchResponse> getStoreSearch(@PathVariable("userId") long userId){

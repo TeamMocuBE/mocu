@@ -67,7 +67,7 @@ public class StoreService {
                 storeInfo.getMaxStamp(),
                 storeInfo.getReward(),
                 storeInfo.getRating(),
-                reviews
+                reviews             // -> 리펙토링 필요??
         );
     }
 

@@ -3,11 +3,14 @@ package com.example.mocu.Service;
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.user.*;
+import com.example.mocu.Exception.DatabaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABASE_ERROR;
 
 @Slf4j
 @Service
@@ -57,5 +60,21 @@ public class UserService {
         int regularsCount = userDao.getRegularsCount(userId);
 
         return new GetMyStoreListResponse(regularsCount, storeList);
+    }
+
+    public List<GetStoreCanBeRegularResponse> getStoreCanBeRegularList(long userId, double userLatitude, double userLongitude, int page) {
+        log.info("[UserService.getStoreCanBeRegularList]");
+
+        return userDao.getStoreCanBeRegularList(userId, userLatitude, userLongitude, page);
+    }
+
+
+    public void updateRegularStatusToNotAccept(PatchUserRegularRequest patchUserRegularRequest) {
+        log.info("[UserService.updateRegularStatusToNotAccept]");
+
+        int affectedRows = userDao.updateRegularStatusToNotAccept(patchUserRegularRequest);
+        if(affectedRows != 1){
+            throw new DatabaseException(DATABASE_ERROR);
+        }
     }
 }

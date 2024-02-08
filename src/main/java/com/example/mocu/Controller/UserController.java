@@ -74,8 +74,32 @@ public class UserController {
     }
 
     /**
-     * 유저 현 위치 변경
+     * 단골로 설정 가능한 가게 목록 조회
+     * 무한 스크롤 구현
      */
+    @GetMapping("/userId={userId}/my-storelist/add-new")
+    public BaseResponse<List<GetStoreCanBeRegularResponse>> getStoreCanBeRegularList(
+            @PathVariable long userId,
+            @RequestParam double userLatitude,
+            @RequestParam double userLongitude,
+            @RequestParam(defaultValue = "0") int page){
+        log.info("[UserController.getStoreCanBeRegularList]");
+
+        return new BaseResponse<>(userService.getStoreCanBeRegularList(userId, userLatitude, userLongitude, page));
+    }
+
+    /**
+     * 단골로 설정 가능한 가게 목록 페이지에서 삭제
+     * -> status = "not-accept" 로 변경
+     */
+    @PatchMapping("/my-storelist/add-new/delete")
+    public BaseResponse<String> updateRegularStatusToNotAccept(@RequestBody PatchUserRegularRequest patchUserRegularRequest){
+        log.info("[UserController.updateRegularStatusToNotAccept]");
+
+        userService.updateRegularStatusToNotAccept(patchUserRegularRequest);
+
+        return new BaseResponse<>("단골로 설정 가능한 목록에서 삭제가 완료되었습니다.");
+    }
 
 
 }
