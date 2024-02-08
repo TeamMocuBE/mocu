@@ -10,5 +10,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetStampStoreAroundResponse {
-    // 가게 대표 사진, 가게 이름, numOfStamp, maxStamp, rating, reward, numOfCouponAvailable
+    // 가게 대표 사진, 가게 이름, numOfStamp, maxStamp, rating, reward, numOfCouponAvailable, distance
+    private String mainImageUrl;
+    private String storeName;
+    private int numOfStamp;
+    private int maxStamp;
+    private int numOfCouponAvailable;
+    private String reward;
+    private float rating;
+    private double distance;            // 현재 user위치와 store사이의 distance
 }
