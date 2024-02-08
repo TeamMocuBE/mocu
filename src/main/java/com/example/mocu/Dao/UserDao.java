@@ -325,4 +325,11 @@ public class UserDao {
 
         return jdbcTemplate.queryForObject(sql, params, long.class);
     }
+
+    public int getUserIdCount(Long userId) {
+        String sql = "select Count(*) as userIdCount from Users where userId = :userId";
+        Map<String, Object> param = Map.of("userId", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, Integer.class);
+    }
 }

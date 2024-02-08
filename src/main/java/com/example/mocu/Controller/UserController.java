@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.example.mocu.Common.response.status.BaseResponseStatus.INVALID_USER_STATUS;
+import static com.example.mocu.Common.response.status.BaseResponseStatus.*;
 
 @Slf4j
 @RestController
@@ -31,7 +31,14 @@ public class UserController {
         if (!status.equals("active") && !status.equals("dormant") && !status.equals("deleted")) {
             throw new UserException(INVALID_USER_STATUS);
         }
-        return new BaseResponse<>(userService.getUsers(nickname, email, status));
+
+        List<GetUserResponse> result = userService.getUsers(nickname, email, status);
+
+        if (result.isEmpty()) {
+            throw new UserException(USER_NOT_FOUND);
+        }
+
+        return new BaseResponse<>(result);
     }
 
     /**
@@ -41,6 +48,9 @@ public class UserController {
     public BaseResponse<GetMyPageResponse> getMypage(@PathVariable Long userId) {
         log.info("[UserController.getMypage] - userId: {}", userId);
         //TODO: userID 검증 로직
+        if (!isUserIdCorrect(userId)) {
+            throw new UserException(USER_NOT_FOUND);
+        }
 
         return new BaseResponse<>(userService.getMypage(userId));
     }
@@ -70,12 +80,18 @@ public class UserController {
                                                                @RequestParam double userLongitude) {
         log.info("[UserController.getMyStoreList]");
 
+        if (!isUserIdCorrect(userId)) {
+            throw new UserException(USER_NOT_FOUND);
+        }
+
         return new BaseResponse<>(userService.getMyStoreList(userId, category, sort, isEventTrue, isCouponUsable, userLatitude, userLongitude));
     }
 
-    /**
-     * 유저 현 위치 변경
-     */
+    public boolean isUserIdCorrect(Long userId) {
+        log.info("[UserController.isUserIdCorrect]");
 
+        int userIdCount = userService.getUserIdCount(userId);
 
+        return userIdCount == 1;
+    }
 }

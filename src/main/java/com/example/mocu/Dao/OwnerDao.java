@@ -1,11 +1,11 @@
 package com.example.mocu.Dao;
 
 import com.example.mocu.Dto.menu.MenuInfo;
+import com.example.mocu.Dto.owner.GetCustomerStampResponse;
 import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
 import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
 import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -19,6 +19,7 @@ import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -151,4 +152,49 @@ public class OwnerDao {
     }
 
 
+    //TODO. modify useCount
+    public List<GetCustomerStampResponse> getCustomerStamp(Long ownerId, boolean isCustomerRegular, String sort) {
+        String sql = "select u.userImage, u.name, st.numOfStamp, s.maxStamp, st.useCount ";
+        sql += "from Stores s ";
+        sql += "join Stamps st on s.storeId = st.storeId ";
+        sql += "join Users u on st.userId = u.userId ";
+
+        if (isCustomerRegular) {
+            sql += "join Regulars r on u.userId = r.userId ";
+            sql += "where r.status = 'accept' ";
+            sql += "and s.ownerId = :ownerId ";
+        } else {
+            sql += "where s.ownerId = :ownerId ";
+        }
+
+        if (sort != null && !sort.isEmpty()) {
+            sql += "order by ";
+            switch (sort) {
+                case("적립 많은 순") -> {
+                    sql += "st.numOfStamp";
+                    break;
+                }
+                case ("쿠폰 사용 많은 순") -> {
+                    sql += "st.useCount";
+                    break;
+                }
+                case ("최근 방문 순") -> {
+                    sql += "st.createdDate DESC";
+                }
+            }
+        }
+
+        Map<String, Object> param = Map.of(
+                "ownerId", ownerId
+        );
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetCustomerStampResponse(
+                        rs.getString("userImage"),
+                        rs.getString("name"),
+                        rs.getInt("numOfStamp"),
+                        rs.getInt("maxStamp"),
+                        rs.getInt("useCount")
+                ));
+    }
 }

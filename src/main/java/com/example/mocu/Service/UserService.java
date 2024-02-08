@@ -58,4 +58,10 @@ public class UserService {
 
         return new GetMyStoreListResponse(regularsCount, storeList);
     }
+
+    public int getUserIdCount(Long userId) {
+        log.info("[UserService.getUserIdCount");
+
+        return userDao.getUserIdCount(userId);
+    }
 }

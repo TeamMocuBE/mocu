@@ -45,4 +45,14 @@ public class AddressController {
 
         return new BaseResponse<>(addressService.modifyAddress(userId, patchUserAddressRequest));
     }
+
+    /**
+     * 주소 선택 (현 위치 변경)
+     */
+    @PatchMapping("/{userId}/set-address")
+    public BaseResponse<SelectUserAddressResponse> selectAddress(@PathVariable Long userId, @RequestBody String addressName) {
+        log.info("[AddressController.selectAddress]");
+
+        return new BaseResponse<>(addressService.selectAddress(userId, addressName));
+    }
 }

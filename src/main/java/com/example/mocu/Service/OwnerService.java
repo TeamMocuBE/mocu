@@ -1,20 +1,13 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.OwnerDao;
-import com.example.mocu.Dao.StoreDao;
-import com.example.mocu.Dto.owner.GetOwnerStampNotAcceptResponse;
-import com.example.mocu.Dto.owner.PatchOwnerStoreRequest;
-import com.example.mocu.Dto.owner.PostOwnerStoreRequest;
-import com.example.mocu.Dto.owner.PostOwnerStoreResponse;
-import com.example.mocu.Exception.DatabaseException;
+import com.example.mocu.Dto.owner.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABASE_ERROR;
 
 @Slf4j
 @RestController
@@ -43,5 +36,9 @@ public class OwnerService {
     }
 
 
+    public List<GetCustomerStampResponse> getCustomerStamp(Long ownerId, boolean isCustomerRegular, String sort) {
+        log.info("[OwnerService.getCustomerStamp]");
 
+        return ownerDao.getCustomerStamp(ownerId, isCustomerRegular, sort);
+    }
 }
