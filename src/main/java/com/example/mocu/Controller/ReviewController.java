@@ -19,6 +19,7 @@ public class ReviewController {
 
     /**
      * 리뷰 등록
+     * + 가게 평점 update
      */
     @PostMapping("")
     public BaseResponse<PostReviewResponse> register(@Validated @RequestBody PostReviewRequest postReviewRequest) {

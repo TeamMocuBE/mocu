@@ -2,6 +2,7 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.ReviewDao;
+import com.example.mocu.Dao.StoreDao;
 import com.example.mocu.Dto.mission.IsTodayMission;
 import com.example.mocu.Dto.review.*;
 import com.example.mocu.Exception.ReviewException;
@@ -20,6 +21,7 @@ import static com.example.mocu.Common.response.status.BaseResponseStatus.INVALID
 public class ReviewService {
     private final ReviewDao reviewDao;
     private final MissionDao missionDao;
+    private final StoreDao storeDao;
 
     public PostReviewResponse register(PostReviewRequest postReviewRequest) {
         log.info("[ReviewService.createReview]");
@@ -43,7 +45,10 @@ public class ReviewService {
             missionDao.updateTodayMissionToDone(todayMissionId);
         }
 
-        // TODO 4. return
+        // TODO 4. 가게 평점 update
+        storeDao.updateStoreRating(postReviewRequest.getStoreId(), postReviewRequest.getRate());
+
+        // TODO 5. return
         return new PostReviewResponse(reviewId, todayMissionList);
     }
 
@@ -52,10 +57,15 @@ public class ReviewService {
         long userId = postReviewRequest.getUserId();
         String content = postReviewRequest.getContent();
 
-        // 리뷰 글자수가 10자 이상인지 검사
+        // TODO 1. 리뷰 글자수가 10자 이상인지 검사
         if(content.length() < 10){
             throw new ReviewException(INVALID_REVIEW_LENGTH);
         }
+
+        // TODO 2. 시간제한
+        // 리뷰는 스탬프 적립 후 3일동안만 작성 가능
+
+
     }
 
     public List<GetAvailableReviewResponse> getAvailableReview(Long userId) {

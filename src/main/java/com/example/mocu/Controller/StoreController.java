@@ -66,8 +66,5 @@ public class StoreController {
         return new BaseResponse<>(storeService.getStoreSearch(userId));
     }
 
-    /**
-     * 가게 평점 update
-     */
 
 }
