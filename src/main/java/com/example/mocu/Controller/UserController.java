@@ -77,14 +77,15 @@ public class UserController {
                                                                @RequestParam(defaultValue = "false") boolean isEventTrue,
                                                                @RequestParam(defaultValue = "false") boolean isCouponUsable,
                                                                @RequestParam double userLatitude,
-                                                               @RequestParam double userLongitude) {
+                                                               @RequestParam double userLongitude,
+                                                               @RequestParam(defaultValue = "0") int page) {
         log.info("[UserController.getMyStoreList]");
 
         if (!isUserIdCorrect(userId)) {
             throw new UserException(USER_NOT_FOUND);
         }
 
-        return new BaseResponse<>(userService.getMyStoreList(userId, category, sort, isEventTrue, isCouponUsable, userLatitude, userLongitude));
+        return new BaseResponse<>(userService.getMyStoreList(userId, category, sort, isEventTrue, isCouponUsable, userLatitude, userLongitude, page));
     }
 
     /**

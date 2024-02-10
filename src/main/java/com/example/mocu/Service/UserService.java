@@ -52,10 +52,10 @@ public class UserService {
         return new PatchUserRegularResponse(regularId, isTodayMission);
     }
 
-    public GetMyStoreListResponse getMyStoreList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, double userLatitude, double userLongitude) {
+    public GetMyStoreListResponse getMyStoreList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, double userLatitude, double userLongitude, int page) {
         log.info("[UserService.getMyStoreList]");
 
-        List<GetRegularResponse> storeList = userDao.getMyStoreList(userId, category, sort, isEventTrue, isCouponUsable, userLatitude, userLongitude);
+        List<GetRegularResponse> storeList = userDao.getMyStoreList(userId, category, sort, isEventTrue, isCouponUsable, userLatitude, userLongitude, page);
 
         int regularsCount = userDao.getRegularsCount(userId);
 

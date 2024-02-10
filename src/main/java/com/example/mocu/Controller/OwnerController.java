@@ -3,8 +3,7 @@ package com.example.mocu.Controller;
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dto.owner.*;
 import com.example.mocu.Service.OwnerService;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -18,21 +17,7 @@ import java.util.List;
 public class OwnerController {
     private final OwnerService ownerService;
 
-
-    
-
     /**
-    * 미수락 스탬프 적립 요청 목록 조회
-    */
-    @GetMapping("/{storeId}/stamp/not-accept")
-    public BaseResponse<List<GetOwnerStampNotAcceptResponse>> getStampsNotAccept(
-            @PathVariable long storeId) {
-        log.info("[OwnerController.getStampNotAccept]");
-
-        return new BaseResponse<>(ownerService.getStampsNotAccept(storeId));
-    }
-      
-     /**
     * 고객 요청관리 조회
     * 점주 앱 고객 요청 관리 페이지
     * 필터링, 무한스크롤 구현

@@ -3,13 +3,10 @@ package com.example.mocu.Dao;
 import com.example.mocu.Dto.menu.MenuInfo;
 import com.example.mocu.Dto.owner.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -252,11 +249,11 @@ public class OwnerDao {
             sql += "order by ";
             switch (sort) {
                 case("적립 많은 순") -> {
-                    sql += "st.numOfStamp";
+                    sql += "st.numOfStamp, st.useCount DESC";
                     break;
                 }
                 case ("쿠폰 사용 많은 순") -> {
-                    sql += "st.useCount";
+                    sql += "st.useCount, st.numOfStamp DESC";
                     break;
                 }
                 case ("최근 방문 순") -> {
@@ -277,7 +274,7 @@ public class OwnerDao {
                         rs.getInt("maxStamp"),
                         rs.getInt("useCount")
                 ));
-      }
+    }
   
     public List<GetUserRequestForOwner> getAllStampRequests(long storeId, int page) {
         int limit = 5;
