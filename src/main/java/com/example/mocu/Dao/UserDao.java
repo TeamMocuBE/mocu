@@ -215,8 +215,10 @@ public class UserDao {
     /**
      * 단골 페이지에 나올 가게 리스트
      */
-    //TODO. 옵션값 추가하기
-    public List<GetRegularResponse> getMyStoreList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, double userLatitude, double userLongitude) {
+    public List<GetRegularResponse> getMyStoreList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, double userLatitude, double userLongitude, int page) {
+        int limit = 10;
+        int offset = page * limit;
+
         String sql = "select s.mainImageUrl, s.name, st.numOfStamp, s.maxStamp, s.reward, s.coordinate, s.event ";
         sql += "ST_Distance_Sphere(point(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) AS distance ";
         sql += "from stores s ";
@@ -261,13 +263,17 @@ public class UserDao {
             }
         }
 
+        sql += " LIMIT :limit OFFSET :offset";
+
         assert sort != null;
         Map<String, Object> param = Map.of(
                 "userId", userId,
                 "category", category != null ? category : "",
                 "sort", sort,
                 "userLatitude", userLatitude,
-                "userLongitude", userLongitude
+                "userLongitude", userLongitude,
+                "limit", limit,
+                "offset", offset
         );
 
         return jdbcTemplate.query(sql, param,
