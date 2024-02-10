@@ -35,4 +35,10 @@ public class AddressService {
 
         return new PatchUserAddressResponse(addressDao.modifyAddress(userId, patchUserAddressRequest));
     }
+
+    public SelectUserAddressResponse selectAddress(Long userId, String addressName) {
+        log.info("[AddressService.selectAddress");
+
+        return addressDao.selectAddress(userId, addressName);
+    }
 }

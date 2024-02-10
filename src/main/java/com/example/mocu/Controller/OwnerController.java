@@ -19,11 +19,24 @@ public class OwnerController {
     private final OwnerService ownerService;
 
 
+    
+
     /**
-     * 고객 요청관리 조회
-     * 점주 앱 고객 요청 관리 페이지
-     * 필터링, 무한스크롤 구현
-     */
+    * 미수락 스탬프 적립 요청 목록 조회
+    */
+    @GetMapping("/{storeId}/stamp/not-accept")
+    public BaseResponse<List<GetOwnerStampNotAcceptResponse>> getStampsNotAccept(
+            @PathVariable long storeId) {
+        log.info("[OwnerController.getStampNotAccept]");
+
+        return new BaseResponse<>(ownerService.getStampsNotAccept(storeId));
+    }
+      
+     /**
+    * 고객 요청관리 조회
+    * 점주 앱 고객 요청 관리 페이지
+    * 필터링, 무한스크롤 구현
+    */
     @GetMapping("/store-request/storeId={storeId}")
     public BaseResponse<List<GetUserRequestForOwner>> getUserRequestListForOwner(
             @PathVariable("storeId") long storeId,
@@ -32,7 +45,6 @@ public class OwnerController {
             @RequestParam(required = false, defaultValue = "false") boolean rewardRequest,
             @RequestParam(required = false, defaultValue = "false") boolean stampRequest,
             @RequestParam(defaultValue = "0") int page){
-        // -> page의 defaulValue 1이어야 하지 않나??
 
         log.info("[OwnerController.getUserRequestListForOwner]");
 
@@ -49,7 +61,7 @@ public class OwnerController {
 
         return new BaseResponse<>(ownerService.registerStore(postOwnerStoreRequest));
     }
-
+  
     /**
      * 가게 정보 수정
      */
@@ -62,6 +74,18 @@ public class OwnerController {
     }
 
     /**
+     * 고객 적립 현황
+     */
+    @GetMapping("/{ownerId}/stamp-of-customer")
+    public BaseResponse<List<GetCustomerStampResponse>> getCustomerStamp(@PathVariable Long ownerId,
+                                                                         @RequestParam(required = false, defaultValue = "false") boolean isCustomerRegular,
+                                                                         @RequestParam(defaultValue = "적립 높은 순") String sort) {
+        log.info("[OwnerController.getCustomerStamp]");
+
+        return new BaseResponse<>(ownerService.getCustomerStamp(ownerId, isCustomerRegular, sort));
+    }
+  
+     /**
      * 가게 정보 조회
      */
     @GetMapping("/store-info/storeId={storeId}")
@@ -70,5 +94,4 @@ public class OwnerController {
 
         return new BaseResponse<>(ownerService.getStoreInfoForOwner(storeId));
     }
-
 }

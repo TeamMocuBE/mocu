@@ -62,6 +62,7 @@ public class UserService {
         return new GetMyStoreListResponse(regularsCount, storeList);
     }
 
+
     public List<GetStoreCanBeRegularResponse> getStoreCanBeRegularList(long userId, double userLatitude, double userLongitude, int page) {
         log.info("[UserService.getStoreCanBeRegularList]");
 
@@ -76,5 +77,11 @@ public class UserService {
         if(affectedRows != 1){
             throw new DatabaseException(DATABASE_ERROR);
         }
+    }
+  
+    public int getUserIdCount(Long userId) {
+        log.info("[UserService.getUserIdCount");
+
+        return userDao.getUserIdCount(userId);
     }
 }

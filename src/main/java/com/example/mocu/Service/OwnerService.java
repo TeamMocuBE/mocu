@@ -15,6 +15,7 @@ import java.util.List;
 import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABASE_ERROR;
 import static com.example.mocu.Common.response.status.BaseResponseStatus.INVALID_OWNER_USER_REQUEST_VALUE;
 
+
 @Slf4j
 @RestController
 @Service
@@ -102,5 +103,9 @@ public class OwnerService {
         }
     }
 
+    public List<GetCustomerStampResponse> getCustomerStamp(Long ownerId, boolean isCustomerRegular, String sort) {
+        log.info("[OwnerService.getCustomerStamp]");
 
+        return ownerDao.getCustomerStamp(ownerId, isCustomerRegular, sort);
+    }
 }

@@ -325,7 +325,8 @@ public class UserDao {
 
         return jdbcTemplate.queryForObject(sql, params, long.class);
     }
-
+  
+  
     public List<GetStoreCanBeRegularResponse> getStoreCanBeRegularList(long userId, double userLatitude, double userLongitude, int page) {
         int limit = 5;
         int offset = limit * page;
@@ -366,5 +367,12 @@ public class UserDao {
         params.addValue("storeId", patchUserRegularRequest.getStoreId());
 
         return jdbcTemplate.update(sql, params);
+    }
+  
+    public int getUserIdCount(Long userId) {
+        String sql = "select Count(*) as userIdCount from Users where userId = :userId";
+        Map<String, Object> param = Map.of("userId", userId);
+
+        return jdbcTemplate.queryForObject(sql, param, Integer.class);
     }
 }

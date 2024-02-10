@@ -3,6 +3,7 @@ package com.example.mocu.Dao;
 import com.example.mocu.Dto.address.GetAddressResponse;
 import com.example.mocu.Dto.address.PatchUserAddressRequest;
 import com.example.mocu.Dto.address.PostAddressRequest;
+import com.example.mocu.Dto.address.SelectUserAddressResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -79,5 +80,28 @@ public class AddressDao {
             // 적절한 예외 처리를 수행하거나, 실패를 나타내는 특정 값을 반환
             throw new RuntimeException("주소 업데이트 실패");
         }
+    }
+
+    public SelectUserAddressResponse selectAddress(Long userId, String addressName) {
+        String sql = "update Addresses set status = 'not selected' where userId ";
+        sql += "update Addresses set status = 'selected' where userId = :userId and name = :addressName";
+
+        Map<String, Object> param = Map.of(
+                "userId", userId,
+                "addressName", addressName
+        );
+
+        jdbcTemplate.update(sql, param);
+
+        sql = "select addressId, name, status ";
+        sql += "from addresses ";
+        sql += "where userId = :userId and name = :addressName";
+
+        return jdbcTemplate.queryForObject(sql, param,
+                (rs, rowNum) -> new SelectUserAddressResponse(
+                        rs.getLong("addressId"),
+                        rs.getString("name"),
+                        rs.getString("status")
+                ));
     }
 }
