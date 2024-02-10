@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.stamp;
+package com.example.mocu.Dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,14 +9,14 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GetStampStoreAroundResponse {
-    // 가게 대표 사진, 가게 이름, numOfStamp, maxStamp, rating, reward, numOfCouponAvailable, distance
+public class GetStoreCanBeRegularResponse {
+    // storeId, 가게 대표 사진, 가게 상호명, 유저가 적립한 스탬프 수, 가게 maxStamp 수, reward, 가게 평점, distance
+    private long storeId;
     private String mainImageUrl;
     private String storeName;
     private int numOfStamp;
     private int maxStamp;
-    private int numOfCouponAvailable;
     private String reward;
     private float rating;
-    private double distance;            // 현재 user위치와 store사이의 distance
+    private double distance;
 }

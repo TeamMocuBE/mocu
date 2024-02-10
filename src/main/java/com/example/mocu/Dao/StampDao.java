@@ -1,5 +1,6 @@
 package com.example.mocu.Dao;
 
+import com.example.mocu.Dto.stamp.GetStampStoreAroundResponse;
 import com.example.mocu.Dto.stamp.PostStampRequest;
 import com.example.mocu.Dto.stamp.PostStampResponse;
 import com.example.mocu.Dto.stamp.StampInfo;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -140,5 +142,34 @@ public class StampDao {
         params.addValue("storeId", storeId);
 
         return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
+
+    public List<GetStampStoreAroundResponse> getStampStoreAroundList(long userId, double latitude, double longitude, int page) {
+        int limit = 5;
+        int offset = limit * page;
+
+        // 현재 user위치와 가까운 store 순으로 정렬해서 return
+        String sql = "select s.mainImageUrl, s.name as storeName, st.numOfStamp, s.maxStamp, st.numOfCouponAvailable, s.reward, s.rating, " +
+                "ST_DISTANCE_SPHERE(POINT(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) as distance " +
+                "from Stores s join Stamps st on s.storeId=st.storeId where st.userId=:userId " +
+                "order by distance limit :limit offset :offset";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userLongitude", longitude);
+        params.addValue("userLatitude", latitude);
+        params.addValue("userId", userId);
+        params.addValue("limit", limit);
+        params.addValue("offset", offset);
+
+        return jdbcTemplate.query(sql, params, (rs, rowNum) -> new GetStampStoreAroundResponse(
+                rs.getString("mainImageUrl"),
+                rs.getString("storeName"),
+                rs.getInt("numOfStamp"),
+                rs.getInt("maxStamp"),
+                rs.getInt("numOfCouponAvailable"),
+                rs.getString("reward"),
+                rs.getFloat("rating"),
+                rs.getDouble("distance")
+            )
+        );
     }
 }

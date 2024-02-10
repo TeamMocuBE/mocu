@@ -19,24 +19,20 @@ public class StoreController {
     /**
      * 가게 상세정보 페이지
      * 리뷰는 최신순 정렬이 default
+     * 무한스크롤 구현
      */
-    @GetMapping("/detail?storeId={storeId}&userId={userId}")
-    public BaseResponse<GetDetailedStoreResponse> getDetailedStore(@RequestParam("storeId") long storeId, @RequestParam("userId") long userId){
+    @GetMapping("/detail")
+    public BaseResponse<GetDetailedStoreResponse> getDetailedStore(
+            @RequestParam("storeId") long storeId,
+            @RequestParam("userId") long userId,
+            @RequestParam(required = false, defaultValue = "true") boolean timeSort,
+            @RequestParam(required = false, defaultValue = "false") boolean rateSort,
+            @RequestParam(defaultValue = "0") int page){
         log.info("[StoreController.getDetailedStore]");
 
-        return new BaseResponse<>(storeService.getDetailedStore(storeId, userId));
+        return new BaseResponse<>(storeService.getDetailedStore(storeId, userId, timeSort, rateSort, page));
     }
 
-
-    /**
-     * 가게 리뷰 리스트 조회(최신순, 평점순)
-     */
-    @GetMapping("/detail/reviews?storeId={storeId}&sort-by={orderType}")
-    public BaseResponse<List<GetStoreReviewsResponse>> getStoreReviews(@RequestParam("storeId") long storeId, @RequestParam("sort-by") String orderType) {
-        log.info("[StoreController.getStoreReviews]");
-
-        return new BaseResponse<>(storeService.getStoreReviews(storeId, orderType));
-    }
 
     /**
      * 가게 검색
@@ -61,6 +57,7 @@ public class StoreController {
 
     /**
      * 가게 검색 페이지 조회
+     * -> 수정 필요(거리순 추천 기능 추가해야함)
      */
     @GetMapping("/store-search/userId={userId}")
     public BaseResponse<GetStoreSearchResponse> getStoreSearch(@PathVariable("userId") long userId){
