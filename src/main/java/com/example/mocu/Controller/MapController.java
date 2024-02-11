@@ -18,7 +18,7 @@ public class MapController {
 
     /**
      * 지도페이지에서 현 기기 위치 근방 가게들의 정보 조회
-     *
+     * -> Stamps table 채운 후 다시 테스트
      */
     @GetMapping("")
     public BaseResponse<List<GetMapStoreInfoResponse>> getMapStoreInfoList(
