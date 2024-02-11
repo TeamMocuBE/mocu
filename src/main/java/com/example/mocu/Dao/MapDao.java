@@ -18,18 +18,34 @@ public class MapDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public List<GetMapStoreInfoResponse> getMapStoreInfoList(long userId, double latitude, double longitude, int distance) {
+    public List<GetMapStoreInfoResponse> getMapStoreInfoList(double latitude, double longitude, int distance, String categoryOption, boolean eventOption, boolean dueDateOption) {
         // ST_DISTANCE_SPHERE 함수 이용
         String sql = "select s.name as storeName, s.mainImageUrl, s.category, st.dueDate, s.rating, " +
-                "st.numOfStamp, s.maxStamp, st.numOfCouponAvailable, s.reward, " +
-                "case when s.event is not null then true else false end as event " +
+                "st.numOfStamp, s.maxStamp, st.numOfCouponAvailable, s.reward, s.event" +
                 "from Stores s join Stamps st on s.storeId=st.storeId " +
-                "where ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) <= :distance " +
-                "order by ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude))";
+                "where ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) <= :distance ";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userLongitude", longitude);
         params.addValue("userLatitude", latitude);
         params.addValue("distance", distance);
+
+        // TODO 1. categoryOption에 따라 카테고리 필터링
+        if(!categoryOption.equals("업종 전체")){
+            sql += "and s.category=:categoryOption ";
+            params.addValue("categoryOption", categoryOption);
+        }
+
+        // TODO 2. eventOption에 따라 이벤트 여부 필터링
+        if(eventOption){
+            sql += "and s.event IS NOT NULL ";
+        }
+
+        // TODO 3. dueDateOption에 따라 쿠폰사용 임박 여부 필터링
+        if(dueDateOption){
+            sql += "and st.dueDate=true ";
+        }
+
+        sql += "order by ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude))";
 
         return jdbcTemplate.query(sql, params, (rs, rowNum) ->
                 new GetMapStoreInfoResponse(
@@ -37,12 +53,13 @@ public class MapDao {
                         rs.getString("mainImageUrl"),
                         rs.getString("category"),
                         rs.getBoolean("dueDate"),
-                        rs.getFloat("rating"),
+                        rs.getDouble("rating"),
                         rs.getInt("numOfStamp"),
                         rs.getInt("maxStamp"),
                         rs.getInt("numOfCouponAvailable"),
                         rs.getString("reward"),
-                        rs.getBoolean("event")
+                        // event 값이 null이면 null, 아니면 Stores table의 event값 return
+                        rs.getString("event") != null ? rs.getString("event") : null
                 )
         );
     }

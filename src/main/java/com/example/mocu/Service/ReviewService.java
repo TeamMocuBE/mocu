@@ -28,6 +28,7 @@ public class ReviewService {
 
         /**
          * 1. 리뷰 작성 X -> status = '작성이전'
+         * reviewId만 생성
          */
         if(postReviewRequest.getContent() == null){
             int rate = 0;
