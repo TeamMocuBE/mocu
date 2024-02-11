@@ -21,11 +21,18 @@ public class ReviewController {
      * 리뷰 등록
      */
     @PostMapping("")
-    public BaseResponse<PostReviewResponse> register(@Validated @RequestBody PostReviewRequest postReviewRequest) {
+    public BaseResponse<PostReviewResponse> registerReview(@Validated @RequestBody PostReviewRequest postReviewRequest) {
         log.info("[ReviewController.signUp]");
 
-        return new BaseResponse<>(reviewService.register(postReviewRequest));
+        return new BaseResponse<>(reviewService.registerReview(postReviewRequest));
     }
+
+    /**
+     * 리뷰 수정
+     * -> ?? 필요할까 ??
+     */
+
+
 
     /**
      * 작성 가능 리뷰 (새 리뷰 쓰기)
@@ -35,6 +42,16 @@ public class ReviewController {
         log.info("[ReviewController.getAvailabilityReview");
 
         return new BaseResponse<>(reviewService.getAvailableReview(userId));
+    }
+
+    /**
+     * 작성 가능 리뷰목록에서 새 리뷰 쓰기
+     */
+    @PatchMapping("/available-review/add-new-review")
+    public BaseResponse<PatchAvailableReviewResponse> registerReviewFromAvailableReviews(@Validated @RequestBody PatchAvailableReviewRequest patchAvailableReviewRequest){
+        log.info("[ReviewController.registerReviewFromAvailableReviews]");
+
+        return new BaseResponse<>(reviewService.registerReviewFromAvailableReviews(patchAvailableReviewRequest));
     }
 
     /**

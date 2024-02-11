@@ -11,10 +11,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -249,4 +252,31 @@ public class StoreDao {
     }
 
 
+    public void updateStoreRating(long storeId, int rate) {
+        // TODO 1. 해당 store에 등록된 review 개수 count
+        String countSql = "select count(*) from Reviews where storeId=:storeId and status='작성이후'";
+        MapSqlParameterSource countParams = new MapSqlParameterSource();
+        countParams.addValue("storeId", storeId);
+        int count = jdbcTemplate.queryForObject(countSql, countParams, Integer.class);
+
+        // TODO 2. 해당 store에 등록된 rate의 sum 계산
+        String totalRateSql = "select sum(rate) from Reviews where storeId=:storeId and status='작성이후'";
+        MapSqlParameterSource totalRateParams = new MapSqlParameterSource();
+        totalRateParams.addValue("storeId", storeId);
+        int totalRate = jdbcTemplate.queryForObject(totalRateSql, totalRateParams, Integer.class);
+
+        // TODO 3. 해당 store의 rating 값 update
+        // newRating double로 typeCasting
+        double newRating = ((double)(totalRate + rate)) / (count + 1);
+        // 소수점 이하 1자리로 반올림
+        DecimalFormat df = new DecimalFormat("#.#");
+        BigDecimal roundedRating = new BigDecimal(df.format(newRating));
+
+        String updateSql = "update Stores set rating=:rating where storeId=:storeId";
+        MapSqlParameterSource updateParams = new MapSqlParameterSource();
+        updateParams.addValue("rating", roundedRating);
+        updateParams.addValue("storeId", storeId);
+
+        jdbcTemplate.update(updateSql, updateParams);
+    }
 }
