@@ -23,20 +23,20 @@ public class ReviewDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long createReview(PostReviewRequest postReviewRequest) {
-        String sql = "insert into Reviews(userId, storeId, rate, content) values (:userId, :storeId, :rate, :content)";
+    public long createReviewId(long userId, long storeId, int rate, String content, String status) {
+        String sql = "insert into Reviews(userId, storeId, rate, content, status) values (:userId, :storeId, :rate, :content, :status)";
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", postReviewRequest.getUserId())
-                .addValue("storeId", postReviewRequest.getStoreId())
-                .addValue("rate", postReviewRequest.getRate())
-                .addValue("content", postReviewRequest.getContent());
+                .addValue("userId", userId)
+                .addValue("storeId", storeId)
+                .addValue("rate", rate)
+                .addValue("content", content)
+                .addValue("status",status);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder);
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
-
 
     public List<GetAvailableReviewResponse> getAvailableReview(Long userId) {
         String sql = "select s.mainImageUrl, r.createdDate, s.name, s.category, s.maxStamp, st.numOfStamp, s.reward ";
