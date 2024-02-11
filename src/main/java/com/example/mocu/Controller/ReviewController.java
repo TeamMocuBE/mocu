@@ -29,9 +29,14 @@ public class ReviewController {
 
     /**
      * 리뷰 수정
-     * -> ?? 필요할까 ??
+     * -> 작성 가능 리뷰목록에서 새 리뷰 쓰기 + 내가 작성한 리뷰 수정
      */
+    @PatchMapping("/correct-my-review")
+    public BaseResponse<PatchReviewResponse> correctReview(@Validated @RequestBody PatchReviewRequest patchReviewRequest){
+        log.info("[ReviewController.correctReview]");
 
+        return new BaseResponse<>(reviewService.correctReview(patchReviewRequest));
+    }
 
 
     /**
@@ -44,15 +49,6 @@ public class ReviewController {
         return new BaseResponse<>(reviewService.getAvailableReview(userId));
     }
 
-    /**
-     * 작성 가능 리뷰목록에서 새 리뷰 쓰기
-     */
-    @PatchMapping("/available-review/add-new-review")
-    public BaseResponse<PatchAvailableReviewResponse> registerReviewFromAvailableReviews(@Validated @RequestBody PatchAvailableReviewRequest patchAvailableReviewRequest){
-        log.info("[ReviewController.registerReviewFromAvailableReviews]");
-
-        return new BaseResponse<>(reviewService.registerReviewFromAvailableReviews(patchAvailableReviewRequest));
-    }
 
     /**
      * 리뷰 신고 처리
