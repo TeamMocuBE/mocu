@@ -21,7 +21,7 @@ public class MapDao {
     public List<GetMapStoreInfoResponse> getMapStoreInfoList(double latitude, double longitude, int distance, String categoryOption, boolean eventOption, boolean dueDateOption) {
         // ST_DISTANCE_SPHERE 함수 이용
         String sql = "select s.name as storeName, s.mainImageUrl, s.category, st.dueDate, s.rating, " +
-                "st.numOfStamp, s.maxStamp, st.numOfCouponAvailable, s.reward, s.event" +
+                "st.numOfStamp, s.maxStamp, st.numOfCouponAvailable, s.reward, s.event " +
                 "from Stores s join Stamps st on s.storeId=st.storeId " +
                 "where ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) <= :distance ";
         MapSqlParameterSource params = new MapSqlParameterSource();

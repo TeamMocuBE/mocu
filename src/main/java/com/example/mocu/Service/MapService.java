@@ -20,6 +20,7 @@ public class MapService {
         log.info("[MapService.getMapStoreInfoList]");
 
         // TODO . 주어진 위도, 경도를 기준으로 반경 distance 미터 내의 GetMapStoreInfoResponse값들을 return
+        // 1km로 설정
         int distance = 1000;
         return mapDao.getMapStoreInfoList(latitude, longitude, distance, categoryOption, eventOption, dueDateOption);
     }
