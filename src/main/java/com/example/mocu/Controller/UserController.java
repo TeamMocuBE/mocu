@@ -71,14 +71,14 @@ public class UserController {
      * 단골 페이지 조회
      */
     @GetMapping("/{userId}/my-storelist")
-    public BaseResponse<GetMyStoreListResponse> getMyStoreList(@PathVariable long userId,
-                                                               @RequestParam(required = false) String category,
-                                                               @RequestParam(required = false, defaultValue = "최신순") String sort,
-                                                               @RequestParam(defaultValue = "false") boolean isEventTrue,
-                                                               @RequestParam(defaultValue = "false") boolean isCouponUsable,
-                                                               @RequestParam double userLatitude,
-                                                               @RequestParam double userLongitude,
-                                                               @RequestParam(defaultValue = "0") int page) {
+    public BaseResponse<GetMyStoreListResponse> getMyStoreList(@PathVariable(name = "userId") long userId,
+                                                               @RequestParam(name = "category", required = false) String category,
+                                                               @RequestParam(name = "sort", required = false, defaultValue = "최신순") String sort,
+                                                               @RequestParam(name = "isEventTrue", defaultValue = "false") boolean isEventTrue,
+                                                               @RequestParam(name = "isCouponUsable", defaultValue = "false") boolean isCouponUsable,
+                                                               @RequestParam(name = "userLatitude") double userLatitude,
+                                                               @RequestParam(name = "userLongitude") double userLongitude,
+                                                               @RequestParam(name = "page", defaultValue = "0") int page) {
         log.info("[UserController.getMyStoreList]");
 
         if (!isUserIdCorrect(userId)) {
@@ -94,10 +94,10 @@ public class UserController {
      */
     @GetMapping("/userId={userId}/my-storelist/add-new")
     public BaseResponse<List<GetStoreCanBeRegularResponse>> getStoreCanBeRegularList(
-            @PathVariable long userId,
-            @RequestParam double userLatitude,
-            @RequestParam double userLongitude,
-            @RequestParam(defaultValue = "0") int page){
+            @PathVariable(name = "userId") long userId,
+            @RequestParam(name = "userLatitude") double userLatitude,
+            @RequestParam(name = "userLongitude") double userLongitude,
+            @RequestParam(name = "page", defaultValue = "0") int page){
         log.info("[UserController.getStoreCanBeRegularList]");
 
         return new BaseResponse<>(userService.getStoreCanBeRegularList(userId, userLatitude, userLongitude, page));

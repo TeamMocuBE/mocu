@@ -43,13 +43,13 @@ public class CouponController {
      * 쿠폰 적립 현황
      */
     @GetMapping("/my-coupon/{userId}")
-    public BaseResponse<List<GetMyCouponList>> myCouponList(@PathVariable long userId,
-                                                            @RequestParam(required = false) String category,
-                                                            @RequestParam(required = false, defaultValue = "최신순") String sort,
-                                                            @RequestParam(defaultValue = "false") boolean isEventTrue,
-                                                            @RequestParam(defaultValue = "false") boolean isCouponUsable,
-                                                            @RequestParam(defaultValue = "false") boolean isStoreRegular,
-                                                            @RequestParam(defaultValue = "false") boolean isCouponCloseToCompletion) {
+    public BaseResponse<List<GetMyCouponList>> myCouponList(@PathVariable(name = "userId") long userId,
+                                                            @RequestParam(name = "category", required = false) String category,
+                                                            @RequestParam(name = "sort", required = false, defaultValue = "최신순") String sort,
+                                                            @RequestParam(name = "isEventTrue", defaultValue = "false") boolean isEventTrue,
+                                                            @RequestParam(name = "isCouponUsable", defaultValue = "false") boolean isCouponUsable,
+                                                            @RequestParam(name = "isStoreRegular", defaultValue = "false") boolean isStoreRegular,
+                                                            @RequestParam(name = "isCouponCloseToCompletion", defaultValue = "false") boolean isCouponCloseToCompletion) {
         log.info("[CouponController.myCouponList]");
 
         return new BaseResponse<>(couponService.myCouponList(userId, category, sort, isEventTrue, isCouponUsable, isStoreRegular, isCouponCloseToCompletion));
