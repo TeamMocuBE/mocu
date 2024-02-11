@@ -81,19 +81,6 @@ public class ReviewService {
         return new PostReviewResponse(reviewId, todayMissionList);
     }
 
-    public PatchAvailableReviewResponse registerReviewFromAvailableReviews(PatchAvailableReviewRequest patchAvailableReviewRequest) {
-        log.info("[ReviewService.registerReviewFromAvailableReviews]");
-
-        // TODO 1. 글자수 체크
-        // 10자 이상이어야 리뷰로 등록
-        if(patchAvailableReviewRequest.getContent().length() < 10){
-            throw new ReviewException(INVALID_REVIEW_LENGTH);
-        }
-
-        // TODO 2.
-
-    }
-
     public List<GetAvailableReviewResponse> getAvailableReview(Long userId) {
         log.info("[ReviewService.getAvailableReviewCount]");
 
@@ -111,6 +98,39 @@ public class ReviewService {
         log.info("ReviewService.GeyMyReview");
 
         return reviewDao.getMyReview(userId, sort);
+    }
+
+
+    public PatchReviewResponse correctReview(PatchReviewRequest patchReviewRequest) {
+        log.info("[ReviewService.correctReview]");
+
+        // TODO 1. 글자수 체크
+        // 10자 이상이어야 리뷰로 등록
+        if(patchReviewRequest.getContent().length() < 10){
+            throw new ReviewException(INVALID_REVIEW_LENGTH);
+        }
+
+        // TODO 2. reviewId update
+        reviewDao.updateReview(patchReviewRequest);
+
+        // TODO 3. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
+        // 오늘의 미션 중 '리뷰 작성하기' 가 있는지 체크
+        List<IsTodayMission> todayMissionList = new ArrayList<>();
+        if(missionDao.isTodayMissionAssigned(patchReviewRequest.getUserId(), "리뷰 작성하기")){
+            IsTodayMission todayMission = new IsTodayMission("리뷰 작성하기", true);
+            todayMissionList.add(todayMission);
+
+            // 1. get '리뷰 작성하기' 의 todayMissionId
+            long todayMissionId = missionDao.getTodayMissionId(patchReviewRequest.getUserId(), "리뷰 작성하기");
+            // 2. 해당 todayMissionId 를 '미션 완료' 처리
+            missionDao.updateTodayMissionToDone(todayMissionId);
+        }
+
+        // TODO 4. 가게 평점 update
+        storeDao.updateStoreRating(patchReviewRequest.getStoreId(), patchReviewRequest.getRate());
+
+        // TODO 5. return
+        return new PatchReviewResponse(todayMissionList);
     }
 
 

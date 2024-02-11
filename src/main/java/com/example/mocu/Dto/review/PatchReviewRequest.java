@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchAvailableReviewRequest {
+public class PatchReviewRequest {
+    private long reviewId;
     private long userId;
     private long storeId;
     private int rate;
