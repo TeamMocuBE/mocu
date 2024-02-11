@@ -16,11 +16,11 @@ import java.util.List;
 public class MapService {
     private final MapDao mapDao;
 
-    public List<GetMapStoreInfoResponse> getMapStoreInfoList(long userId, double latitude, double longitude) {
+    public List<GetMapStoreInfoResponse> getMapStoreInfoList(double latitude, double longitude, String categoryOption, boolean eventOption, boolean dueDateOption) {
         log.info("[MapService.getMapStoreInfoList]");
 
-        // TODO . user의 현위치를 기준으로 반경 distance 미터 내의 GetMapStoreInfoResponse값들을 return
+        // TODO . 주어진 위도, 경도를 기준으로 반경 distance 미터 내의 GetMapStoreInfoResponse값들을 return
         int distance = 1000;
-        return mapDao.getMapStoreInfoList(userId, latitude, longitude, distance);
+        return mapDao.getMapStoreInfoList(latitude, longitude, distance, categoryOption, eventOption, dueDateOption);
     }
 }

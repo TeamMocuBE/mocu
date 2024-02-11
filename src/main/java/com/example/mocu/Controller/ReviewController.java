@@ -69,7 +69,9 @@ public class ReviewController {
      * 내가 작성한 리뷰
      */
     @GetMapping("/{userId}/my-review")
-    public BaseResponse<List<GetMyReviewResponse>> getMyReview(@PathVariable Long userId, @RequestParam(defaultValue = "최신순") String sort) {
+    public BaseResponse<List<GetMyReviewResponse>> getMyReview(
+            @PathVariable(name = "userId") Long userId,
+            @RequestParam(name = "sort", defaultValue = "최신순") String sort) {
         log.info(("ReviewController.getMyReview]"));
 
         return new BaseResponse<>(reviewService.getMyReview(userId, sort));

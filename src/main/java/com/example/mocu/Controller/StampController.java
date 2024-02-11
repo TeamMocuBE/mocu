@@ -46,10 +46,10 @@ public class StampController {
      */
     @GetMapping("/stores-around/userId={userId}?latitude={latitude}&longitude={longitude}")
     public BaseResponse<List<GetStampStoreAroundResponse>> getStampStoreAroundList(
-            @PathVariable long userId,
-            @RequestParam double latitude,
-            @RequestParam double longitude,
-            @RequestParam(defaultValue = "0") int page){
+            @PathVariable(name = "userId") long userId,
+            @RequestParam(name = "latitude") double latitude,
+            @RequestParam(name = "longitude") double longitude,
+            @RequestParam(name = "page", defaultValue = "0") int page){
         log.info("[StampController.getStampStoreAroundList]");
 
         return new BaseResponse<>(stampService.getStampStoreAroundList(userId, latitude, longitude, page));

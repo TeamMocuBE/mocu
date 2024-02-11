@@ -18,12 +18,19 @@ public class MapController {
 
     /**
      * 지도페이지에서 현 기기 위치 근방 가게들의 정보 조회
+     *
      */
-    @GetMapping("/{userId}?latitude={latitude}&longitude={longitude}")
-    public BaseResponse<List<GetMapStoreInfoResponse>> getMapStoreInfoList(@PathVariable("userId") long userId, @RequestParam("latitude") double latitude, @RequestParam("longitude") double longitude){
+    @GetMapping("")
+    public BaseResponse<List<GetMapStoreInfoResponse>> getMapStoreInfoList(
+            @RequestParam(name = "latitude") double latitude,
+            @RequestParam(name = "longitude") double longitude,
+            @RequestParam(name = "categoryOption", required = false, defaultValue = "업종 전체") String categoryOption,
+            @RequestParam(name = "eventOption", required = false, defaultValue = "false") boolean eventOption,
+            @RequestParam(name = "dueDateOption", required = false, defaultValue = "false") boolean dueDateOption){
+
         log.info("[MapController.getStoreMapInfoList]");
 
-        return new BaseResponse<>(mapService.getMapStoreInfoList(userId, latitude, longitude));
+        return new BaseResponse<>(mapService.getMapStoreInfoList(latitude, longitude, categoryOption, eventOption, dueDateOption));
     }
 
 }

@@ -59,7 +59,7 @@ public class MissionController {
      * 미션 맵 현황 조회
      */
     @GetMapping("/{userId}/mission-map")
-    public BaseResponse<GetMissionMapResponse> getMissionMapForUser(@PathVariable long userId){
+    public BaseResponse<GetMissionMapResponse> getMissionMapForUser(@PathVariable(name = "userId") long userId){
         log.info("[MissionController.getMissionMapForUser]");
 
         return new BaseResponse<>(missionService.getMissionMapForUser(userId));
