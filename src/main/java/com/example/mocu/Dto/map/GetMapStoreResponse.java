@@ -11,8 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GetMapStoreResponse {
     private long storeId;
-    private double storeLatitude;
-    private double storeLongitude;
+    private double latitude;
+    private double longitude;
     private String category;
     private boolean hasEvent;
     private boolean isDueDate;

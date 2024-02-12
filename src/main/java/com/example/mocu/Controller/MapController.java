@@ -19,6 +19,7 @@ public class MapController {
 
     /**
      * 지도페이지에서 현 기기 위치 근방 가게들의 정보 조회
+     * -> OK
      */
     @GetMapping("/userId={userId}")
     public BaseResponse<List<GetMapStoreResponse>> getMapStoreList(
@@ -36,9 +37,9 @@ public class MapController {
 
     /**
      * 지도페이지에서 가게 정보 조회
-     * -> 404 NOT FOUND ??
+     * -> OK
      */
-    @GetMapping("/store-Info?userId={userId}&storeId={storeId}")
+    @GetMapping("/store-info")
     public BaseResponse<GetMapStoreInfoResponse> getMapStoreInfo(
             @RequestParam(name = "userId") long userId,
             @RequestParam(name = "storeId") long storeId){

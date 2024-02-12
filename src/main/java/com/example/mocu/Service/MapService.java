@@ -22,7 +22,7 @@ public class MapService {
 
         // TODO 1. 주어진 위도, 경도를 기준으로 반경 distance 미터 내의 GetMapStoreResponse값들을 return
         // 1km로 설정
-        int distance = 1000;
+        int distance = 1000000;
         return mapDao.getMapStoreList(userId, latitude, longitude, distance, categoryOption, eventOption, dueDateOption);
     }
 
