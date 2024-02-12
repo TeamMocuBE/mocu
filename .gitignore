@@ -36,6 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-### firebase 비공개 키, yml파일 ###
+### firebase 비공개 키, yml 파일###
 src/main/resources/application.yml
 src/main/resources/mocu-95b9b-firebase-adminsdk-pzlgz-f8082489eb.json
