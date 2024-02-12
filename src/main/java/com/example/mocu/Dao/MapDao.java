@@ -54,16 +54,19 @@ public class MapDao {
             // TODO 4. 필터링
             log.info("todo4");
             // 1. categoryOption에 따라 카테고리 필터링
+            log.info("카테고리 필터링");
             if (!categoryOption.equals("업종 전체")) {
                 selectSql += "AND s.category = :categoryOption ";
                 selectParam.addValue("categoryOption", categoryOption);
             }
 
+            log.info("이벤트 필터링");
             // 2. eventOption에 따라 이벤트 여부 필터링
             if (eventOption) {
                 selectSql += "AND s.event IS NOT NULL ";
             }
 
+            log.info("쿠폰사용임박 필터링");
             // 3. dueDateOption에 따라 쿠폰사용 임박 여부 필터링
             if(dueDateOption){
                 selectSql += "and st.dueDate is true ";
@@ -83,6 +86,7 @@ public class MapDao {
                     )
             );
 
+            log.info("response 값 add");
             responseList.add(response);
         }
 
