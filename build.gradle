@@ -26,6 +26,8 @@ repositories {
 }
 
 dependencies {
+	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+	implementation 'com.google.firebase:firebase-admin:6.8.1'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 	//implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'

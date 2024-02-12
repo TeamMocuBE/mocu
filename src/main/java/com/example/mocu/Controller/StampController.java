@@ -19,13 +19,24 @@ public class StampController {
     private final StampService stampService;
 
     /**
-     * 스탬프 적립 요청(유저 앱 -> 점주 앱)
+     * 스탬프 적립 요청
      */
     @PostMapping("/request")
-    public BaseResponse<PostStampResponse> stampRequestRegister(@Validated @RequestBody PostStampRequest postStampRequest){
+    public BaseResponse<String> stampRequestRegister(@RequestBody PostStampRequest postStampRequest){
         log.info("[StampController.stampRequestRegister]");
 
-        return new BaseResponse<>(stampService.stampRequestRegister(postStampRequest));
+        try {
+            PostStampResponse postStampResponse = stampService.stampRequestRegister(postStampRequest);
+            sendPushNotification(postStampResponse);
+            return new BaseResponse<>("스탬프 적립 요청 성공");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("스탬프 적립 요청 중 오류 발생");
+        }
+    }
+
+    // 푸시 알림을 보내는 메서드
+    private void sendPushNotification(PostStampResponse postStampResponse) {
+
     }
 
     /**
