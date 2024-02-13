@@ -101,7 +101,7 @@ public class CouponDao {
     }
 
     public List<GetMyCouponList> myCouponList(long userId, String category, String sort, boolean isEventTrue, boolean isCouponUsable, boolean isStoreRegular, boolean isCouponCloseToCompletion) {
-        String sql = "select s.mainImageUrl, s.name, s.maxStamp, st.numOfStamp, s.reward, s.coordinate, s.event ";
+        String sql = "select s.mainImageUrl, s.name, s.maxStamp, st.numOfStamp, s.reward, s.latitude, s.longitude, s.event ";
         sql += "from stores s join stamps st on s.storeId = st.storeId and st.userId = :userId ";
 
         if (isStoreRegular) {
@@ -166,7 +166,8 @@ public class CouponDao {
                         rs.getInt("maxStamp"),
                         rs.getInt("numOfStamp"),
                         rs.getString("reward"),
-                        rs.getString("coordinate"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude"),
                         rs.getString("event")
                 ));
     }

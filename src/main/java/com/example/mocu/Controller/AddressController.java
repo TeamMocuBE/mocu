@@ -39,20 +39,20 @@ public class AddressController {
     /**
      * 주소 수정
      */
-    @PatchMapping("/{userId}/modify-address")
-    public BaseResponse<PatchUserAddressResponse> modifyAddress(@PathVariable Long userId, @RequestBody PatchUserAddressRequest patchUserAddressRequest) {
+    @PatchMapping("/{userId}/modify-address/{addressId}")
+    public BaseResponse<PatchUserAddressResponse> modifyAddress(@PathVariable Long userId, @RequestBody PatchUserAddressRequest patchUserAddressRequest, @PathVariable Long addressId) {
         log.info("[AddressController.modifyAddress]");
 
-        return new BaseResponse<>(addressService.modifyAddress(userId, patchUserAddressRequest));
+        return new BaseResponse<>(addressService.modifyAddress(userId, patchUserAddressRequest, addressId));
     }
 
     /**
      * 주소 선택 (현 위치 변경)
      */
     @PatchMapping("/{userId}/set-address")
-    public BaseResponse<SelectUserAddressResponse> selectAddress(@PathVariable Long userId, @RequestBody String addressName) {
+    public BaseResponse<SelectUserAddressResponse> selectAddress(@PathVariable Long userId, @RequestBody PatchUserSetAddress patchUserSetAddress) {
         log.info("[AddressController.selectAddress]");
 
-        return new BaseResponse<>(addressService.selectAddress(userId, addressName));
+        return new BaseResponse<>(addressService.selectAddress(userId, patchUserSetAddress));
     }
 }
