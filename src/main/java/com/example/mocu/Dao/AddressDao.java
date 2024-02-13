@@ -1,10 +1,8 @@
 package com.example.mocu.Dao;
 
-import com.example.mocu.Dto.address.GetAddressResponse;
-import com.example.mocu.Dto.address.PatchUserAddressRequest;
-import com.example.mocu.Dto.address.PostAddressRequest;
-import com.example.mocu.Dto.address.SelectUserAddressResponse;
+import com.example.mocu.Dto.address.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -35,7 +33,7 @@ public class AddressDao {
                 .addValue("name", postAddressRequest.getName())
                 .addValue("address", postAddressRequest.getAddress())
                 .addValue("latitude", postAddressRequest.getLatitude())
-                .addValue("longitide", postAddressRequest.getLongitude());
+                .addValue("longitude", postAddressRequest.getLongitude());
 
         // 쿼리 실행 및 생성된 키(예: 자동 생성된 ID) 반환
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -59,15 +57,16 @@ public class AddressDao {
                 ));
     }
 
-    public long modifyAddress(Long userId, PatchUserAddressRequest patchUserAddressRequest) {
-        String sql = "UPDATE Users SET address = :address, latitude = :latitude, longitude = :longitude WHERE userId = :userId";
+    public long modifyAddress(Long userId, PatchUserAddressRequest patchUserAddressRequest, Long addressId) {
+        String sql = "UPDATE Addresses SET address = :address, latitude = :latitude, longitude = :longitude WHERE userId = :userId and name = :name and addressId = :addressId";
 
         Map<String, Object> param = Map.of(
                 "userId", userId,
                 "name", patchUserAddressRequest.getName(),
                 "address", patchUserAddressRequest.getAddress(),
                 "latitude", patchUserAddressRequest.getLatitude(),
-                "longitude", patchUserAddressRequest.getLongitude()
+                "longitude", patchUserAddressRequest.getLongitude(),
+                "addressId", addressId
         );
 
         int updatedRows = jdbcTemplate.update(sql, param);
@@ -82,26 +81,37 @@ public class AddressDao {
         }
     }
 
-    public SelectUserAddressResponse selectAddress(Long userId, String addressName) {
-        String sql = "update Addresses set status = 'not selected' where userId ";
-        sql += "update Addresses set status = 'selected' where userId = :userId and name = :addressName";
+    public SelectUserAddressResponse selectAddress(Long userId, PatchUserSetAddress patchUserSetAddress) {
+        // 사용자의 모든 주소 상태를 '선택되지 않음'으로 초기화
+        String sqlResetStatus = "UPDATE Addresses SET status = 'not selected' WHERE userId = :userId";
+        Map<String, Object> paramReset = Map.of("userId", userId);
+        jdbcTemplate.update(sqlResetStatus, paramReset);
 
-        Map<String, Object> param = Map.of(
+        // 지정된 주소의 상태를 '선택됨'으로 설정
+        String sqlSelectAddress = "UPDATE Addresses SET status = 'selected' WHERE userId = :userId AND name = :addressName";
+        Map<String, Object> paramSelect = Map.of(
                 "userId", userId,
-                "addressName", addressName
+                "addressName", patchUserSetAddress.getAddressName()
         );
 
-        jdbcTemplate.update(sql, param);
+        int updated = jdbcTemplate.update(sqlSelectAddress, paramSelect);
 
-        sql = "select addressId, name, status ";
-        sql += "from addresses ";
-        sql += "where userId = :userId and name = :addressName";
+        if (updated == 0) {
+            // 주소가 업데이트되지 않았다면, 예외 처리
+            throw new EmptyResultDataAccessException("업데이트할 주소가 없습니다.", 1);
+        }
 
-        return jdbcTemplate.queryForObject(sql, param,
-                (rs, rowNum) -> new SelectUserAddressResponse(
-                        rs.getLong("addressId"),
-                        rs.getString("name"),
-                        rs.getString("status")
-                ));
+        // 업데이트된 주소의 상세 정보 검색 및 반환
+        String sql = "SELECT addressId, name, status FROM Addresses WHERE userId = :userId AND name = :addressName";
+        try {
+            return jdbcTemplate.queryForObject(sql, paramSelect, (rs, rowNum) -> new SelectUserAddressResponse(
+                    rs.getLong("addressId"),
+                    rs.getString("name"),
+                    rs.getString("status")
+            ));
+        } catch (EmptyResultDataAccessException ex) {
+            // 주소가 존재하지 않거나 선택되지 않았을 경우 예외 처리
+            throw new EmptyResultDataAccessException("예상대로 주소를 선택하는 데 실패했습니다.", 1);
+        }
     }
 }

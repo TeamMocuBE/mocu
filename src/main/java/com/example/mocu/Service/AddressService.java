@@ -28,17 +28,17 @@ public class AddressService {
         return addressDao.getAddress(userId);
     }
 
-    public PatchUserAddressResponse modifyAddress(Long userId, PatchUserAddressRequest patchUserAddressRequest) {
+    public PatchUserAddressResponse modifyAddress(Long userId, PatchUserAddressRequest patchUserAddressRequest, Long addressId) {
         log.info("[AddressService.modifyAddress]");
 
         //TODO. 수정 가능한 내용인지 검사
 
-        return new PatchUserAddressResponse(addressDao.modifyAddress(userId, patchUserAddressRequest));
+        return new PatchUserAddressResponse(addressDao.modifyAddress(userId, patchUserAddressRequest, addressId));
     }
 
-    public SelectUserAddressResponse selectAddress(Long userId, String addressName) {
+    public SelectUserAddressResponse selectAddress(Long userId, PatchUserSetAddress patchUserSetAddress) {
         log.info("[AddressService.selectAddress");
 
-        return addressDao.selectAddress(userId, addressName);
+        return addressDao.selectAddress(userId, patchUserSetAddress);
     }
 }
