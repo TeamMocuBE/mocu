@@ -2,6 +2,7 @@ package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dto.stamp.*;
+import com.example.mocu.FCM.FcmController;
 import com.example.mocu.Service.StampService;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
@@ -17,15 +18,27 @@ import java.util.List;
 @RequestMapping("/stamp")
 public class StampController {
     private final StampService stampService;
+    private final FcmController fcmController;
 
     /**
-     * 스탬프 적립 요청(유저 앱 -> 점주 앱)
+     * 스탬프 적립 요청
      */
     @PostMapping("/request")
-    public BaseResponse<PostStampResponse> stampRequestRegister(@Validated @RequestBody PostStampRequest postStampRequest){
+    public BaseResponse<String> stampRequestRegister(@RequestBody PostStampRequest postStampRequest){
         log.info("[StampController.stampRequestRegister]");
 
-        return new BaseResponse<>(stampService.stampRequestRegister(postStampRequest));
+        try {
+            PostStampResponse postStampResponse = stampService.stampRequestRegister(postStampRequest);
+            sendPushNotification(postStampResponse);
+            return new BaseResponse<>("스탬프 적립 요청 성공");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("스탬프 적립 요청 중 오류 발생");
+        }
+    }
+
+    // 푸시 알림을 보내는 메서드
+    private void sendPushNotification(PostStampResponse postStampResponse) {
+
     }
 
     /**
@@ -46,10 +59,10 @@ public class StampController {
      */
     @GetMapping("/stores-around/userId={userId}?latitude={latitude}&longitude={longitude}")
     public BaseResponse<List<GetStampStoreAroundResponse>> getStampStoreAroundList(
-            @PathVariable long userId,
-            @RequestParam double latitude,
-            @RequestParam double longitude,
-            @RequestParam(defaultValue = "0") int page){
+            @PathVariable(name = "userId") long userId,
+            @RequestParam(name = "latitude") double latitude,
+            @RequestParam(name = "longitude") double longitude,
+            @RequestParam(name = "page", defaultValue = "0") int page){
         log.info("[StampController.getStampStoreAroundList]");
 
         return new BaseResponse<>(stampService.getStampStoreAroundList(userId, latitude, longitude, page));

@@ -19,13 +19,27 @@ public class ReviewController {
 
     /**
      * 리뷰 등록
+     * -> OK
      */
     @PostMapping("")
-    public BaseResponse<PostReviewResponse> register(@Validated @RequestBody PostReviewRequest postReviewRequest) {
+    public BaseResponse<PostReviewResponse> registerReview(@RequestBody PostReviewRequest postReviewRequest) {
         log.info("[ReviewController.signUp]");
 
-        return new BaseResponse<>(reviewService.register(postReviewRequest));
+        return new BaseResponse<>(reviewService.registerReview(postReviewRequest));
     }
+
+    /**
+     * 리뷰 수정
+     * -> 작성 가능 리뷰목록에서 새 리뷰 쓰기 + 내가 작성한 리뷰 수정
+     * -> OK
+     */
+    @PatchMapping("/correct-my-review")
+    public BaseResponse<PatchReviewResponse> correctReview(@RequestBody PatchReviewRequest patchReviewRequest){
+        log.info("[ReviewController.correctReview]");
+
+        return new BaseResponse<>(reviewService.correctReview(patchReviewRequest));
+    }
+
 
     /**
      * 작성 가능 리뷰 (새 리뷰 쓰기)
@@ -37,8 +51,10 @@ public class ReviewController {
         return new BaseResponse<>(reviewService.getAvailableReview(userId));
     }
 
+
     /**
      * 리뷰 신고 처리
+     * -> OK
      */
     @PatchMapping("/update/report-true")
     public BaseResponse<String> updateReviewReportToTrue(@Validated @RequestBody PatchReviewReportToTrueRequest patchReviewReportToTrueRequest) {
@@ -56,7 +72,9 @@ public class ReviewController {
      * 내가 작성한 리뷰
      */
     @GetMapping("/{userId}/my-review")
-    public BaseResponse<List<GetMyReviewResponse>> getMyReview(@PathVariable Long userId, @RequestParam(defaultValue = "최신순") String sort) {
+    public BaseResponse<List<GetMyReviewResponse>> getMyReview(
+            @PathVariable(name = "userId") Long userId,
+            @RequestParam(name = "sort", defaultValue = "최신순") String sort) {
         log.info(("ReviewController.getMyReview]"));
 
         return new BaseResponse<>(reviewService.getMyReview(userId, sort));

@@ -1,9 +1,6 @@
 package com.example.mocu.Dao;
 
-import com.example.mocu.Dto.review.GetAvailableReviewResponse;
-import com.example.mocu.Dto.review.GetMyReviewResponse;
-import com.example.mocu.Dto.review.PatchReviewReportToTrueRequest;
-import com.example.mocu.Dto.review.PostReviewRequest;
+import com.example.mocu.Dto.review.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,20 +20,20 @@ public class ReviewDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public long createReview(PostReviewRequest postReviewRequest) {
-        String sql = "insert into Reviews(userId, storeId, rate, content) values (:userId, :storeId, :rate, :content)";
+    public long createReviewId(long userId, long storeId, int rate, String content, String status) {
+        String sql = "insert into Reviews(userId, storeId, rate, content, status) values (:userId, :storeId, :rate, :content, :status)";
         MapSqlParameterSource params = new MapSqlParameterSource()
-                .addValue("userId", postReviewRequest.getUserId())
-                .addValue("storeId", postReviewRequest.getStoreId())
-                .addValue("rate", postReviewRequest.getRate())
-                .addValue("content", postReviewRequest.getContent());
+                .addValue("userId", userId)
+                .addValue("storeId", storeId)
+                .addValue("rate", rate)
+                .addValue("content", content)
+                .addValue("status",status);
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(sql, params, keyHolder);
 
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
-
 
     public List<GetAvailableReviewResponse> getAvailableReview(Long userId) {
         String sql = "select s.mainImageUrl, r.createdDate, s.name, s.category, s.maxStamp, st.numOfStamp, s.reward ";
@@ -47,7 +44,7 @@ public class ReviewDao {
 
         sql += "join Stamps st on s.storeId = st.storeId and st.userId = :userId ";
 
-        sql += "where r.status = '작성 이전' and s.status = 'active'";
+        sql += "where r.status = '작성이전' and s.status = 'active'";
 
         Map<String, Object> param = Map.of("userId", userId);
 
@@ -108,5 +105,15 @@ public class ReviewDao {
                         rs.getString("createdDate"),
                         rs.getString("content")
                 ));
+    }
+
+    public void updateReview(PatchReviewRequest patchReviewRequest) {
+        String sql = "update Reviews set rate=:rate, content=:content, status='작성이후' where reviewId=:reviewId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("rate", patchReviewRequest.getRate());
+        params.addValue("content", patchReviewRequest.getContent());
+        params.addValue("reviewId", patchReviewRequest.getReviewId());
+
+        jdbcTemplate.update(sql, params);
     }
 }

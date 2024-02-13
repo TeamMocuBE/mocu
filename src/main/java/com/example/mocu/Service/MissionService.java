@@ -32,16 +32,22 @@ public class MissionService {
      * 매일 자정마다 미션 목록 중 오늘의 미션 2개를 선택
      * @Scheduled(cron = "0 0 0 * * ?")는 매일 자정에 실행되도록 스케줄링됩니다.
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    //@Scheduled(cron = "0 0 0 * * ?")
     public void updateTodayMissions(){
         log.info("[MissionService.updateTodayMissions]");
 
-        // TODO 1. 'MOCU앱 출석하기' 미션을 제외한 모든 MISSIONS TABLE의 TUPLE들 상태를 "not-select"으로 update
-        missionDao.updateAllMissionsStatusWithoutAttendanceMission();
+        // TODO 1. 모든 MISSIONS TABLE의 TUPLE들 상태를 "not-select"으로 update
+        missionDao.updateAllMissionsToNotSelect();
 
-        // TODO 2. 'MOCU 앱 출석하기' 를 제외한 2개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
+        // TODO 2. 'MOCU앱 출석하기' 를 제외한 2개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
+        // 1. 'MOCU앱 출석하기' 미션을 select 상태로 update
+        missionDao.updateAttendanceMissionToSelect();
+        // 2. 나머지 2개 미션을 랜덤으로 골라서 select 상태로 update
         List<Long> selectedMissionIds = missionDao.getRandomMissionIds(2);
         missionDao.updateMissionsStatusToSelect(selectedMissionIds);
+        // 3. selectedMissionIds 에 'MOCU앱 출석하기' missionId도 추가
+        long missionId = missionDao.getAttendanceMissionId();
+        selectedMissionIds.add(missionId);
 
         // TODO 3. Users table의 모든 유저들의 userId 목록 조회
         List<Long> userIds = userDao.getAllUserIds();

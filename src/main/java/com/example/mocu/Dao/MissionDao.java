@@ -35,8 +35,13 @@ public class MissionDao {
         return jdbcTemplate.query(sql, params, new BeanPropertyRowMapper<>(GetTodayMissionResponse.class));
     }
 
-    public void updateAllMissionsStatusWithoutAttendanceMission() {
+    public void updateAllMissionsToNotSelect() {
         String sql = "update Missions set status='not-select' where content!='MOCU앱 출석하기'";
+        jdbcTemplate.update(sql, new MapSqlParameterSource());
+    }
+
+    public void updateAttendanceMissionToSelect() {
+        String sql = "update Missions set status='select' where content='MOCU앱 출석하기'";
         jdbcTemplate.update(sql, new MapSqlParameterSource());
     }
 
@@ -49,6 +54,7 @@ public class MissionDao {
         return jdbcTemplate.queryForList(sql, params, Long.class);
     }
 
+
     public void updateMissionsStatusToSelect(List<Long> selectedMissionIds) {
         String sql = "update Missions set status='select' where missionId in (:selectedMissionIds)";
 
@@ -56,6 +62,11 @@ public class MissionDao {
         params.addValue("selectedMissionIds", selectedMissionIds);
 
         jdbcTemplate.update(sql, params);
+    }
+
+    public long getAttendanceMissionId() {
+        String sql = "select missionId from Missions where content='MOCU앱 출석하기'";
+        return jdbcTemplate.queryForObject(sql, new MapSqlParameterSource(), Long.class);
     }
 
     public void updateTodayMissionsForUser(Long userId, List<Long> selectedMissionIds) {
@@ -212,4 +223,7 @@ public class MissionDao {
 
         return jdbcTemplate.queryForObject(sql, params, long.class);
     }
+
+
+
 }

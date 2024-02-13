@@ -24,24 +24,35 @@ public class OwnerController {
     */
     @GetMapping("/store-request/storeId={storeId}")
     public BaseResponse<List<GetUserRequestForOwner>> getUserRequestListForOwner(
-            @PathVariable("storeId") long storeId,
-            @RequestParam(required = false, defaultValue = "false") boolean notAcceptRequest,
-            @RequestParam(required = false, defaultValue = "true") boolean bothRequest,
-            @RequestParam(required = false, defaultValue = "false") boolean rewardRequest,
-            @RequestParam(required = false, defaultValue = "false") boolean stampRequest,
-            @RequestParam(defaultValue = "0") int page){
+            @PathVariable(name = "storeId") long storeId,
+            @RequestParam(name = "notAcceptRequest", required = false, defaultValue = "false") boolean notAcceptRequest,
+            @RequestParam(name = "bothRequest", required = false, defaultValue = "true") boolean bothRequest,
+            @RequestParam(name = "rewardRequest", required = false, defaultValue = "false") boolean rewardRequest,
+            @RequestParam(name = "stampRequest", required = false, defaultValue = "false") boolean stampRequest,
+            @RequestParam(name = "page", defaultValue = "0") int page){
 
         log.info("[OwnerController.getUserRequestListForOwner]");
 
         return new BaseResponse<>(ownerService.getUserRequestListForOwner(storeId, notAcceptRequest, bothRequest, rewardRequest, stampRequest, page));
     }
 
+    /**
+     * 가게 정보 조회
+     * -> OK
+     */
+    @GetMapping("/store-info/storeId={storeId}")
+    public BaseResponse<GetOwnerStoreInfoResponse> getStoreInfoForOwner(@PathVariable("storeId") long storeId){
+        log.info("[OwnerController.getStoreInfoForOwner]");
+
+        return new BaseResponse<>(ownerService.getStoreInfoForOwner(storeId));
+    }
 
     /**
      * 가게 정보 등록
+     * -> OK
      */
     @PostMapping("/store-register")
-    public BaseResponse<PostOwnerStoreResponse> registerStore(@Validated @RequestBody PostOwnerStoreRequest postOwnerStoreRequest){
+    public BaseResponse<PostOwnerStoreResponse> registerStore(@RequestBody PostOwnerStoreRequest postOwnerStoreRequest){
         log.info("[OwnerController.registerStore]");
 
         return new BaseResponse<>(ownerService.registerStore(postOwnerStoreRequest));
@@ -49,9 +60,10 @@ public class OwnerController {
   
     /**
      * 가게 정보 수정
+     * -> OK
      */
     @PatchMapping("/store-edit")
-    public BaseResponse<String> modifyStoreInfo(@Validated @RequestBody PatchOwnerStoreRequest patchOwnerStoreRequest){
+    public BaseResponse<String> modifyStoreInfo(@RequestBody PatchOwnerStoreRequest patchOwnerStoreRequest){
         log.info("[OwnerController.modifyStoreInfo]");
 
         ownerService.modifyStoreInfo(patchOwnerStoreRequest);
@@ -69,14 +81,5 @@ public class OwnerController {
 
         return new BaseResponse<>(ownerService.getCustomerStamp(ownerId, isCustomerRegular, sort));
     }
-  
-     /**
-     * 가게 정보 조회
-     */
-    @GetMapping("/store-info/storeId={storeId}")
-    public BaseResponse<GetOwnerStoreInfoResponse> getStoreInfoForOwner(@PathVariable("storeId") long storeId){
-        log.info("[OwnerController.getStoreInfoForOwner]");
 
-        return new BaseResponse<>(ownerService.getStoreInfoForOwner(storeId));
-    }
 }

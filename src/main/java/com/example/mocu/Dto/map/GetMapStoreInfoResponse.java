@@ -17,10 +17,10 @@ public class GetMapStoreInfoResponse {
     private String mainImageUrl;
     private String category;
     private boolean dueDate;
-    private float rating;
+    private double rating;
     private int numOfStamp;
     private int maxStamp;
     private int numOfCouponAvailable;
     private String reward;
-    private boolean event;
+    private String event;
 }

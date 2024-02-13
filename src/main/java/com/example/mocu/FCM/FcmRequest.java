@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.search;
+package com.example.mocu.FCM;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Search {
-    private String query;
+public class FcmRequest {
+    private String targetToken;
+    private String title;
+    private String body;
 }

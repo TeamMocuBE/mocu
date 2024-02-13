@@ -25,9 +25,9 @@ public class StoreController {
     public BaseResponse<GetDetailedStoreResponse> getDetailedStore(
             @RequestParam("storeId") long storeId,
             @RequestParam("userId") long userId,
-            @RequestParam(required = false, defaultValue = "true") boolean timeSort,
-            @RequestParam(required = false, defaultValue = "false") boolean rateSort,
-            @RequestParam(defaultValue = "0") int page){
+            @RequestParam(name = "timeSort", required = false, defaultValue = "true") boolean timeSort,
+            @RequestParam(name = "rateSort", required = false, defaultValue = "false") boolean rateSort,
+            @RequestParam(name = "page", defaultValue = "0") int page){
         log.info("[StoreController.getDetailedStore]");
 
         return new BaseResponse<>(storeService.getDetailedStore(storeId, userId, timeSort, rateSort, page));
@@ -39,17 +39,17 @@ public class StoreController {
      */
     @GetMapping("/store-search-result/{userId}")
     public BaseResponse<List<GetSearchedStoreResponse>> getSearchedStore(
-            @PathVariable("userId") long userId,
-            @RequestParam(required = false) String query,
-            @RequestParam(required = false, defaultValue = "defaultSort") String sort,
-            @RequestParam(required = false) String category,
-            @RequestParam(defaultValue = "false") boolean savingOption,
-            @RequestParam(defaultValue = "false") boolean notVisitedOption,
-            @RequestParam(defaultValue = "false") boolean couponImminentOption,
-            @RequestParam(defaultValue = "false") boolean eventOption,
-            @RequestParam double userLatitude,
-            @RequestParam double userLongitude,
-            @RequestParam(defaultValue = "0") int page) {
+            @PathVariable(name = "userId") long userId,
+            @RequestParam(name = "query", required = false) String query,
+            @RequestParam(name = "sort", required = false, defaultValue = "defaultSort") String sort,
+            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "savingOption", defaultValue = "false") boolean savingOption,
+            @RequestParam(name = "notVisitedOption", defaultValue = "false") boolean notVisitedOption,
+            @RequestParam(name = "couponImminentOption", defaultValue = "false") boolean couponImminentOption,
+            @RequestParam(name = "eventOption", defaultValue = "false") boolean eventOption,
+            @RequestParam(name = "userLatitude") double userLatitude,
+            @RequestParam(name = "userLongitude") double userLongitude,
+            @RequestParam(name = "page", defaultValue = "0") int page) {
         log.info("[StoreController.getSearchedStore] Search Query: {}", query);
 
         return new BaseResponse<>(storeService.getSearchedStore(userId, query, sort, category, savingOption, notVisitedOption, couponImminentOption, eventOption, userLatitude, userLongitude, page));
@@ -57,17 +57,17 @@ public class StoreController {
 
     /**
      * 가게 검색 페이지 조회
-     * -> 수정 필요(거리순 추천 기능 추가해야함)
+     * -> OK
      */
     @GetMapping("/store-search/userId={userId}")
-    public BaseResponse<GetStoreSearchResponse> getStoreSearch(@PathVariable("userId") long userId){
+    public BaseResponse<GetStoreSearchResponse> getStoreSearch(
+            @PathVariable("userId") long userId,
+            @RequestParam(name = "latitude") double latitude,
+            @RequestParam(name = "longitude") double longitude){
         log.info("[StoreController.getStoreSearch]");
 
-        return new BaseResponse<>(storeService.getStoreSearch(userId));
+        return new BaseResponse<>(storeService.getStoreSearch(userId, latitude, longitude));
     }
 
-    /**
-     * 가게 평점 update
-     */
 
 }

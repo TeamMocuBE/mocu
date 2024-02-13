@@ -14,10 +14,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Slf4j
 @Repository
@@ -128,67 +125,73 @@ public class UserDao {
         return jdbcTemplate.queryForList(sql, new MapSqlParameterSource(), Long.class);
     }
 
-    public List<Search> getRecentSearchesForUser(long userId, int limit) {
-        String sql = "select query from RecentSearch where userId=:userId order by createdDate desc limit :limit";
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("userId", userId);
-        params.addValue("limit", limit);
+    public List<Search> getRecentSearchesForUser(long userId) {
+        log.info("[UserDao.getRecentSearchesForUser]");
 
-        List<Search> recentSearches = jdbcTemplate.query(sql, params, (rs, rowNum) -> {
-            Search search = new Search();
-            search.setContent(rs.getString("query"));
-            return search;
-        });
+        int limit = 5;
+
+        String sql = "select query from RecentSearch where userId = :userId order by createdDate desc limit :limit";
+        Map<String, Object> params = Map.of(
+                "userId", userId,
+                "limit", limit
+        );
+
+        List<Search> recentSearches = jdbcTemplate.query(sql, params, (rs, rowNum) ->
+            new Search(
+                    rs.getString("query")
+            )
+        );
 
         // return null if the list is empty
         return recentSearches.isEmpty() ? null : recentSearches;
     }
 
-    public List<RecentlyVisitedStoreInfo> getRecentlyVisitedStoreInfoListForUser(long userId, int limit) {
-        String sql = "select s.name storeName, st.numOfCouponAvailable, IFNULL(s.event, false) as event, " +
-                "s.coordinate from Stores s join Stamps st on s.storeId=st.storeId where st.userId=:userId and st.status='active' " +
-                "group by s.storeId order by MAX(st.modifiedDate) desc limin :limit";
-        // IFNULL 함수 : Stores table의 event 값이 null이면 false를 반환
-        // Stamps table의 tuple이 수정 <-> 해당 user가 해당 가게에 방문했다는 의미
+    public RecentlyVisitedStoreInfo getRecentlyVisitedStoreInfoForUser(long storeId, long userId, double latitude, double longitude) {
+        log.info("[UserDao.getRecentlyVisitedStoreInfoForUser]");
 
+        String sql = "select s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, " +
+                "case when s.event is null then false else true end as hasEvent, " +
+                "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) as distance " +
+                "from Stores s join Stamps st on s.storeId=st.storeId where s.storeId=:storeId and st.userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userLongitude", longitude);
+        params.addValue("userLatitude", latitude);
+        params.addValue("storeId", storeId);
         params.addValue("userId", userId);
-        params.addValue("limit", limit);
 
-        List<RecentlyVisitedStoreInfo> recentlyVisitedStoreInfoList = jdbcTemplate.query(sql, params, (rs, rowNum) -> {
-            RecentlyVisitedStoreInfo storeInfo = new RecentlyVisitedStoreInfo();
-            storeInfo.setStoreName(rs.getString("storeName"));
-            storeInfo.setNumOfCouponAvailable(rs.getInt("numOfCouponAvailable"));
-            storeInfo.setEvent(rs.getBoolean("event"));
-            storeInfo.setCoordinate(rs.getString("coordinate"));
-            return storeInfo;
-        });
-
-        // return null if the list is empty
-        return recentlyVisitedStoreInfoList.isEmpty() ? null : recentlyVisitedStoreInfoList;
+        return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
+                new RecentlyVisitedStoreInfo(
+                        rs.getString("storeName"),
+                        rs.getInt("numOfStamp"),
+                        rs.getInt("numOfCouponAvailable"),
+                        rs.getBoolean("hasEvent"),
+                        rs.getDouble("distance")
+                )
+        );
     }
 
-    public List<DueDateStoreInfo> getDueDateStoreInfoListForUser(long userId, int limit) {
-        String sql = "select st.numOfStamp, s.maxStamp, s.name as storeName, s.coordinate from " +
-                "Stamps st join Stores s on st.storeId=s.storeId where st.userId=:userId and st.dueDate=true and st.status='active' " +
-                "order by st.modifiedDate desc limit :limit";
-        // 수정일을 기준으로 limit 개수만큼 제한
+    public DueDateStoreInfo getDueDateStoreInfoForUser(long storeId, long userId, double latitude, double longitude) {
+        log.info("[UserDao.getDueDateStoreInfoListForUser]");
 
+        String sql = "select s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, " +
+                "case when s.event is null then false else true end as hasEvent, " +
+                "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) as distance " +
+                "from Stores s join Stamps st on s.storeId=st.storeId where s.storeId=:storeId and st.userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userLongitude", longitude);
+        params.addValue("userLatitude", latitude);
+        params.addValue("storeId", storeId);
         params.addValue("userId", userId);
-        params.addValue("limit", limit);
 
-        List<DueDateStoreInfo> dueDateStoreInfoList = jdbcTemplate.query(sql, params, (rs, rowNum) -> {
-            DueDateStoreInfo dueDateStoreInfo = new DueDateStoreInfo();
-            dueDateStoreInfo.setNumOfStamp(rs.getInt("numOfStamp"));
-            dueDateStoreInfo.setMaxStamp(rs.getInt("maxStamp"));
-            dueDateStoreInfo.setStoreName(rs.getString("storeName"));
-            dueDateStoreInfo.setCoordinate(rs.getString("coordinate"));
-            return dueDateStoreInfo;
-        });
-
-        // return null if the list is empty
-        return dueDateStoreInfoList.isEmpty() ? null : dueDateStoreInfoList;
+        return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
+                new DueDateStoreInfo(
+                        rs.getString("storeName"),
+                        rs.getInt("numOfStamp"),
+                        rs.getInt("numOfCouponAvailable"),
+                        rs.getBoolean("hasEvent"),
+                        rs.getDouble("distance")
+                )
+        );
     }
 
     public void updateRegularStatus(PatchUserRegularRequest patchUserRegularRequest) {
@@ -381,4 +384,6 @@ public class UserDao {
 
         return jdbcTemplate.queryForObject(sql, param, Integer.class);
     }
+
+
 }
