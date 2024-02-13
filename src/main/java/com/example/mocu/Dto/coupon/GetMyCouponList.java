@@ -20,7 +20,9 @@ public class GetMyCouponList {
 
     private String reward;
 
-    private String coordinate;
+    private double latitude;
+
+    private double longitude;
 
     private String event;
 }
