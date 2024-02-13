@@ -231,50 +231,50 @@ public class OwnerDao {
     }
   
     //TODO. modify useCount
-    public List<GetCustomerStampResponse> getCustomerStamp(Long ownerId, boolean isCustomerRegular, String sort) {
-        String sql = "select u.userImage, u.name, st.numOfStamp, s.maxStamp, st.useCount ";
-        sql += "from Stores s ";
-        sql += "join Stamps st on s.storeId = st.storeId ";
-        sql += "join Users u on st.userId = u.userId ";
+        public List<GetCustomerStampResponse> getCustomerStamp(Long ownerId, boolean isCustomerRegular, String sort) {
+            String sql = "select u.userImage, u.name, st.numOfStamp, s.maxStamp, st.useCount ";
+            sql += "from Stores s ";
+            sql += "join Stamps st on s.storeId = st.storeId ";
+            sql += "join Users u on st.userId = u.userId ";
 
-        if (isCustomerRegular) {
-            sql += "join Regulars r on u.userId = r.userId ";
-            sql += "where r.status = 'accept' ";
-            sql += "and s.ownerId = :ownerId ";
-        } else {
-            sql += "where s.ownerId = :ownerId ";
-        }
+            if (isCustomerRegular) {
+                sql += "join Regulars r on u.userId = r.userId ";
+                sql += "where r.status = 'accept' ";
+                sql += "and s.ownerId = :ownerId ";
+            } else {
+                sql += "where s.ownerId = :ownerId ";
+            }
 
-        if (sort != null && !sort.isEmpty()) {
-            sql += "order by ";
-            switch (sort) {
-                case("적립 많은 순") -> {
-                    sql += "st.numOfStamp, st.useCount DESC";
-                    break;
-                }
-                case ("쿠폰 사용 많은 순") -> {
-                    sql += "st.useCount, st.numOfStamp DESC";
-                    break;
-                }
-                case ("최근 방문 순") -> {
-                    sql += "st.createdDate DESC";
+            if (sort != null && !sort.isEmpty()) {
+                sql += "order by ";
+                switch (sort) {
+                    case("적립 많은 순") -> {
+                        sql += "st.numOfStamp, st.useCount DESC";
+                        break;
+                    }
+                    case ("쿠폰 사용 많은 순") -> {
+                        sql += "st.useCount, st.numOfStamp DESC";
+                        break;
+                    }
+                    case ("최근 방문 순") -> {
+                        sql += "st.createdDate DESC";
+                    }
                 }
             }
+
+            Map<String, Object> param = Map.of(
+                    "ownerId", ownerId
+            );
+
+            return jdbcTemplate.query(sql, param,
+                    (rs, rowNum) -> new GetCustomerStampResponse(
+                            rs.getString("userImage"),
+                            rs.getString("name"),
+                            rs.getInt("numOfStamp"),
+                            rs.getInt("maxStamp"),
+                            rs.getInt("useCount")
+                    ));
         }
-
-        Map<String, Object> param = Map.of(
-                "ownerId", ownerId
-        );
-
-        return jdbcTemplate.query(sql, param,
-                (rs, rowNum) -> new GetCustomerStampResponse(
-                        rs.getString("userImage"),
-                        rs.getString("name"),
-                        rs.getInt("numOfStamp"),
-                        rs.getInt("maxStamp"),
-                        rs.getInt("useCount")
-                ));
-    }
   
     public List<GetUserRequestForOwner> getAllStampRequests(long storeId, int page) {
         int limit = 5;
