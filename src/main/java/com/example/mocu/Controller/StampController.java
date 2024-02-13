@@ -2,6 +2,7 @@ package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dto.stamp.*;
+import com.example.mocu.FCM.FcmController;
 import com.example.mocu.Service.StampService;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("/stamp")
 public class StampController {
     private final StampService stampService;
+    private final FcmController fcmController;
 
     /**
      * 스탬프 적립 요청

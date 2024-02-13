@@ -12,6 +12,6 @@ import lombok.Setter;
 public class RecommendStoreInfo {
     // 추천 가게 이름, 이벤트 여부, 가게 대표 사진
     private String storeName;
-    private boolean event;
+    private boolean hasEvent;
     private String mainImageUrl;
 }

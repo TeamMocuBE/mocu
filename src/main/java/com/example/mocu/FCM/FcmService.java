@@ -1,16 +1,15 @@
-package com.example.mocu.Service;
+package com.example.mocu.FCM;
 
-import com.example.mocu.Dto.FCM.FcmMessage;
+import com.example.mocu.FCM.FcmMessage;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.gson.JsonParseException;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
-import org.apache.http.HttpHeaders;
-import org.codehaus.jackson.JsonProcessingException;
+import com.google.common.net.HttpHeaders;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,14 +31,14 @@ public class FcmService {
                 .post(requestBody)
                 .addHeader(HttpHeaders.AUTHORIZATION, "Bearer " +
                         getAccessToken())
+                .addHeader(HttpHeaders.CONTENT_TYPE, "application/json; UTF-8")
                 .build();
-        Response response = client.newCall(request)
-                .execute();
+        Response response = client.newCall(request).execute();
 
         System.out.println(response.body().string());
     }
 
-    private String makeMessage(String targetToken, String title, String body) throws JsonProcessingException, com.fasterxml.jackson.core.JsonProcessingException {
+    private String makeMessage(String targetToken, String title, String body) throws JsonParseException, JsonProcessingException {
         FcmMessage fcmMessage = FcmMessage.builder()
                 .message(FcmMessage.Message.builder()
                         .token(targetToken)
@@ -57,7 +56,7 @@ public class FcmService {
     }
 
     // Access Token 발급 받기
-    private String getAccessToken() throws IOException{
+    private String getAccessToken() throws IOException {
         // 발급받아 resource단에 저장한 비공개 키 path
         String firebaseConfigPath = "mocu-95b9b-firebase-adminsdk-pzlgz-9a565ebea4.json";
         GoogleCredentials googleCredentials = GoogleCredentials

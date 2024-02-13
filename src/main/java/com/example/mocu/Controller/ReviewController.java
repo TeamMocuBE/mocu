@@ -19,9 +19,10 @@ public class ReviewController {
 
     /**
      * 리뷰 등록
+     * -> OK
      */
     @PostMapping("")
-    public BaseResponse<PostReviewResponse> registerReview(@Validated @RequestBody PostReviewRequest postReviewRequest) {
+    public BaseResponse<PostReviewResponse> registerReview(@RequestBody PostReviewRequest postReviewRequest) {
         log.info("[ReviewController.signUp]");
 
         return new BaseResponse<>(reviewService.registerReview(postReviewRequest));
@@ -30,9 +31,10 @@ public class ReviewController {
     /**
      * 리뷰 수정
      * -> 작성 가능 리뷰목록에서 새 리뷰 쓰기 + 내가 작성한 리뷰 수정
+     * -> OK
      */
     @PatchMapping("/correct-my-review")
-    public BaseResponse<PatchReviewResponse> correctReview(@Validated @RequestBody PatchReviewRequest patchReviewRequest){
+    public BaseResponse<PatchReviewResponse> correctReview(@RequestBody PatchReviewRequest patchReviewRequest){
         log.info("[ReviewController.correctReview]");
 
         return new BaseResponse<>(reviewService.correctReview(patchReviewRequest));
@@ -52,6 +54,7 @@ public class ReviewController {
 
     /**
      * 리뷰 신고 처리
+     * -> OK
      */
     @PatchMapping("/update/report-true")
     public BaseResponse<String> updateReviewReportToTrue(@Validated @RequestBody PatchReviewReportToTrueRequest patchReviewReportToTrueRequest) {

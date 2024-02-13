@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -20,16 +21,39 @@ public class RecommendDao {
     }
 
 
-    public List<RecommendStoreInfo> getRecommendStoreInfoListForNewUser(int recommendLimit) {
-        String sql = "select name as storeName, IFNULL(event, false) as event, mainImageUrl " +
-                "from Stores order by rating desc limit :recommendLimit";
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("recommendLimit", recommendLimit);
+    public List<RecommendStoreInfo> getRecommendStoreInfoListForNewUser(double latitude, double longitude, int recommendLimit) {
+        log.info("[RecommendDao.getRecommendStoreInfoListForNewUser]");
 
-        List<RecommendStoreInfo> recommendStoreInfoList = jdbcTemplate.query(sql, params, (rs, rowNum) -> {
+        // TODO 1. 해당 유저 근방 가게의 storeId get
+        log.info("todo1");
+
+        int distance = 1000;            // 1km
+        String sql = "select storeId from Stores s where ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) <= :distance";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userLongitude", longitude);
+        params.addValue("userLatitude", latitude);
+        params.addValue("distance", distance);
+
+        List<Long> storeIds = jdbcTemplate.queryForList(sql, params, Long.class);
+
+        // TODO 2. TODO 1 에서 걸러낸 가게들 중 평점이 높은 가게들을 return
+        log.info("todo2");
+
+        String inClausePlaceholders = storeIds.stream().map(id -> ":storeId_" + id).collect(Collectors.joining(", "));
+        String selectSql = "select name as storeName, " +
+                "case when event is null then false else true end as hasEvent, mainImageUrl " +
+                "from Stores where storeId in (" + inClausePlaceholders + ") " +
+                "order by rating desc limit :recommendLimit";
+        MapSqlParameterSource selectParams = new MapSqlParameterSource();
+        selectParams.addValue("recommendLimit", recommendLimit);
+        for(Long id : storeIds){
+            selectParams.addValue("storeId_" + id, id);
+        }
+
+        List<RecommendStoreInfo> recommendStoreInfoList = jdbcTemplate.query(selectSql, selectParams, (rs, rowNum) -> {
             RecommendStoreInfo recommendStoreInfo = new RecommendStoreInfo();
             recommendStoreInfo.setStoreName(rs.getString("storeName"));
-            recommendStoreInfo.setEvent(rs.getBoolean("event"));
+            recommendStoreInfo.setHasEvent(rs.getBoolean("hasEvent"));
             recommendStoreInfo.setMainImageUrl(rs.getString("mainImageUrl"));
             return recommendStoreInfo;
         });
@@ -38,21 +62,32 @@ public class RecommendDao {
         return recommendStoreInfoList.isEmpty() ? Collections.singletonList(new RecommendStoreInfo()) : recommendStoreInfoList;
     }
 
-    public List<String> getFavoriteCategories(long userId, int numOfCategory) {
-        String sql = "select distinct s.category from Stores s join Stamps st on s.storeId=st.storeId " +
-                "where st.userId=:userId and st.status='active' order by max(st.modifiedDate) desc limit :numOfCategory";
+    public List<String> getFavoriteCategories(List<Long> storeIds, long userId, int numOfCategory) {
+        log.info("[RecommendDao.getFavoriteCategories]");
+
+        String inClausePlaceholders = storeIds.stream().map(id -> ":storeId_" + id).collect(Collectors.joining(", "));
+        String sql = "select s.category from Stores s join Stamps st on s.storeId=st.storeId " +
+                "where st.userId=:userId and st.status='active' and " +
+                "s.storeId in (" + inClausePlaceholders + ") " +
+                "group by s.category order by max(st.modifiedDate) desc limit :numOfCategory";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         params.addValue("numOfCategory", numOfCategory);
+        for(Long id : storeIds){
+            params.addValue("storeId_" + id, id);
+        }
 
         return jdbcTemplate.queryForList(sql, params, String.class);
     }
 
     public RecommendStoreInfo getRecommendStoreInfo(String category, long userId, int recommendLimit) {
-        String sql = "select s.name as storeName, IFNULL(event, false) as event, s.mainImageUrl " +
-                "from Stores s where s.category=:category and s.storeId not in " +
-                "(select st.storeId from Stamps st where st.userId=:userId) " +
+        log.info("[RecommendDao.getRecommendStoreInfo]");
+
+        String sql = "select s.name as storeName, " +
+                "case when s.event is null then false else true end as hasEvent, " +
+                "s.mainImageUrl " +
+                "from Stores s where s.category=:category " +
                 "order by s.rating desc limit :recommendLimit";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("category", category);
@@ -62,7 +97,7 @@ public class RecommendDao {
         return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
                 new RecommendStoreInfo(
                         rs.getString("storeName"),
-                        rs.getBoolean("event"),
+                        rs.getBoolean("hasEvent"),
                         rs.getString("mainImageUrl")
                 )
         );

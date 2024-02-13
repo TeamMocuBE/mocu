@@ -57,13 +57,16 @@ public class StoreController {
 
     /**
      * 가게 검색 페이지 조회
-     * -> 수정 필요(거리순 추천 기능 추가해야함)
+     * -> OK
      */
     @GetMapping("/store-search/userId={userId}")
-    public BaseResponse<GetStoreSearchResponse> getStoreSearch(@PathVariable("userId") long userId){
+    public BaseResponse<GetStoreSearchResponse> getStoreSearch(
+            @PathVariable("userId") long userId,
+            @RequestParam(name = "latitude") double latitude,
+            @RequestParam(name = "longitude") double longitude){
         log.info("[StoreController.getStoreSearch]");
 
-        return new BaseResponse<>(storeService.getStoreSearch(userId));
+        return new BaseResponse<>(storeService.getStoreSearch(userId, latitude, longitude));
     }
 
 
