@@ -88,7 +88,9 @@ public class ReviewService {
         return reviewDao.getAvailableReview(userId);
     }
 
-    // 신고하기 처리
+    /**
+     * 신고하기 처리
+     */
     public void updateReviewReportToTrue(PatchReviewReportToTrueRequest patchReviewReportToTrueRequest) {
         log.info("[ReviewService.updateReviewReportToTrue]");
 
@@ -111,7 +113,7 @@ public class ReviewService {
             throw new ReviewException(INVALID_REVIEW_LENGTH);
         }
 
-        // TODO 2. reviewId update
+        // TODO 2. review update
         reviewDao.updateReview(patchReviewRequest);
 
         // TODO 3. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크

@@ -63,12 +63,18 @@ public class StoreDao {
     }
 
   
-    public List<StoreInEventInfo> getStoreInEventInfoList(int limit) {
-        String sql = "select name as storeName, mainImageUrl from Stores where event is not null " +
-                "order by rand() limit :limit";
-        // 일단은 랜덤하게 고르는 로직 사용
+    public List<StoreInEventInfo> getStoreInEventInfoList(double latitude, double longitude) {
+        log.info("[StoreDao.getStoreInEventInfoList]");
+
+        int limit = 5;
+
+        String sql = "select name as storeName, mainImageUrl from Stores s " +
+                "where event is not null " +
+                "order by ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) limit :limit";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userLongitude", longitude);
+        params.addValue("userLatitude", latitude);
         params.addValue("limit", limit);
 
         List<StoreInEventInfo> storeInEventInfoList = jdbcTemplate.query(sql, params, (rs, rowNul) -> {

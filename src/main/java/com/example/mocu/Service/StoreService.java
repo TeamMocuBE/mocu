@@ -1,6 +1,7 @@
 package com.example.mocu.Service;
 
 import com.example.mocu.Dao.RecommendDao;
+import com.example.mocu.Dao.StampDao;
 import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.review.ReviewForUser;
 import com.example.mocu.Dto.search.Search;
@@ -25,6 +26,7 @@ public class StoreService {
     private final StoreDao storeDao;
     private final UserDao userDao;
     private final RecommendDao recommendDao;
+    private final StampDao stampDao;
 
     public GetDetailedStoreResponse getDetailedStore(long storeId, long userId, boolean timeSort, boolean rateSort, int page) {
         log.info("[StoreService.getDetailed]");
@@ -79,18 +81,15 @@ public class StoreService {
         return storeDao.getSearchedStore(userId, query, sort, category, savingOnly, notVisitedOnly, couponImminent, eventOnly, userLatitude, userLongitude, page);
     }
 
-    public GetStoreSearchResponse getStoreSearch(long userId) {
+    public GetStoreSearchResponse getStoreSearch(long userId, double latitude, double longitude) {
         log.info("[StoreService.getStoreSearch]");
         /**
          * 유저의 현재 설정한 위치를 기준으로 근방의 가게들을 return하는 방식으로 수정해야 할 듯
          */
 
-        // 5개 제한
-        int limit = 5;
-
         // TODO 1. 최근 검색어 LIST 조회
         // 없으면 모든 멤벼변수가 null로 초기화된 Search 하나를 가진 list return
-        List<Search> recentSearches = userDao.getRecentSearchesForUser(userId, limit);
+        List<Search> recentSearches = userDao.getRecentSearchesForUser(userId);
         if(recentSearches == null){
             recentSearches = Collections.singletonList(new Search());
         }
@@ -98,24 +97,36 @@ public class StoreService {
         // TODO 2. 최근 방문한 가게 LIST 조회
         // 해당 user가 스탬프 적립 & 쿠폰 사용한 가게 LIST
         // 없으면 모든 멤벼변수가 null로 초기화된 RecentlyVisitedStoreInfo 하나를 가진 list return
-        List<RecentlyVisitedStoreInfo> recentlyVisitedStoreInfoList = userDao.getRecentlyVisitedStoreInfoListForUser(userId, limit);
-        if(recentlyVisitedStoreInfoList == null){
-            recentlyVisitedStoreInfoList = Collections.singletonList(new RecentlyVisitedStoreInfo());
+        // 1. 해당 유저가 적립한 적이 있는 storeId값을 거리순으로 get
+        List<Long> storeIds = stampDao.getStoreIdsStampedByUser(userId, latitude, longitude);
+        List<RecentlyVisitedStoreInfo> recentlyVisitedStoreInfoList = new ArrayList<>();
+        if(storeIds != null){
+            // 2. storeIds 에 있는 storeId를 가지고 RecentlyVisitedStoreInfo return
+            for(long storeId : storeIds){
+                RecentlyVisitedStoreInfo recentlyVisitedStoreInfo = userDao.getRecentlyVisitedStoreInfoForUser(storeId, userId, latitude, longitude);
+                recentlyVisitedStoreInfoList.add(recentlyVisitedStoreInfo);
+            }
         }
 
         // TODO 3. 이벤트 진행 중인 가게 LIST 조회
         // 현재 이벤트 진행 중인 가게들을 랜덤하게 골라서 RETURN (일단은)
         // 없으면 모든 멤벼변수가 null로 초기화된 StoreInEventInfo 하나를 가진 list return
-        List<StoreInEventInfo> storeInEventInfoList = storeDao.getStoreInEventInfoList(limit);
+        List<StoreInEventInfo> storeInEventInfoList = storeDao.getStoreInEventInfoList(latitude, longitude);
         if(storeInEventInfoList == null){
             storeInEventInfoList = Collections.singletonList(new StoreInEventInfo());
         }
 
         // TODO 4. 쿠폰 사용 임박 가게 LIST 조회
         // 없으면 모든 멤벼변수가 null로 초기화된 DueDateStoreInfo 하나를 가진 list return
-        List<DueDateStoreInfo> dueDateStoreInfoList = userDao.getDueDateStoreInfoListForUser(userId, limit);
-        if(dueDateStoreInfoList == null){
-            dueDateStoreInfoList = Collections.singletonList(new DueDateStoreInfo());
+        // 1. 해당 유저가 적립한 적이 있는 storeId값을 거리순으로 get
+        // -> storeIds 에 담겨 있음
+        // 2. storeIds 에 있는 storeId를 가지고 DueDateStoreInfo return
+        List<DueDateStoreInfo> dueDateStoreInfoList = new ArrayList<>();
+        if(storeIds != null){
+            for(long storeId : storeIds){
+                DueDateStoreInfo dueDateStoreInfo = userDao.getDueDateStoreInfoForUser(storeId, userId, latitude, longitude);
+                dueDateStoreInfoList.add(dueDateStoreInfo);
+            }
         }
 
         // TODO 5. 유저별 맞춤 가게 LIST 조회
@@ -128,15 +139,16 @@ public class StoreService {
         // numOfCategory * recommendLimit = recommendLimitForNewUser
 
         List<RecommendStoreInfo> recommendStoreInfoList;
-        if(recentlyVisitedStoreInfoList == null){
-            recommendStoreInfoList = recommendDao.getRecommendStoreInfoListForNewUser(recommendLimitForNewUser);
+        if(storeIds == null){
+            // user가 적립한 가게가 없는 경우
+            // user의 현 위치에서 가깝고 평점이 높은 가게 순으로 추천
+            recommendStoreInfoList = recommendDao.getRecommendStoreInfoListForNewUser(latitude, longitude, recommendLimitForNewUser);
         }
         else{
             // 1. user가 적립한 가게들을 카테고리를 기준으로 최신 적립순으로 정렬 후, 상위 numOfCategory 개수만큼의 카테고리들 값을 return
-            List<String> categories = recommendDao.getFavoriteCategories(userId, numOfCategory);
+            List<String> categories = recommendDao.getFavoriteCategories(storeIds, userId, numOfCategory);
 
             // 2. 1의 결과에 해당하는 카테고리들의 가게들을 가게 평점 높은순으로 각 카테고리별 recommendLimit 개수만큼 return
-            // -> user가 적립한 가게는 제외
             recommendStoreInfoList = new ArrayList<>();
             for(String category : categories){
                 RecommendStoreInfo recommendStoreInfo = recommendDao.getRecommendStoreInfo(category, userId, recommendLimit);

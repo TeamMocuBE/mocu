@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.FCM;
+package com.example.mocu.FCM;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

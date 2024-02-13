@@ -172,4 +172,23 @@ public class StampDao {
             )
         );
     }
+
+    public List<Long> getStoreIdsStampedByUser(long userId, double latitude, double longitude) {
+        log.info("[StampDao.getStoreIdsStampedByUser]");
+        int limit = 5;
+
+        String sql = "select s.storeId from Stamps st join Stores s on st.storeId=s.storeId " +
+                "where st.userId=:userId and st.numOfStamp > 0 " +
+                "order by ST_DISTANCE_SPHERE(POINT(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) " +
+                "limit :limit";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("userLongitude", longitude);
+        params.addValue("userLatitude", latitude);
+        params.addValue("limit", limit);
+
+        List<Long> storeIds = jdbcTemplate.queryForList(sql, params, Long.class);
+
+        return storeIds.isEmpty() ? null : storeIds;
+    }
 }
