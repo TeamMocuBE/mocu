@@ -76,20 +76,20 @@ public class ReviewDao {
         String sql = "select s.mainImageUrl, s.name, r.rate, r.createdDate, r.content ";
         sql += "from Stores s ";
         sql += "join Reviews r on s.storeId = r.storeId and r.userId = :userId ";
-        sql += "where r.status 'active' and r.report = true ";
+        sql += "where r.status = '작성 이후' and r.report = false ";
 
         if (sort != null && !sort.isEmpty()) {
             sql += "order by ";
             switch (sort) {
                 case "최신순":
-                    sql += "st.modifiedDate DESC";
+                    sql += "r.modifiedDate DESC";
                     break;
                 case "별점 높은 순":
                     sql += "s.rating DESC";
                     break;
                 // 추가적인 정렬 조건
                 case "흠 또 뭐있지":
-                    sql += "rv.reviewCount DESC";
+                    sql += "fuck you";
                     break;
             }
         }
@@ -103,7 +103,7 @@ public class ReviewDao {
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetMyReviewResponse(
                         rs.getString("mainImageUrl"),
-                        rs.getTimestamp("name").toString(),
+                        rs.getString("name"),
                         rs.getInt("rate"),
                         rs.getString("createdDate"),
                         rs.getString("content")
