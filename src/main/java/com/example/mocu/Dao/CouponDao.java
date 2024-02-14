@@ -6,6 +6,7 @@ import com.example.mocu.Dto.coupon.PostCouponRequest;
 import com.example.mocu.Dto.coupon.PostCouponResponse;
 import com.example.mocu.Dto.stamp.StampInfoAfterCouponUse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -47,6 +48,8 @@ public class CouponDao {
         return jdbcTemplate.queryForObject(selectSql, selectParams, (rs, rowNum) ->
                 new PostCouponResponse(
                         rs.getLong("couponRequestId"),
+                        postCouponRequest.getUserId(),
+                        postCouponRequest.getStoreId(),
                         timestampToString(rs.getTimestamp("createdDate")),
                         rs.getString("storeAddress"),
                         rs.getString("userName")
@@ -60,6 +63,8 @@ public class CouponDao {
     }
 
     public void updateCouponsRequestStatusToAccept(long couponRequestId) {
+        log.info("[CouponDao.updateCouponsRequestStatusToAccept]");
+
         String sql = "update CouponsRequest set status='accept' where couponRequestId=:couponRequestId";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -69,6 +74,8 @@ public class CouponDao {
 
 
     public StampInfoAfterCouponUse updateStampsTable(PostCouponAcceptRequest postCouponAcceptRequest, int maxStamp) {
+        log.info("[CouponDao.updateStampsTable]");
+
         String sql = "update Stamps set numOfStamp=numOfStamp-:maxStamp, " +
                 "numOfCouponAvailable=numOfCouponAvailable-1, " +
                 "useCount=useCount+1 where userId=:userId and storeId=:storeId";
@@ -94,6 +101,8 @@ public class CouponDao {
 
 
     public String getStoreReward(long storeId) {
+        log.info("[CouponDao..getStoreReward]");
+
         String sql = "select reward from Stores where storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("storeId", storeId);
@@ -169,5 +178,21 @@ public class CouponDao {
                         rs.getString("coordinate"),
                         rs.getString("event")
                 ));
+    }
+
+
+    public int getNumOfCouponAvailable(long userId, long storeId) {
+        log.info("[CouponDao.getNumOfCouponAvailable]");
+
+        String sql = "select numOfCouponAvailable from Stamps where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+        params.addValue("storeId", storeId);
+
+        try{
+            return jdbcTemplate.queryForObject(sql, params, Integer.class);
+        } catch (EmptyResultDataAccessException e){
+            return 0;
+        }
     }
 }

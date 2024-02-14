@@ -20,6 +20,7 @@ public class StoreController {
      * 가게 상세정보 페이지
      * 리뷰는 최신순 정렬이 default
      * 무한스크롤 구현
+     * -> OK
      */
     @GetMapping("/detail")
     public BaseResponse<GetDetailedStoreResponse> getDetailedStore(

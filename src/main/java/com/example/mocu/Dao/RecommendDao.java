@@ -41,10 +41,13 @@ public class RecommendDao {
 
         String inClausePlaceholders = storeIds.stream().map(id -> ":storeId_" + id).collect(Collectors.joining(", "));
         String selectSql = "select name as storeName, " +
-                "case when event is null then false else true end as hasEvent, mainImageUrl " +
+                "case when event is null then false else true end as hasEvent, mainImageUrl," +
+                "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(longitude, latitude)) as distance " +
                 "from Stores where storeId in (" + inClausePlaceholders + ") " +
                 "order by rating desc limit :recommendLimit";
         MapSqlParameterSource selectParams = new MapSqlParameterSource();
+        selectParams.addValue("userLongitude", longitude);
+        selectParams.addValue("userLatitude", latitude);
         selectParams.addValue("recommendLimit", recommendLimit);
         for(Long id : storeIds){
             selectParams.addValue("storeId_" + id, id);
@@ -55,6 +58,7 @@ public class RecommendDao {
             recommendStoreInfo.setStoreName(rs.getString("storeName"));
             recommendStoreInfo.setHasEvent(rs.getBoolean("hasEvent"));
             recommendStoreInfo.setMainImageUrl(rs.getString("mainImageUrl"));
+            recommendStoreInfo.setDistance(rs.getDouble("distance"));
             return recommendStoreInfo;
         });
 
@@ -81,24 +85,27 @@ public class RecommendDao {
         return jdbcTemplate.queryForList(sql, params, String.class);
     }
 
-    public RecommendStoreInfo getRecommendStoreInfo(String category, long userId, int recommendLimit) {
+    public RecommendStoreInfo getRecommendStoreInfo(String category, double latitude, double longitude, int recommendLimit) {
         log.info("[RecommendDao.getRecommendStoreInfo]");
 
         String sql = "select s.name as storeName, " +
                 "case when s.event is null then false else true end as hasEvent, " +
-                "s.mainImageUrl " +
+                "s.mainImageUrl, " +
+                "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) as distance " +
                 "from Stores s where s.category=:category " +
                 "order by s.rating desc limit :recommendLimit";
         MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userLongitude", longitude);
+        params.addValue("userLatitude", latitude);
         params.addValue("category", category);
-        params.addValue("userId", userId);
         params.addValue("recommendLimit", recommendLimit);
 
         return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
                 new RecommendStoreInfo(
                         rs.getString("storeName"),
                         rs.getBoolean("hasEvent"),
-                        rs.getString("mainImageUrl")
+                        rs.getString("mainImageUrl"),
+                        rs.getDouble("distance")
                 )
         );
     }

@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PatchTodayMissionDoneRequest {
+    // status가 'done'인 todayMissionId, userId
     private long todayMissionId;
     private long userId;
 }

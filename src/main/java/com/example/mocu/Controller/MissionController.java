@@ -51,6 +51,7 @@ public class MissionController {
      * 하루에 미션 스탬프 최대 2개까지 적립가능
      * 미션 스탬프 적립 가능한 경우 : 미션 스탬프 +1, 수행한 오늘의 미션 content 값을 return
      * 미션 스탬프 적립 가능하지 않은 경우 : "이미 2개의 미션 스탬프를 획득하였습니다." return
+     * -> OK
      */
     @PatchMapping("/today-mission/done")
     public BaseResponse<PatchTodayMissionDoneResponse> todayMissionDone(@RequestBody PatchTodayMissionDoneRequest patchTodayMissionDoneRequest){
@@ -61,8 +62,9 @@ public class MissionController {
 
     /**
      * 미션 맵 현황 조회
+     * -> OK
      */
-    @GetMapping("/{userId}/mission-map")
+    @GetMapping("/mission-map/userId={userId}")
     public BaseResponse<GetMissionMapResponse> getMissionMapForUser(@PathVariable(name = "userId") long userId){
         log.info("[MissionController.getMissionMapForUser]");
 
@@ -71,6 +73,7 @@ public class MissionController {
 
     /**
      * 미션 맵 완료(최종 보상 수령)
+     * -> OK
      */
     @PatchMapping("/mission-map/complete")
     public BaseResponse<PatchMissionMapCompleteResponse> completeMissionMap(@RequestBody PatchMissionMapCompleteRequest patchMissionMapCompleteRequest){
@@ -82,7 +85,10 @@ public class MissionController {
     /**
      * 미션 맵 update
      * 한달에 한번 미션 맵 update
+     * -> OK
+     * 아래의 URL은 테스트용 URL임
      */
+    @PostMapping("/update/mission-map")
     public BaseResponse<String> updateMissionMap(){
         log.info("[MissionController.updateMissionMap]");
 
