@@ -53,10 +53,10 @@ public class StampService {
                     postStampAcceptRequest.getNumOfStamp());
         }
 
-        // TODO 4. 적립 후 쿠폰 사용 임박 여부 체크
+        // TODO 4. 적립 후 쿠폰 사용 임박 여부 체크 & update
         boolean isCouponImminent = checkCouponImminent(stampInfo, postStampAcceptRequest.getStoreId());
 
-        // TODO 5. 적립 후 쿠폰 활성화 여부 체크
+        // TODO 5. 적립 후 쿠폰 활성화 여부 체크 & update
         int updatedNumOfCouponAvailable = updateCouponAvailability(stampInfo, postStampAcceptRequest.getStoreId());
 
         // TODO 6. '이벤트 중인 가게에서 적립하기' 또는 '단골가게에서 적립하기' 또는 '쿠폰 사용 임박 가게에서 적립하기' 가 오늘의 미션에 해당하는지 체크
@@ -116,6 +116,8 @@ public class StampService {
     }
 
     private int updateCouponAvailability(StampInfo stampInfo, long storeId) {
+        log.info("[StampService.updateCouponAvailability]");
+
         // maxStamp value 조회
         int maxStampValue = stampDao.getMaxStampValue(storeId);
         // 사용가능한 쿠폰의 개수 계산
@@ -127,6 +129,8 @@ public class StampService {
     }
 
     private boolean checkCouponImminent(StampInfo stampInfo, long storeId) {
+        log.info("[StampService.checkCouponImminent]");
+
         // maxStamp value 조회
         int maxStampValue = stampDao.getMaxStampValue(storeId);
         // 적립 임박 요건을 충족하는지 체크

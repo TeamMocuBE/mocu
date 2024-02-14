@@ -36,13 +36,15 @@ public class MissionDao {
     }
 
     public void updateAllMissionsToNotSelect() {
-        String sql = "update Missions set status='not-select' where content!='MOCU앱 출석하기'";
+        String sql = "update Missions set status='not-select'";
         jdbcTemplate.update(sql, new MapSqlParameterSource());
     }
 
     public void updateAttendanceMissionToSelect() {
         String sql = "update Missions set status='select' where content='MOCU앱 출석하기'";
         jdbcTemplate.update(sql, new MapSqlParameterSource());
+
+
     }
 
     public List<Long> getRandomMissionIds(int count) {
@@ -77,7 +79,7 @@ public class MissionDao {
         jdbcTemplate.update(sql, params);
 
         // TODO 2. 새로 update된 오늘의 미션 목록을 insert
-        String insertSql = "insert into TodayMissions (userId, missionId) values (:userId, :missionId)";
+        String insertSql = "insert into TodayMissions (userId, missionId, modifiedDate) values (:userId, :missionId, now())";
         MapSqlParameterSource insertParams = new MapSqlParameterSource();
         insertParams.addValue("userId", userId);
         for(Long missionId : selectedMissionIds){
@@ -114,7 +116,7 @@ public class MissionDao {
     }
 
     public void insertMissionMap(long userId) {
-        String sql = "insert into MissionStamps (userId, reward) values (:userId, :reward)";
+        String sql = "insert into MissionStamps (userId, reward, modifiedDate) values (:userId, :reward, now())";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         params.addValue("reward", "스타벅스 2만원권");
@@ -125,6 +127,7 @@ public class MissionDao {
     public GetMissionMapResponse getMissionMapForUser(long userId) {
         String sql = "select numOfStamp, reward, createdDate, status from MissionStamps where userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
 
         return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
                 new GetMissionMapResponse(
@@ -158,10 +161,14 @@ public class MissionDao {
 
 
     public void updateMissionMapForUser(Long userId) {
-        String sql = "update MissionStamps set numOfStamp=0, status='not-done' where userId=:userId";
+        // TODO 1. User가 가지고 있는 MissionStamps table의 정보 delete
+        String sql= "delete from MissionStamps where userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         jdbcTemplate.update(sql, params);
+
+        // TODO 2. 새로운 tuple을 MissionStamps table에 생성
+        insertMissionMap(userId);
     }
 
     public boolean isTodayMissionPerformed(long todayMissionId) {

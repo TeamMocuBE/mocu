@@ -40,7 +40,7 @@ public class MissionService {
         missionDao.updateAllMissionsToNotSelect();
 
         // TODO 2. 'MOCU앱 출석하기' 를 제외한 2개의 TUPLE들을 랜덤으로 골라서 STATUS를 "select"로 update
-        // 1. 'MOCU앱 출석하기' 미션을 select 상태로 update
+        // 1. 'MOCU앱 출석하기' 미션을 'select' 상태로 update
         missionDao.updateAttendanceMissionToSelect();
         // 2. 나머지 2개 미션을 랜덤으로 골라서 select 상태로 update
         List<Long> selectedMissionIds = missionDao.getRandomMissionIds(2);
@@ -55,7 +55,12 @@ public class MissionService {
         // TODO 4. 모든 user 들의 오늘의 미션 목록 update
         for(Long userId : userIds){
             missionDao.updateTodayMissionsForUser(userId, selectedMissionIds);
+            // TODO 5. 'MOCU앱 출석하기' 미션은 TodayMissions table에서 'done'으로 처리
+            missionDao.updateTodayMissionToDone(
+                    missionDao.getTodayMissionId(userId, "MOCU앱 출석하기")
+            );
         }
+
     }
 
 
@@ -87,7 +92,7 @@ public class MissionService {
      * 매달 첫째날 00시에 미션맵 update
      * the method will be scheduled to run at 00:00 (midnight) on the first day of every month.
      */
-    @Scheduled(cron = "0 0 0 1 * ?")
+    //@Scheduled(cron = "0 0 0 1 * ?")
     public void updateMissionMap() {
         log.info("[MissionService.updateMissionMap]");
 

@@ -59,6 +59,7 @@ public class UserController {
      * 단골 설정 요청 처리
      * 단골 설청 ok -> status = "accept"
      * 단골 설정 no -> status = "request"
+     * -> OK
      */
     @PatchMapping("/regular-request")
     public BaseResponse<PatchUserRegularResponse> handleRegularRequest(@RequestBody PatchUserRegularRequest patchUserRegularRequest) {
