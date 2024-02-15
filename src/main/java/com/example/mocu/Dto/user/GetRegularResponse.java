@@ -20,5 +20,5 @@ public class GetRegularResponse {
 
     private String reward;
 
-    private String coordinate;
+    private int distance;
 }

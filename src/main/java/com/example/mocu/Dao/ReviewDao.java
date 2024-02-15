@@ -44,7 +44,7 @@ public class ReviewDao {
 
         sql += "join Stamps st on s.storeId = st.storeId and st.userId = :userId ";
 
-        sql += "where r.status = '작성이전' and s.status = 'active'";
+        sql += "where r.status = '작성 이전' and s.status = 'active'";
 
         Map<String, Object> param = Map.of("userId", userId);
 
