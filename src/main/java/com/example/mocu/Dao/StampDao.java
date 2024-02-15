@@ -29,7 +29,7 @@ public class StampDao {
     }
 
     public PostStampResponse stampRequestRegister(PostStampRequest postStampRequest) {
-        String sql = "insert into StampsRequest(userId, storeId) values(:userId, :storeId)";
+        String sql = "insert into StampsRequest(userId, storeId, modifiedDate) values(:userId, :storeId, now())";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", postStampRequest.getUserId());
