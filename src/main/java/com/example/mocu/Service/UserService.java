@@ -32,10 +32,15 @@ public class UserService {
     public PatchUserRegularResponse handleRegularRequest(PatchUserRegularRequest patchUserRegularRequest) {
         log.info("[UserService.handleRegularRequest]");
 
-        // TODO 1. Regular table에서 tuple의 status update
+        // TODO 1. regularId 존재하는지 확인
+        if(!userDao.isExistRegularId(patchUserRegularRequest.getUserId(), patchUserRegularRequest.getStoreId())){
+            userDao.createRegularId(patchUserRegularRequest.getUserId(), patchUserRegularRequest.getStoreId());
+        }
+
+        // TODO 2. Regular table에서 tuple의 status update
         userDao.updateRegularStatus(patchUserRegularRequest);
 
-        // TODO 2. '단골 맺기' 가 오늘의 미션에 해당되는지 & '단골 맺기'의 상태가 'accept' 인지 체크
+        // TODO 3. '단골 맺기' 가 오늘의 미션에 해당되는지 & '단골 맺기'의 상태가 'accept' 인지 체크
         // 오늘의 미션 중 '단골 맺기' 가 있는지 &  체크
         boolean isTodayMission = false;
         if(missionDao.isTodayMissionAssigned(patchUserRegularRequest.getUserId(), "단골 맺기") &&
@@ -70,10 +75,10 @@ public class UserService {
     }
 
 
-    public void updateRegularStatusToNotAccept(PatchUserRegularRequest patchUserRegularRequest) {
+    public void updateRegularStatusToNotAccept(PatchUserRegularToNotAcceptRequest patchUserRegularToNotAcceptRequest) {
         log.info("[UserService.updateRegularStatusToNotAccept]");
 
-        int affectedRows = userDao.updateRegularStatusToNotAccept(patchUserRegularRequest);
+        int affectedRows = userDao.updateRegularStatusToNotAccept(patchUserRegularToNotAcceptRequest);
         if(affectedRows != 1){
             throw new DatabaseException(DATABASE_ERROR);
         }

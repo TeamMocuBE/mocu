@@ -21,7 +21,7 @@ public class ReviewDao {
     }
 
     public long createReviewId(long userId, long storeId, int rate, String content, String status) {
-        String sql = "insert into Reviews(userId, storeId, rate, content, status) values (:userId, :storeId, :rate, :content, :status)";
+        String sql = "insert into Reviews(userId, storeId, rate, content, createdDate, modifiedDate, status) values (:userId, :storeId, :rate, :content, now(), now(), :status)";
         MapSqlParameterSource params = new MapSqlParameterSource()
                 .addValue("userId", userId)
                 .addValue("storeId", storeId)

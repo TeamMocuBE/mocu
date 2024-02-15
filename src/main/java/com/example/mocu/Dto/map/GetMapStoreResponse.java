@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetMapStoreResponse {
+    // isDueDate : ture -> 유저가 해당 가게에 쿠폰 사용 임박 상태임 / false -> X
     private long storeId;
     private double latitude;
     private double longitude;

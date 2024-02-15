@@ -18,5 +18,5 @@ public class GetStampStoreAroundResponse {
     private int numOfCouponAvailable;
     private String reward;
     private float rating;
-    private double distance;            // 현재 user위치와 store사이의 distance
+    private double distance;
 }

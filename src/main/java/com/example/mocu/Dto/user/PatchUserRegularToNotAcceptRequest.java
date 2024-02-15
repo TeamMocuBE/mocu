@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.mission;
+package com.example.mocu.Dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchTodayMissionDoneRequest {
-    // status가 'done'인 todayMissionId, userId
-    private long todayMissionId;
+public class PatchUserRegularToNotAcceptRequest {
+    // userId, 단골로 설정 가능한 목록에서 삭제할 가게의 storeId
     private long userId;
+    private long storeId;
 }

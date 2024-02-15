@@ -18,7 +18,7 @@ public class MapService {
     private final MapDao mapDao;
 
     public List<GetMapStoreResponse> getMapStoreList(long userId, double latitude, double longitude, String categoryOption, boolean eventOption, boolean dueDateOption) {
-        log.info("[MapService.getMapStoreInfoList]");
+        log.info("[MapService.getMapStoreList]");
 
         // TODO 1. 주어진 위도, 경도를 기준으로 반경 distance 미터 내의 GetMapStoreResponse값들을 return
         // 1km로 설정

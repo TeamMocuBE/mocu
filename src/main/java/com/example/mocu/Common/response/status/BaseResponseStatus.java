@@ -91,7 +91,18 @@ public enum BaseResponseStatus implements ResponseStatus {
     dfsSTORE_NOT_FOUND(9003, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 가게입니다."),
     sdfSTORE_NOT_FOUND1(9004, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
     dfINVALID_USER_STATUS1(9005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
-    aeEMAIL_NOT_FOUND1(9006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다.");
+    aeEMAIL_NOT_FOUND1(9006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다."),
+
+    /**
+     * 10000: Coupon 오류
+     */
+    IS_NOT_ENOUGH_NUMBER_OF_COUPON(10000, HttpStatus.BAD_REQUEST.value(), "사용가능한 쿠폰이 존재하지 않습니다."),
+    fsDUPLICATE_EMAIL1(10001, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 이메일입니다."),
+    fsDUPLICATE_NICKNAME1(10002, HttpStatus.BAD_REQUEST.value(), "이미 존재하는 닉네임입니다."),
+    fsSTORE_NOT_FOUND(10003, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 가게입니다."),
+    dfSTORE_NOT_FOUND1(10004, HttpStatus.BAD_REQUEST.value(), "비밀번호가 일치하지 않습니다."),
+    fINVALID_USER_STATUS1(10005, HttpStatus.BAD_REQUEST.value(), "잘못된 회원 status 값입니다."),
+    eEMAIL_NOT_FOUND1(10006, HttpStatus.BAD_REQUEST.value(), "존재하지 않는 이메일입니다.");
 
 
 

@@ -7,6 +7,7 @@ import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.coupon.*;
 import com.example.mocu.Dto.mission.IsTodayMission;
 import com.example.mocu.Dto.stamp.StampInfoAfterCouponUse;
+import com.example.mocu.Exception.CouponException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.mocu.Common.response.status.BaseResponseStatus.IS_NOT_ENOUGH_NUMBER_OF_COUPON;
 
 @Slf4j
 @RestController
@@ -35,25 +38,31 @@ public class CouponService {
     public PostCouponAcceptResponse couponRequestAccept(PostCouponAcceptRequest postCouponAcceptRequest) {
         log.info("[CouponService.couponRequestAccept]");
 
-        // TODO 1. CouponsRequest table의 tuple에서 status 값을 'accept'로 변경
+        // TODO 1. numOfCouponAvailable 의 개수가 1 이상인지 체크
+        int numOfCouponAvailable = couponDao.getNumOfCouponAvailable(postCouponAcceptRequest.getUserId(), postCouponAcceptRequest.getStoreId());
+        if(numOfCouponAvailable < 1){
+            throw new CouponException(IS_NOT_ENOUGH_NUMBER_OF_COUPON);
+        }
+
+        // TODO 2. CouponsRequest table의 tuple에서 status 값을 'accept'로 변경
         couponDao.updateCouponsRequestStatusToAccept(postCouponAcceptRequest.getCouponRequestId());
 
-        // TODO 2. 해당 가게의 maxStamp 값 찾기
+        // TODO 3. 해당 가게의 maxStamp 값 찾기
         int maxStamp = stampDao.getMaxStampValue(postCouponAcceptRequest.getStoreId());
 
-        // TODO 3. Stamps table의 tuple에서 numOfStamp, numOfCouponAvailable, useCount 값 update
+        // TODO 4. Stamps table의 tuple에서 numOfStamp, numOfCouponAvailable, useCount 값 update
         // numOfStamp -= maxStamp
         // numOfCouponAvailable -= 1
         // useCount += 1
         StampInfoAfterCouponUse stampInfoAfterCouponUse = couponDao.updateStampsTable(postCouponAcceptRequest, maxStamp);
 
-        // TODO 4. 쿠폰 사용에 대한 보상 찾기
+        // TODO 5. 쿠폰 사용에 대한 보상 찾기
         String reward = couponDao.getStoreReward(postCouponAcceptRequest.getStoreId());
 
-        // TODO 5. 쿠폰 사용 후 쿠폰 사용 임박 여부 체크
+        // TODO 6. 쿠폰 사용 후 쿠폰 사용 임박 여부 체크
         boolean isCouponImminent = checkCouponImminent(stampInfoAfterCouponUse, postCouponAcceptRequest.getStoreId());
 
-        // TODO 6. '단골 등록' 팝업창 띄울지 말지 체크
+        // TODO 7. '단골 등록' 팝업창 띄울지 말지 체크
         boolean regularPopUp;
         // 1. regularId 존재하는지 체크
         if(userDao.isExistRegularId(postCouponAcceptRequest.getUserId(), postCouponAcceptRequest.getStoreId())){
@@ -75,11 +84,12 @@ public class CouponService {
         }
         else{
             // 존재하지 않으면 regularId 생성
+            // status -> 'request'
             userDao.createRegularId(postCouponAcceptRequest.getUserId(), postCouponAcceptRequest.getStoreId());
             regularPopUp = true;
         }
 
-        // TODO 7. '쿠폰 사용하기' 가 오늘의 미션에 해당하는지 체크
+        // TODO 8. '쿠폰 사용하기' 가 오늘의 미션에 해당하는지 체크
         // 오늘의 미션 중 '쿠폰 사용하기' 가 있는지 체크
         List<IsTodayMission> todayMissionList = new ArrayList<>();
 
@@ -93,7 +103,7 @@ public class CouponService {
             missionDao.updateTodayMissionToDone(todayMissionId);
         }
 
-        // TODO 8. RETURN 형식 맞추기
+        // TODO 9. RETURN 형식 맞추기
         return buildPostCouponAcceptResponse(postCouponAcceptRequest, stampInfoAfterCouponUse, maxStamp, isCouponImminent, reward, todayMissionList, regularPopUp);
     }
 

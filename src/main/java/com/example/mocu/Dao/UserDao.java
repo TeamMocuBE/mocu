@@ -171,42 +171,55 @@ public class UserDao {
         params.addValue("storeId", storeId);
         params.addValue("userId", userId);
 
-        return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
-                new RecentlyVisitedStoreInfo(
-                        rs.getString("storeName"),
-                        rs.getInt("numOfStamp"),
-                        rs.getInt("numOfCouponAvailable"),
-                        rs.getBoolean("hasEvent"),
-                        rs.getDouble("distance")
-                )
-        );
+        try {
+            return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
+                    new RecentlyVisitedStoreInfo(
+                            rs.getString("storeName"),
+                            rs.getInt("numOfStamp"),
+                            rs.getInt("numOfCouponAvailable"),
+                            rs.getBoolean("hasEvent"),
+                            rs.getDouble("distance")
+                    )
+            );
+        } catch (EmptyResultDataAccessException e){
+            return null;
+        }
+
     }
 
     public DueDateStoreInfo getDueDateStoreInfoForUser(long storeId, long userId, double latitude, double longitude) {
         log.info("[UserDao.getDueDateStoreInfoListForUser]");
 
-        String sql = "select s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, " +
+        String sql = "select s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, s.maxStamp, " +
                 "case when s.event is null then false else true end as hasEvent, " +
                 "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) as distance " +
-                "from Stores s join Stamps st on s.storeId=st.storeId where s.storeId=:storeId and st.userId=:userId";
+                "from Stores s join Stamps st on s.storeId=st.storeId where s.storeId=:storeId and st.userId=:userId and st.dueDate=true";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userLongitude", longitude);
         params.addValue("userLatitude", latitude);
         params.addValue("storeId", storeId);
         params.addValue("userId", userId);
 
-        return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
-                new DueDateStoreInfo(
-                        rs.getString("storeName"),
-                        rs.getInt("numOfStamp"),
-                        rs.getInt("numOfCouponAvailable"),
-                        rs.getBoolean("hasEvent"),
-                        rs.getDouble("distance")
-                )
-        );
+        try {
+            return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
+                    new DueDateStoreInfo(
+                            rs.getString("storeName"),
+                            rs.getInt("numOfStamp"),
+                            rs.getInt("numOfCouponAvailable"),
+                            rs.getInt("maxStamp"),
+                            rs.getBoolean("hasEvent"),
+                            rs.getDouble("distance")
+                    )
+            );
+        } catch (EmptyResultDataAccessException e){
+            return null;
+        }
+
     }
 
     public void updateRegularStatus(PatchUserRegularRequest patchUserRegularRequest) {
+        log.info("[UserDao.updateRegularStatus]");
+
         String sql = "update Regulars set status=:status where userId=:userId and storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("status", patchUserRegularRequest.isRequest() ? "accept" : "request");
@@ -218,6 +231,8 @@ public class UserDao {
 
     
     public boolean isRegular(long userId, long storeId) {
+        log.info("[UserDao.isRegular]");
+
         String sql = "select count(*) from Regulars where userId=:userId and storeId=:storeId and status='accept'";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
@@ -306,7 +321,9 @@ public class UserDao {
     }
 
     public void createRegularId(long userId, long storeId) {
-        String sql = "insert into Regulars (userId, storeId) values (:userId, :storeId)";
+        log.info("[UserDao.createRegularId]");
+
+        String sql = "insert into Regulars (userId, storeId, modifiedDate) values (:userId, :storeId, now())";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         params.addValue("storeId", storeId);
@@ -316,6 +333,8 @@ public class UserDao {
 
 
     public boolean isExistRegularId(long userId, long storeId) {
+        log.info("[UserDao.isExistRegularId]");
+
         String sql = "select count(*) from Regulars where userId=:userId and storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
@@ -327,6 +346,8 @@ public class UserDao {
     }
 
     public String getRegularStatus(long userId, long storeId) {
+        log.info("[UserDao.getRegularStatus]");
+
         String sql = "select status from Regulars where userId=:userId and storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
@@ -346,6 +367,8 @@ public class UserDao {
   
   
     public List<GetStoreCanBeRegularResponse> getStoreCanBeRegularList(long userId, double userLatitude, double userLongitude, int page) {
+        log.info("[UserDao.getStoreCanBeRegularList]");
+
         int limit = 5;
         int offset = limit * page;
 
@@ -378,11 +401,11 @@ public class UserDao {
         );
     }
 
-    public int updateRegularStatusToNotAccept(PatchUserRegularRequest patchUserRegularRequest) {
+    public int updateRegularStatusToNotAccept(PatchUserRegularToNotAcceptRequest patchUserRegularToNotAcceptRequest) {
         String sql = "update Regulars set status='not-accept' where userId=:userId and storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("userId", patchUserRegularRequest.getUserId());
-        params.addValue("storeId", patchUserRegularRequest.getStoreId());
+        params.addValue("userId", patchUserRegularToNotAcceptRequest.getUserId());
+        params.addValue("storeId", patchUserRegularToNotAcceptRequest.getStoreId());
 
         return jdbcTemplate.update(sql, params);
     }

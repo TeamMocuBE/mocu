@@ -12,8 +12,9 @@ import lombok.Setter;
 public class PatchUserRegularResponse {
     // regularId
     // '단골 맺기'가 오늘의 미션인지 check
-    // missionComplete = false : '리뷰 작성하기'가 오늘의 미션 X
-    //                 = true : '리뷰 작성하기'가 오늘의 미션 O
+    // missionComplete = false : '단골 맺기'가 오늘의 미션 X
+    //                            or '단골 맺기'가 오늘의 미션이지만 단골을 맺지 않은 경우
+    //                 = true : '단골 맺기'가 오늘의 미션 O
     private long regularId;
     private boolean missionComplete;
 }

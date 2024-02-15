@@ -10,8 +10,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostStampResponse {
-    // stampRequestId, 스탬프적립요청 생성일, 스탬프적립요청 가게 주소, 유저 이름
+    // stampRequestId, userId, storeId, 스탬프적립요청 생성일, 스탬프적립요청 가게 주소, 유저 이름
     private long stampRequestId;
+    private long userId;
+    private long storeId;
     private String createdDate;
     private String storeAddress;
     private String userName;

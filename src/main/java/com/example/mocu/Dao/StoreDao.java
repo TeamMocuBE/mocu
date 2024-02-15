@@ -170,6 +170,8 @@ public class StoreDao {
 
 
     public boolean isStoreInEvent(long storeId) {
+        log.info("[StoreDao.isStoreInEvent]");
+
         String sql = "select event from Stores where storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("storeId", storeId);
@@ -180,6 +182,8 @@ public class StoreDao {
     }
 
     public boolean isDueDateStore(long userId, long storeId) {
+        log.info("[StoreDao.isDueDateStore]");
+
         String sql = "select dueDate from Stamps where userId=:userId and storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
@@ -191,7 +195,7 @@ public class StoreDao {
     }
 
     public List<ReviewForUser> getReviewsOrderByTime(long storeId, int page) {
-        int limit = 10;
+        int limit = 5;
         int offset = page * limit;
 
         // 리뷰 '최신순' 정렬
@@ -222,7 +226,7 @@ public class StoreDao {
     }
 
     public List<ReviewForUser> getReviewsOrderByRate(long storeId, int page) {
-        int limit = 10;
+        int limit = 5;
         int offset = page * limit;
 
         // 리뷰 '평점순' 정렬

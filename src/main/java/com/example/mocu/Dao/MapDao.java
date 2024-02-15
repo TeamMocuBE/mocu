@@ -3,6 +3,7 @@ package com.example.mocu.Dao;
 import com.example.mocu.Dto.map.GetMapStoreInfoResponse;
 import com.example.mocu.Dto.map.GetMapStoreResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -75,19 +76,22 @@ public class MapDao {
             selectParam.addValue("userLongitude", longitude);
             selectParam.addValue("userLatitude", latitude);
 
-            GetMapStoreResponse response = jdbcTemplate.queryForObject(selectSql, selectParam, (rs, rowNum) ->
-                    new GetMapStoreResponse(
-                            rs.getLong("storeId"),
-                            rs.getDouble("latitude"),
-                            rs.getDouble("longitude"),
-                            rs.getString("category"),
-                            rs.getBoolean("hasEvent"),
-                            rs.getBoolean("isDueDate")
-                    )
-            );
-
-            log.info("response 값 add");
-            responseList.add(response);
+            try{
+                GetMapStoreResponse response = jdbcTemplate.queryForObject(selectSql, selectParam, (rs, rowNum) ->
+                        new GetMapStoreResponse(
+                                rs.getLong("storeId"),
+                                rs.getDouble("latitude"),
+                                rs.getDouble("longitude"),
+                                rs.getString("category"),
+                                rs.getBoolean("hasEvent"),
+                                rs.getBoolean("isDueDate")
+                        )
+                );
+                log.info("response 값 add");
+                responseList.add(response);
+            } catch (EmptyResultDataAccessException e){
+                continue;
+            }
         }
 
         // TODO 5. return

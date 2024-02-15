@@ -149,9 +149,12 @@ public class StoreService {
             List<String> categories = recommendDao.getFavoriteCategories(storeIds, userId, numOfCategory);
 
             // 2. 1의 결과에 해당하는 카테고리들의 가게들을 가게 평점 높은순으로 각 카테고리별 recommendLimit 개수만큼 return
+            /**
+              *-> 해당 user가 적립한 적이 없는 가게들을 추천해주지는 못함 -> 마지막에 도전해볼것
+              */
             recommendStoreInfoList = new ArrayList<>();
             for(String category : categories){
-                RecommendStoreInfo recommendStoreInfo = recommendDao.getRecommendStoreInfo(category, userId, recommendLimit);
+                RecommendStoreInfo recommendStoreInfo = recommendDao.getRecommendStoreInfo(category, latitude, longitude, recommendLimit);
                 recommendStoreInfoList.add(recommendStoreInfo);
             }
         }

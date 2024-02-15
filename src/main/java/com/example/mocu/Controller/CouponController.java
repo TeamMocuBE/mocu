@@ -21,18 +21,33 @@ public class CouponController {
      * 쿠폰 사용 요청(유저 앱 -> 점주 앱)
      */
     @PostMapping("/request")
-    public BaseResponse<PostCouponResponse> couponRequestRegister(@Validated @RequestBody PostCouponRequest postCouponRequest) {
+    public BaseResponse<String> couponRequestRegister(@RequestBody PostCouponRequest postCouponRequest) {
         log.info("[CouponController.couponRequestRegister]");
 
-        return new BaseResponse<>(couponService.couponRequestRegister(postCouponRequest));
+        try {
+            PostCouponResponse postCouponResponse = couponService.couponRequestRegister(postCouponRequest);
+            // -> OK
+
+            /**
+             * 푸시 알림 구현
+             */
+
+
+
+            return new BaseResponse<>("쿠폰 사용 요청 성공");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("쿠폰 사용 요청 중 오류 발생");
+        }
     }
 
     /**
      * 쿠폰 사용 요청 수락
      * (거절할 경우 그냥 팝업 창 닫기고 끝. db에 update할 정보 없음 -> ??)
+     * -> numOfCouponAvailable이 1이상인지 체크하는 로직 추가
+     * -> OK
      */
     @PostMapping("/owner-accept")
-    public BaseResponse<PostCouponAcceptResponse> couponRequestAccept(@Validated @RequestBody PostCouponAcceptRequest postCouponAcceptRequest) {
+    public BaseResponse<PostCouponAcceptResponse> couponRequestAccept(@RequestBody PostCouponAcceptRequest postCouponAcceptRequest) {
         log.info("[CouponController.couponRequestAccept]");
 
         return new BaseResponse<>(couponService.couponRequestAccept(postCouponAcceptRequest));

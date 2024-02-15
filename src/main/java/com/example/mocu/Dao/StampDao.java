@@ -29,7 +29,7 @@ public class StampDao {
     }
 
     public PostStampResponse stampRequestRegister(PostStampRequest postStampRequest) {
-        String sql = "insert into StampsRequest(userId, storeId) values(:userId, :storeId)";
+        String sql = "insert into StampsRequest(userId, storeId, modifiedDate) values(:userId, :storeId, now())";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", postStampRequest.getUserId());
@@ -49,6 +49,8 @@ public class StampDao {
         return jdbcTemplate.queryForObject(selectSql, selectParams, (rs, rowNum) ->
                 new PostStampResponse(
                         rs.getLong("stampRequestId"),
+                        postStampRequest.getUserId(),
+                        postStampRequest.getStoreId(),
                         timestampToString(rs.getTimestamp("createdDate")),
                         rs.getString("storeAddress"),
                         rs.getString("userName")
@@ -62,6 +64,8 @@ public class StampDao {
     }
 
     public void updateStampsRequestStatusToAccept(long stampRequestId) {
+        log.info("[StampDao.updateStampsRequestStatusToAccept]");
+
         String sql = "update StampsRequest set status='accept' where stampRequestId=:stampRequestId";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -70,6 +74,8 @@ public class StampDao {
     }
 
     public boolean doesStampsEntityExist(long userId, long storeId) {
+        log.info("[StampDao.doesStampsEntityExist]");
+
         String sql = "select count(*) from Stamps where userId=:userId and storeId=:storeId";
         
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -81,6 +87,9 @@ public class StampDao {
     }
 
     public StampInfo updateNumOfStamp(long userId, long storeId, int numOfStamp) {
+        log.info("[StampDao.updateNumOfStamp]");
+
+        // 1. update
         String sql = "update Stamps set numOfStamp=numOfStamp+:numOfStamp " +
                 "where userId=:userId and storeId=:storeId";
 
@@ -89,28 +98,55 @@ public class StampDao {
         params.addValue("storeId", storeId);
         params.addValue("numOfStamp", numOfStamp);
 
-        return jdbcTemplate.queryForObject(sql, params,
-                (rs, rowNum) -> new StampInfo(rs.getLong("stampId"), rs.getInt("numOfStamp"))
+        jdbcTemplate.update(sql, params);
+
+        // 2. select
+        String selectSql = "select stampId, numOfStamp from Stamps where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource selectParams = new MapSqlParameterSource();
+        selectParams.addValue("userId", userId);
+        selectParams.addValue("storeId", storeId);
+
+        return jdbcTemplate.queryForObject(selectSql, params, (rs, rowNum) ->
+                new StampInfo(
+                        rs.getLong("stampId"),
+                        rs.getInt("numOfStamp")
+                )
         );
     }
 
 
     public StampInfo createNewStampsEntry(long userId, long storeId, int numOfStamp) {
-        String sql = "insert into Stamps (userId, storeId, numOfStamp) values " +
-                "(:userId, :storeId, :numOfStamp)";
+        log.info("[StampDao.createNewStampsEntry]");
+
+        // 1. insert
+        String sql = "insert into Stamps (userId, storeId, numOfStamp, modifiedDate) values " +
+                "(:userId, :storeId, :numOfStamp, now())";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userId", userId);
         params.addValue("storeId", storeId);
         params.addValue("numOfStamp", numOfStamp);
 
-        return jdbcTemplate.queryForObject(sql, params,
-                (rs, rowNum) -> new StampInfo(rs.getLong("stampId"), rs.getInt("numOfStamp"))
+        jdbcTemplate.update(sql, params);
+
+        // 2. select
+        String selectSql = "select stampId, numOfStamp from Stamps where userId=:userId and storeId=:storeId";
+        MapSqlParameterSource selectParams = new MapSqlParameterSource();
+        selectParams.addValue("userId", userId);
+        selectParams.addValue("storeId", storeId);
+
+        return jdbcTemplate.queryForObject(selectSql, params, (rs, rowNum) ->
+                new StampInfo(
+                        rs.getLong("stampId"),
+                        rs.getInt("numOfStamp")
+                )
         );
     }
 
 
     public int getMaxStampValue(long storeId) {
+        log.info("[StampDao.getMaxStampValue]");
+
         String sql = "select maxStamp from Stores where storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("storeId", storeId);
@@ -119,6 +155,8 @@ public class StampDao {
     }
 
     public void updateDueDate(long stampId, boolean isDueDateTrue) {
+        log.info("[StampDao.updateDueDate]");
+
         String sql = "update Stamps set dueDate=:isDueDateTrue where stampId=:stampId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("isDueDateTrue", isDueDateTrue);
@@ -127,6 +165,8 @@ public class StampDao {
     }
 
     public int updateNumOfCouponAvailable(long stampId, int numOfCouponAvailable) {
+        log.info("[StampDao.updateNumOfCouponAvailable]");
+
         String sql = "update Stamps set numOfCouponAvailable=:numOfCouponAvailable where stampId=:stampId";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("numOfCouponAvailable", numOfCouponAvailable);
@@ -151,7 +191,7 @@ public class StampDao {
         // 현재 user위치와 가까운 store 순으로 정렬해서 return
         String sql = "select s.mainImageUrl, s.name as storeName, st.numOfStamp, s.maxStamp, st.numOfCouponAvailable, s.reward, s.rating, " +
                 "ST_DISTANCE_SPHERE(POINT(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) as distance " +
-                "from Stores s join Stamps st on s.storeId=st.storeId where st.userId=:userId " +
+                "from Stores s join Stamps st on s.storeId=st.storeId where st.userId=:userId and st.numOfStamp>0 " +
                 "order by distance limit :limit offset :offset";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("userLongitude", longitude);

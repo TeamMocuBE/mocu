@@ -10,8 +10,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecommendStoreInfo {
-    // 추천 가게 이름, 이벤트 여부, 가게 대표 사진
+    // 추천 가게 이름, 이벤트 여부, 가게 대표 사진, 거리
     private String storeName;
     private boolean hasEvent;
     private String mainImageUrl;
+    private double distance;
 }
