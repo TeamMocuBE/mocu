@@ -38,11 +38,11 @@ public class StoreController {
     /**
      * 가게 검색
      */
-    @GetMapping("/store-search-result/{userId}")
+    @GetMapping("/search-result")
     public BaseResponse<List<GetSearchedStoreResponse>> getSearchedStore(
-            @PathVariable(name = "userId") long userId,
+            @RequestParam(name = "userId") long userId,
             @RequestParam(name = "query", required = false) String query,
-            @RequestParam(name = "sort", required = false, defaultValue = "defaultSort") String sort,
+            @RequestParam(name = "sort", required = false, defaultValue = "별점 높은 순") String sort,
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "savingOption", defaultValue = "false") boolean savingOption,
             @RequestParam(name = "notVisitedOption", defaultValue = "false") boolean notVisitedOption,

@@ -3,7 +3,6 @@ package com.example.mocu.Dao;
 import com.example.mocu.Dto.review.ReviewForUser;
 import com.example.mocu.Dto.stamp.UserStampInfo;
 import com.example.mocu.Dto.store.GetSearchedStoreResponse;
-import com.example.mocu.Dto.store.GetStoreReviewsResponse;
 import com.example.mocu.Dto.store.StoreInEventInfo;
 import com.example.mocu.Dto.store.StoreInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
@@ -19,10 +17,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 @Slf4j
@@ -93,22 +88,23 @@ public class StoreDao {
         int offset = page * limit;
 
         String sql = "SELECT s.name, s.reward, s.latitude, s.longitude, s.rating, s.maxStamp, ST_Distance_Sphere(point(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) AS distance "
-                + "COALESCE(st.numOfStamp, 0) AS numOfStamp "
+                + ", COALESCE(st.numOfStamp, 0) AS numOfStamp "
                 + "FROM Stores s "
                 + "LEFT JOIN (SELECT storeId, userId, numOfStamp FROM Stamps WHERE userId = :userId) st ON s.storeId = st.storeId "
                 + "LEFT JOIN (SELECT storeId, COUNT(*) as reviewCount FROM Reviews GROUP BY storeId) rv ON s.storeId = rv.storeId ";
 
-        sql += "WHERE ";
+        List<String> conditions = new ArrayList<>();
 
         if (query != null && !query.isEmpty()) {
-            sql += "(s.name LIKE CONCAT('%', :query, '%') OR s.category LIKE CONCAT('%', :query, '%')) ";
+            conditions.add("(s.name LIKE CONCAT('%', :query, '%') OR s.category LIKE CONCAT('%', :query, '%'))");
         }
 
         if (category != null && !category.isEmpty()) {
-            sql += "AND s.category = :category ";
+            conditions.add("s.category = :category");
         }
 
-        List<String> conditions = new ArrayList<>();
+        log.info("[UserDao.getSearchedStore] notVisitedOnly = {}", notVisitedOnly);
+
         if (savingOnly) {
             conditions.add("EXISTS (SELECT 1 FROM Stamps st WHERE st.storeId = s.storeId AND st.userId = :userId)");
         }
@@ -122,41 +118,41 @@ public class StoreDao {
             conditions.add("s.event IS NOT NULL");
         }
 
+        // 조건들을 SQL 문에 추가
         if (!conditions.isEmpty()) {
-            sql += "WHERE " + String.join(" AND ", conditions);
+            sql += "WHERE " + String.join(" AND ", conditions) + " ";
         }
 
         if (sort != null && !sort.isEmpty()) {
             sql += " order by ";
             switch (sort) {
-                case "별점 높은 순" -> {
+                case "별점 높은 순":
                     sql += "s.rating DESC";
                     break;
-                }
-                case "리뷰 많은 순" -> {
+                case "리뷰 많은 순":
                     sql += "rv.reviewCount DESC";
                     break;
-                }
-                case "거리순" -> {
+                case "거리순":
                     sql += "distance";
                     break;
-                }
+                case "적립률 순":
+                    sql += "(CASE WHEN s.maxStamp > 0 THEN COALESCE(st.numOfStamp, 0) / s.maxStamp ELSE 0 END) DESC";
+                    break;
             }
         }
 
         sql += " limit :limit offset :offset";
 
-        Map<String, Object> param = Map.of(
-                "userId", userId,
-                "query", query != null ? "%" + query + "%" : "%",
-                "category", category != null ? category : "%",
-                "userLatitude", userLatitude,
-                "userLongitude", userLongitude,
-                "limit", limit,
-                "offset", offset
-        );
+        Map<String, Object> params = new HashMap<>();
+        params.put("userId", userId);
+        params.put("query", query != null ? query : "");
+        params.put("category", category != null ? category : "");
+        params.put("userLatitude", userLatitude);
+        params.put("userLongitude", userLongitude);
+        params.put("limit", limit);
+        params.put("offset", offset);
 
-        return jdbcTemplate.query(sql, param,
+        return jdbcTemplate.query(sql, params,
                 (rs, rowNum) -> new GetSearchedStoreResponse(
                         rs.getString("name"),
                         rs.getString("reward"),
@@ -167,6 +163,7 @@ public class StoreDao {
                 )
         );
     }
+
 
 
     public boolean isStoreInEvent(long storeId) {
