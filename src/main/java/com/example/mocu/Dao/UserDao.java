@@ -359,6 +359,8 @@ public class UserDao {
   
   
     public List<GetStoreCanBeRegularResponse> getStoreCanBeRegularList(long userId, double userLatitude, double userLongitude, int page) {
+        log.info("[UserDao.getStoreCanBeRegularList]");
+
         int limit = 5;
         int offset = limit * page;
 
@@ -391,11 +393,11 @@ public class UserDao {
         );
     }
 
-    public int updateRegularStatusToNotAccept(PatchUserRegularRequest patchUserRegularRequest) {
+    public int updateRegularStatusToNotAccept(PatchUserRegularToNotAcceptRequest patchUserRegularToNotAcceptRequest) {
         String sql = "update Regulars set status='not-accept' where userId=:userId and storeId=:storeId";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("userId", patchUserRegularRequest.getUserId());
-        params.addValue("storeId", patchUserRegularRequest.getStoreId());
+        params.addValue("userId", patchUserRegularToNotAcceptRequest.getUserId());
+        params.addValue("storeId", patchUserRegularToNotAcceptRequest.getStoreId());
 
         return jdbcTemplate.update(sql, params);
     }

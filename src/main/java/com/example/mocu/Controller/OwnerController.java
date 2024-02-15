@@ -21,6 +21,7 @@ public class OwnerController {
     * 고객 요청관리 조회
     * 점주 앱 고객 요청 관리 페이지
     * 필터링, 무한스크롤 구현
+     * -> OK
     */
     @GetMapping("/store-request/storeId={storeId}")
     public BaseResponse<List<GetUserRequestForOwner>> getUserRequestListForOwner(

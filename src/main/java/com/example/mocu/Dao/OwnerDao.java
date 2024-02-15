@@ -141,6 +141,8 @@ public class OwnerDao {
 
 
     public List<GetUserRequestForOwner> getNotAcceptedCouponRequests(long storeId, int page) {
+        log.info("[OwnerDao.getNotAcceptedCouponRequests]");
+
         int limit = 5;
         int offset = page * limit;
 
@@ -162,6 +164,8 @@ public class OwnerDao {
     }
 
     public List<GetUserRequestForOwner> getNotAcceptedStampRequests(long storeId, int page) {
+        log.info("[OwnerDao.getNotAcceptedStampRequests]");
+
         int limit = 5;
         int offset = page * limit;
 
@@ -183,6 +187,8 @@ public class OwnerDao {
     }
 
     public List<GetUserRequestForOwner> getNotAcceptedBothRequests(long storeId, int page) {
+        log.info("[OwnerDao.getNotAcceptedBothRequests]");
+
         int limit = 5;
         int offset = page * limit;
 
@@ -210,12 +216,14 @@ public class OwnerDao {
     }
 
     public List<GetUserRequestForOwner> getAllCouponRequests(long storeId, int page) {
+        log.info("[OwnerDao.getAllCouponRequests]");
+
         int limit = 5;
         int offset = page * limit;
 
         String sql = "select u.name, cr.status as acceptOption, 'reward' as StampOrReward, cr.modifiedDate " +
                 "from Users u join CouponsRequest cr on u.userId=cr.userId " +
-                "where cr.storeId=:storeId order by cr.modifiedDate desc limit :limit, offset :offset";
+                "where cr.storeId=:storeId order by cr.modifiedDate desc limit :limit offset :offset";
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("storeId", storeId);
         params.addValue("limit", limit);
@@ -277,6 +285,8 @@ public class OwnerDao {
     }
   
     public List<GetUserRequestForOwner> getAllStampRequests(long storeId, int page) {
+        log.info("[OwnerDao.getAllStampRequests]");
+
         int limit = 5;
         int offset = page * limit;
 
@@ -299,6 +309,8 @@ public class OwnerDao {
     }
 
     public List<GetUserRequestForOwner> getAllBothRequests(long storeId, int page) {
+        log.info("[OwnerDao.getAllBothRequests]");
+
         int limit = 5;
         int offset = page * limit;
 

@@ -75,10 +75,10 @@ public class UserService {
     }
 
 
-    public void updateRegularStatusToNotAccept(PatchUserRegularRequest patchUserRegularRequest) {
+    public void updateRegularStatusToNotAccept(PatchUserRegularToNotAcceptRequest patchUserRegularToNotAcceptRequest) {
         log.info("[UserService.updateRegularStatusToNotAccept]");
 
-        int affectedRows = userDao.updateRegularStatusToNotAccept(patchUserRegularRequest);
+        int affectedRows = userDao.updateRegularStatusToNotAccept(patchUserRegularToNotAcceptRequest);
         if(affectedRows != 1){
             throw new DatabaseException(DATABASE_ERROR);
         }

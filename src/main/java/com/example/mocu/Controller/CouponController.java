@@ -21,7 +21,7 @@ public class CouponController {
      * 쿠폰 사용 요청(유저 앱 -> 점주 앱)
      */
     @PostMapping("/request")
-    public BaseResponse<String> couponRequestRegister(@Validated @RequestBody PostCouponRequest postCouponRequest) {
+    public BaseResponse<String> couponRequestRegister(@RequestBody PostCouponRequest postCouponRequest) {
         log.info("[CouponController.couponRequestRegister]");
 
         try {
@@ -47,7 +47,7 @@ public class CouponController {
      * -> OK
      */
     @PostMapping("/owner-accept")
-    public BaseResponse<PostCouponAcceptResponse> couponRequestAccept(@Validated @RequestBody PostCouponAcceptRequest postCouponAcceptRequest) {
+    public BaseResponse<PostCouponAcceptResponse> couponRequestAccept(@RequestBody PostCouponAcceptRequest postCouponAcceptRequest) {
         log.info("[CouponController.couponRequestAccept]");
 
         return new BaseResponse<>(couponService.couponRequestAccept(postCouponAcceptRequest));
