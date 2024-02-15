@@ -6,6 +6,7 @@ import com.example.mocu.Dto.store.RecentlyVisitedStoreInfo;
 import com.example.mocu.Dto.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,7 +16,9 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Repository
@@ -73,7 +76,7 @@ public class UserDao {
                 "JOIN Stores S ON R.storeId = S.storeId " +
                 "WHERE R.status = 'request' AND R.userId = :userId";
         String sqlCurrentAddress = "select address from Addresses " +
-                "where status like 'select'";
+                "where status = 'selected'";
         String sqlRecentCouponUsage = "SELECT S.name AS storeName, S.reward AS benefit " +
                 "FROM CouponsRequest CR " +
                 "JOIN Stores S ON CR.storeId = S.storeId " +
@@ -82,41 +85,49 @@ public class UserDao {
                 "ORDER BY CR.createdDate DESC " +
                 "limit 5";
         String sqlAvailableReviewCount = "select COUNT(*) from reviews where userId = :userId and status = '작성 이전'";
-        String sqlMissionStampCount = "select numOfStamp from MissionStamp where userId = :userId";
+        String sqlMissionStampCount = "select numOfStamp from MissionStamps where userId = :userId";
 
-        Map<String, Object> param = Map.of("userId", userId);
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
 
         // 사용 가능한 쿠폰 개수 조회
-        Integer usableCoupon = jdbcTemplate.queryForObject(sqlUsableCoupon, param, Integer.class);
+        Integer usableCoupon = jdbcTemplate.queryForObject(sqlUsableCoupon, params, Integer.class);
+        if (usableCoupon == null) usableCoupon = 0; // 결과가 없을 경우 기본값으로 0을 설정
 
-        // 단골 설정 가능한 가게 수 조회 (여기서는 가게 이름 목록을 가져옴)
-        List<String> availableFavoriteStoreNames = jdbcTemplate.query(sqlAvailableFavoriteCount, param,
-                (rs, rowNum) -> rs.getString("name"));
+        // 단골 설정 가능한 가게 수 조회
+        List<String> availableFavoriteStoreNames = jdbcTemplate.query(sqlAvailableFavoriteCount, params, (rs, rowNum) -> rs.getString("name"));
         int availableFavoriteCount = availableFavoriteStoreNames.size();
 
         // 현재 선택된 주소 조회
-        String currentAddress = jdbcTemplate.queryForObject(sqlCurrentAddress, Collections.emptyMap(), String.class);
+        String currentAddress;
+        try {
+            currentAddress = jdbcTemplate.queryForObject(sqlCurrentAddress, new MapSqlParameterSource(), String.class);
+        } catch (EmptyResultDataAccessException e) {
+            currentAddress = ""; // 결과가 없을 경우 기본값으로 빈 문자열을 설정
+        }
 
         // 최근 쿠폰 사용 내역 조회
-        List<GetMyPageResponse.CouponUsageDetail> recentCouponUsage = jdbcTemplate.query(sqlRecentCouponUsage, param,
-                (rs, rowNum) -> new GetMyPageResponse.CouponUsageDetail(
-                        rs.getString("benefit"),
-                        rs.getString("storeName")
-                ));
+        List<GetMyPageResponse.CouponUsageDetail> recentCouponUsage = jdbcTemplate.query(sqlRecentCouponUsage, params, new BeanPropertyRowMapper<>(GetMyPageResponse.CouponUsageDetail.class));
 
         // 작성 가능한 리뷰 개수 조회
-        Integer availableReviewCount = jdbcTemplate.queryForObject(sqlAvailableReviewCount, param, Integer.class);
+        Integer availableReviewCount = jdbcTemplate.queryForObject(sqlAvailableReviewCount, params, Integer.class);
+        if (availableReviewCount == null) availableReviewCount = 0; // 결과가 없을 경우 기본값으로 0을 설정
 
         // 미션 스탬프 개수 조회
-        Integer missionStampCount = jdbcTemplate.queryForObject(sqlMissionStampCount, param, Integer.class);
+        Integer missionStampCount;
+        try {
+            missionStampCount = jdbcTemplate.queryForObject(sqlMissionStampCount, params, Integer.class);
+        } catch (EmptyResultDataAccessException e) {
+            missionStampCount = 0; // 결과가 없을 경우 기본값으로 0을 설정
+        }
 
         return new GetMyPageResponse(
-                usableCoupon != null ? usableCoupon : 0,
+                usableCoupon,
                 availableFavoriteCount,
                 currentAddress,
                 recentCouponUsage,
-                availableReviewCount != null ? availableReviewCount : 0,
-                missionStampCount != null ? missionStampCount : 0
+                availableReviewCount,
+                missionStampCount
         );
     }
 
@@ -238,7 +249,7 @@ public class UserDao {
         int limit = 10;
         int offset = page * limit;
 
-        String sql = "select s.mainImageUrl, s.name, st.numOfStamp, s.maxStamp, s.reward, s.coordinate, s.event ";
+        String sql = "select s.mainImageUrl, s.name, st.numOfStamp, s.maxStamp, s.reward, s.event, ";
         sql += "ST_Distance_Sphere(point(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) AS distance ";
         sql += "from stores s ";
         sql += "join stamps st on s.storeId = st.storeId and st.userId = :userId ";
@@ -260,22 +271,21 @@ public class UserDao {
         }
 
         if (sort != null && !sort.isEmpty()) {
-            sql += "order by ";
             switch (sort) {
                 case "최신순" -> {
-                    sql += "st.modifiedDate DESC";
+                    sql += "order by st.modifiedDate DESC";
                     break;
                 }
                 case "적립 많은 순" -> {
-                    sql += "st.numOfStamp";
+                    sql += "order by st.numOfStamp";
                     break;
                 }
                 case "별점 높은 순" -> {
-                    sql += "s.rate";
+                    sql += "order by s.rate";
                     break;
                 }
                 case "거리순" -> {
-                    sql += "distance";
+                    sql += "order by distance";
                     break;
                 }
                 //TODO: 정렬 조건 추가하기
@@ -284,11 +294,9 @@ public class UserDao {
 
         sql += " LIMIT :limit OFFSET :offset";
 
-        assert sort != null;
         Map<String, Object> param = Map.of(
                 "userId", userId,
                 "category", category != null ? category : "",
-                "sort", sort,
                 "userLatitude", userLatitude,
                 "userLongitude", userLongitude,
                 "limit", limit,
@@ -302,13 +310,13 @@ public class UserDao {
                         rs.getInt("numOfStamp"),
                         rs.getInt("maxStamp"),
                         rs.getString("reward"),
-                        rs.getString("coordinate")
+                        rs.getInt("distance")
                 ));
     }
 
     public int getRegularsCount(long userId) {
         String sql = "SELECT COUNT(*) FROM Regulars WHERE userId = :userId AND status = 'request'";
-        Map<String, Object> param = Map.of("userId", "%" + userId + "%");
+        Map<String, Object> param = Map.of("userId", userId);
         return jdbcTemplate.queryForObject(sql, param, Integer.class);
     }
 

@@ -85,7 +85,7 @@ public class UserService {
     }
   
     public int getUserIdCount(Long userId) {
-        log.info("[UserService.getUserIdCount");
+        log.info("[UserService.getUserIdCount]");
 
         return userDao.getUserIdCount(userId);
     }
