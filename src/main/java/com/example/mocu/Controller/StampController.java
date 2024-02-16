@@ -1,8 +1,8 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dto.stamp.*;
-import com.example.mocu.FCM.FcmController;
 import com.example.mocu.Service.StampService;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/stamp")
 public class StampController {
     private final StampService stampService;
-    private final FcmController fcmController;
+    private final OwnerDao ownerDao;
 
     /**
      * 스탬프 적립 요청
@@ -28,19 +28,22 @@ public class StampController {
         log.info("[StampController.stampRequestRegister]");
 
         try {
+            // TODO 1. PostStampResponse return
             PostStampResponse postStampResponse = stampService.stampRequestRegister(postStampRequest);
             // -> OK
-            // postStampResponse 에 담긴 값들을 fcm 서버로 요청보낼때 담아서 보내야함(푸쉬 알림 내용)
-            // sendPushNotification(postStampResponse);
+
+            // TODO 2. postStampResponse의 storeId값을 가지고 있는 owner 정보 get
+            long ownerId = ownerDao.getOwnerId(postStampResponse.getStoreId());
+
+            // TODO 3. 푸시 알람 전송 요청 보내기
+
+
+
+
             return new BaseResponse<>("스탬프 적립 요청 성공");
         } catch (RuntimeException e){
             return new BaseResponse<>("스탬프 적립 요청 중 오류 발생");
         }
-    }
-
-    // 푸시 알림을 보내는 메서드
-    private void sendPushNotification(PostStampResponse postStampResponse) {
-
     }
 
     /**
@@ -53,7 +56,14 @@ public class StampController {
     public BaseResponse<PostStampAcceptResponse> stampRequestAccept(@RequestBody PostStampAcceptRequest postStampAcceptRequest){
         log.info("[StampController.stampRequestAccept]");
 
-        return new BaseResponse<>(stampService.stampRequestAccept(postStampAcceptRequest));
+        try {
+            // TODO 1. PostStampAcceptResponse return
+            PostStampAcceptResponse postStampAcceptResponse = stampService.stampRequestAccept(postStampAcceptRequest);
+
+            // TODO
+        }
+
+
     }
 
     /**

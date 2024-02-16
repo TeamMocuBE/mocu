@@ -336,4 +336,14 @@ public class OwnerDao {
                 )
         );
     }
+
+    public long getOwnerId(long storeId) {
+        log.info("[OwnerDao.getOwnerId]");
+
+        String sql = "select ownerId from Stores where storeId=:storeId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("storeId", storeId);
+
+        return jdbcTemplate.queryForObject(sql, params, Long.class);
+    }
 }
