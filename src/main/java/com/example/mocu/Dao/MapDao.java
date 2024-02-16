@@ -37,6 +37,7 @@ public class MapDao {
 
         // TODO 2. 각 storeId마다 해당 유저가 적립한 적이 있는 가게인지 체크
         log.info("todo2");
+
         for(long storeId : storeIds){
             if(!hasStampId(userId, storeId)){
                 log.info("stampId 생성");
@@ -45,7 +46,8 @@ public class MapDao {
             // TODO 3. GetMapStoreResponse 에 맞는 값 select
             log.info("todo3");
             String selectSql = "select s.storeId, s.latitude, s.longitude, s.category, " +
-                    "case when s.event is null then false else true end as hasEvent, st.dueDate as isDueDate " +
+                    "case when s.event is null then false else true end as hasEvent, st.dueDate as isDueDate," +
+                    "case when st.numOfStamp=0 and st.numOfCouponAvailable=0 and st.useCount=0 then false else true end as isVisited " +
                     "from Stores s join Stamps st on s.storeId=st.storeId " +
                     "where s.storeId=:storeId and st.userId=:userId ";
             MapSqlParameterSource selectParam = new MapSqlParameterSource();
@@ -84,7 +86,8 @@ public class MapDao {
                                 rs.getDouble("longitude"),
                                 rs.getString("category"),
                                 rs.getBoolean("hasEvent"),
-                                rs.getBoolean("isDueDate")
+                                rs.getBoolean("isDueDate"),
+                                rs.getBoolean("isVisited")
                         )
                 );
                 log.info("response 값 add");

@@ -19,7 +19,7 @@ public class MapController {
 
     /**
      * 지도페이지에서 현 기기 위치 근방 가게들의 정보 조회
-     * -> 필터링 부분 error 발생
+     * -> OK
      */
     @GetMapping("/userId={userId}")
     public BaseResponse<List<GetMapStoreResponse>> getMapStoreList(

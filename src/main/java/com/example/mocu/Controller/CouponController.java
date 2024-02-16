@@ -1,6 +1,7 @@
 package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dto.coupon.*;
 import com.example.mocu.Service.CouponService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequestMapping("/coupon")
 public class CouponController {
     private final CouponService couponService;
+    private final OwnerDao ownerDao;
 
     /**
      * 쿠폰 사용 요청(유저 앱 -> 점주 앱)
@@ -25,12 +27,15 @@ public class CouponController {
         log.info("[CouponController.couponRequestRegister]");
 
         try {
+            // TODO 1. PostCouponResponse return
             PostCouponResponse postCouponResponse = couponService.couponRequestRegister(postCouponRequest);
             // -> OK
 
-            /**
-             * 푸시 알림 구현
-             */
+            // TODO 2. postCouponResponse의 storeId값을 가지고 있는 owner 정보 get
+            long ownerId = ownerDao.getOwnerId(postCouponResponse.getStoreId());
+
+            // TODO 3. 푸시 알림 전송 요청 보내기
+
 
 
 
