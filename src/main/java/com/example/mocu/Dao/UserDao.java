@@ -84,7 +84,7 @@ public class UserDao {
                 "AND CR.createdDate >= CURDATE() - INTERVAL 1 MONTH " +
                 "ORDER BY CR.createdDate DESC " +
                 "limit 5";
-        String sqlAvailableReviewCount = "select COUNT(*) from reviews where userId = :userId and status = '작성 이전'";
+        String sqlAvailableReviewCount = "select COUNT(*) from reviews where userId = :userId and status = '작성이전'";
         String sqlMissionStampCount = "select numOfStamp from MissionStamps where userId = :userId";
 
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -417,5 +417,34 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, param, Integer.class);
     }
 
+    public long getUserId(long stampId) {
+        String sql = "select userId from Stamps where stampId=:stampId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("stampId", stampId);
 
+        return jdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
+    public void registerDeviceInfo(Long userId, String deviceId, String deviceToken) {
+        // 카카오 로그인 한 유저에 한해서 디바이스 아이디, 디바이스 토큰 등록
+        log.info("[UserDao.registerDeviceToken]");
+
+        String sql = "update Users set deviceId=:deviceId, deviceToken=:deviceToken where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("deviceId", deviceId);
+        params.addValue("deviceToken", deviceToken);
+        params.addValue("userId", userId);
+
+        jdbcTemplate.update(sql, params);
+    }
+
+    public String getUserUuid(long userId) {
+        log.info("[UserDao.getUserUuid]");
+
+        String sql = "select userUuid from Users where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
+
+        return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
 }

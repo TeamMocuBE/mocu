@@ -7,13 +7,12 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PushRequest {
-    private long ownerId;
+public class PushRequestToOwner {
+    private String ownerUuid;
     private long requestId;
     private long userId;
     private long storeId;
     private String createdDate;
     private String storeAddress;
     private String userName;
-    private String reward;
 }

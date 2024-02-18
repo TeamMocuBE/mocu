@@ -1,5 +1,6 @@
 package com.example.mocu.Service;
 
+import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.user.AuthResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
@@ -20,15 +21,47 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserDao userDao;
+    private final OwnerDao ownerDao;
     private final AuthTokensGenerator authTokensGenerator;
     private final RequestOAuthInfoService requestOAuthInfoService;
+    private final PushService pushService;
 
-    public AuthResponse login(OAuthLoginParams params) {
-        log.info("[AuthService.login]");
+    public AuthResponse userLogin(OAuthLoginParams params) {
+        log.info("[AuthService.userLogin]");
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
         Long userId = findOrCreateMember(oAuthInfoResponse);
 
         AuthTokens authTokens = authTokensGenerator.generate(userId);
+
+        // TODO 1. 디바이스 토큰, 디바이스 아이디 값 등록하기
+        userDao.registerDeviceInfo(userId, params.getDeviceId(), params.getDeviceToken());
+
+        // TODO 2. uuid 값 발급받기 (-> 카카오에서)
+        //String userUuid = ,,, ;
+
+
+        // TODO 3. 푸시 토큰 등록하기
+        //pushService.registerPushToken(userUuid, params.getDeviceId(), params.getDeviceToken());
+
+        return new AuthResponse(userId, authTokens);
+    }
+
+    public AuthResponse ownerLogin(OAuthLoginParams params) {
+        log.info("[AuthService.ownerLogin]");
+        OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
+        Long userId = findOrCreateMember(oAuthInfoResponse);
+
+        AuthTokens authTokens = authTokensGenerator.generate(userId);
+
+        // TODO 1. 디바이스 토큰, 디바이스 아이디 값 등록하기
+        ownerDao.registerDeviceInfo(userId, params.getDeviceId(), params.getDeviceToken());
+
+        // TODO 2. uuid 값 발급받기 (-> 카카오에서)
+        //String ownerUuid = ,,, ;
+
+
+        // TODO 3. 푸시 토큰 등록하기
+        //pushService.registerPushToken(ownerUuid, params.getDeviceId(), params.getDeviceToken());
 
         return new AuthResponse(userId, authTokens);
     }

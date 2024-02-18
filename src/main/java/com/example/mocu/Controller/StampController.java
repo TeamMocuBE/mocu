@@ -2,12 +2,14 @@ package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dao.OwnerDao;
+import com.example.mocu.Dao.UserDao;
+import com.example.mocu.Dto.Push.PushRequestToOwner;
+import com.example.mocu.Dto.Push.PushRequestToUser;
 import com.example.mocu.Dto.stamp.*;
+import com.example.mocu.Service.PushService;
 import com.example.mocu.Service.StampService;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +21,8 @@ import java.util.List;
 public class StampController {
     private final StampService stampService;
     private final OwnerDao ownerDao;
+    private final UserDao userDao;
+    private final PushService pushService;
 
     /**
      * 스탬프 적립 요청
@@ -32,13 +36,22 @@ public class StampController {
             PostStampResponse postStampResponse = stampService.stampRequestRegister(postStampRequest);
             // -> OK
 
-            // TODO 2. postStampResponse의 storeId값을 가지고 있는 owner 정보 get
+            // TODO 2. push 알림을 보낼 ownerId get
             long ownerId = ownerDao.getOwnerId(postStampResponse.getStoreId());
+            String ownerUuid = ownerDao.getOwnerUuid(ownerId);
 
-            // TODO 3. 푸시 알람 전송 요청 보내기
+            // TODO 3. 푸시 알람 전송 요청 보내기 (to owner)
+            PushRequestToOwner pushRequestToOwner = new PushRequestToOwner(
+                    ownerUuid,
+                    postStampResponse.getStampRequestId(),
+                    postStampResponse.getUserId(),
+                    postStampResponse.getStoreId(),
+                    postStampResponse.getCreatedDate(),
+                    postStampResponse.getStoreAddress(),
+                    postStampResponse.getUserName()
+            );
 
-
-
+            pushService.sendPushMessageToOwner(pushRequestToOwner);
 
             return new BaseResponse<>("스탬프 적립 요청 성공");
         } catch (RuntimeException e){
@@ -53,14 +66,33 @@ public class StampController {
      * 테스트 더 많이 해볼 것
      */
     @PostMapping("/owner-accept")
-    public BaseResponse<PostStampAcceptResponse> stampRequestAccept(@RequestBody PostStampAcceptRequest postStampAcceptRequest){
+    public BaseResponse<String> stampRequestAccept(@RequestBody PostStampAcceptRequest postStampAcceptRequest){
         log.info("[StampController.stampRequestAccept]");
 
         try {
             // TODO 1. PostStampAcceptResponse return
             PostStampAcceptResponse postStampAcceptResponse = stampService.stampRequestAccept(postStampAcceptRequest);
 
-            // TODO
+            // TODO 2. push 알림을 보낼 userId get
+            long userId = userDao.getUserId(postStampAcceptResponse.getStampId());
+            String userUuid = userDao.getUserUuid(userId);
+
+            // TODO 3. 푸시 알림 전송 요청 보내기 (to user)
+            PushRequestToUser pushRequestToUser = new PushRequestToUser(
+                    userUuid,
+                    postStampAcceptResponse.getStampId(),
+                    postStampAcceptResponse.getNumOfStamp(),
+                    postStampAcceptResponse.getMaxStamp(),
+                    postStampAcceptResponse.getStoreName(),
+                    postStampAcceptResponse.isDueDate(),
+                    postStampAcceptResponse.getNumOfCouponAvailable()
+            );
+
+            pushService.sendPushMessageToUser(pushRequestToUser);
+
+            return new BaseResponse<>("스탬프 적립 요청 수락 성공 처리 완료");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("스탬프 적립 요청 수락 성공 처리 중 오류 발생");
         }
 
 

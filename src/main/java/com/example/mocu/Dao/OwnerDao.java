@@ -240,13 +240,14 @@ public class OwnerDao {
   
     //TODO. modify useCount
         public List<GetCustomerStampResponse> getCustomerStamp(Long ownerId, boolean isCustomerRegular, String sort) {
-            String sql = "select u.userImage, u.name, st.numOfStamp, s.maxStamp, st.useCount ";
+            String sql = "select u.userImage, u.name, st.numOfStamp, s.maxStamp, st.useCount, " +
+                    "case when r.status='accept' then true else false end as isRegular ";
             sql += "from Stores s ";
             sql += "join Stamps st on s.storeId = st.storeId ";
             sql += "join Users u on st.userId = u.userId ";
+            sql += "join Regulars r on u.userId = r.userId ";
 
             if (isCustomerRegular) {
-                sql += "join Regulars r on u.userId = r.userId ";
                 sql += "where r.status = 'accept' ";
                 sql += "and s.ownerId = :ownerId ";
             } else {
@@ -280,7 +281,8 @@ public class OwnerDao {
                             rs.getString("name"),
                             rs.getInt("numOfStamp"),
                             rs.getInt("maxStamp"),
-                            rs.getInt("useCount")
+                            rs.getInt("useCount"),
+                            rs.getBoolean("isRegular")
                     ));
         }
   
@@ -345,5 +347,29 @@ public class OwnerDao {
         params.addValue("storeId", storeId);
 
         return jdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
+    public String getOwnerUuid(long ownerId) {
+        log.info("[OwnerDao.getOwnerUuid]");
+
+        String sql = "select ownerUuid from Owners where ownerId=:ownerId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("ownerId", ownerId);
+
+        return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
+
+
+    public void registerDeviceInfo(Long ownerId, String deviceId, String deviceToken) {
+        // 카카오 로그인 한 유저에 한해서 디바이스 아이디, 디바이스 토큰 등록
+        log.info("[UserDao.registerDeviceToken]");
+
+        String sql = "update Owners set deviceId=:deviceId, deviceToken=:deviceToken where ownerId=:ownerId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("deviceId", deviceId);
+        params.addValue("deviceToken", deviceToken);
+        params.addValue("ownerId", ownerId);
+
+        jdbcTemplate.update(sql, params);
     }
 }

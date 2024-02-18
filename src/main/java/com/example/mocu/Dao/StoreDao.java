@@ -196,7 +196,7 @@ public class StoreDao {
         int offset = page * limit;
 
         // 리뷰 '최신순' 정렬
-        String sql = "select u.name, u.userImage, r.rate, r.content, r.modifiedDate " +
+        String sql = "select r.reviewId, u.name, u.userImage, r.rate, r.content, r.modifiedDate " +
                 "from Users u join Reviews r on u.userId=r.userId " +
                 "where r.storeId=:storeId and r.status='작성이후' " +
                 "order by r.modifiedDate desc limit :limit offset :offset";
@@ -206,6 +206,7 @@ public class StoreDao {
         params.addValue("offset", offset);
 
         List<ReviewForUser> reviews = jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
+                rs.getLong("reviewId"),
                 rs.getString("name"),
                 rs.getString("userImage"),
                 rs.getInt("rate"),
@@ -227,7 +228,7 @@ public class StoreDao {
         int offset = page * limit;
 
         // 리뷰 '평점순' 정렬
-        String sql = "select u.name, u.userImage, r.rate, r.content, r.modifiedDate " +
+        String sql = "select r.reviewId, u.name, u.userImage, r.rate, r.content, r.modifiedDate " +
                 "from Users u join Reviews r on u.userId=r.userId " +
                 "where r.storeId=:storeId and r.status='작성이후' " +
                 "order by r.rate desc limit :limit offset :offset";
@@ -237,6 +238,7 @@ public class StoreDao {
         params.addValue("offset", offset);
 
         List<ReviewForUser> reviews = jdbcTemplate.query(sql, params, (rs, rowNum) -> new ReviewForUser(
+                rs.getLong("reviewId"),
                 rs.getString("name"),
                 rs.getString("userImage"),
                 rs.getInt("rate"),
