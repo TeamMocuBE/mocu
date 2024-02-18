@@ -44,7 +44,7 @@ public class ReviewDao {
 
         sql += "join Stamps st on s.storeId = st.storeId and st.userId = :userId ";
 
-        sql += "where r.status = '작성 이전' and s.status = 'active'";
+        sql += "where r.status = '작성이전' and s.status = 'active'";
 
         Map<String, Object> param = Map.of("userId", userId);
 
@@ -73,7 +73,7 @@ public class ReviewDao {
         String sql = "select s.mainImageUrl, s.name, r.rate, r.createdDate, r.content ";
         sql += "from Stores s ";
         sql += "join Reviews r on s.storeId = r.storeId and r.userId = :userId ";
-        sql += "where r.status = '작성 이후' and r.report = false ";
+        sql += "where r.status = '작성이후' and r.report = false ";
 
         if (sort != null && !sort.isEmpty()) {
             sql += "order by ";

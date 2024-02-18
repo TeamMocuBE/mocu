@@ -18,10 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/kakao")
-    public ResponseEntity<AuthResponse> loginKakao(@RequestBody KakaoLoginParams params) {
+    @PostMapping("/kakao/user")
+    public ResponseEntity<AuthResponse> userLoginKakao(@RequestBody KakaoLoginParams params) {
         log.info("[AuthController.loginKakao] params: {}", params);
-        AuthResponse authResponse = authService.login(params);
+        AuthResponse authResponse = authService.userLogin(params);
+
+        return ResponseEntity.ok(authResponse);
+    }
+
+    @PostMapping("/kakao/owner")
+    public ResponseEntity<AuthResponse> ownerLoginKakao(@RequestBody KakaoLoginParams params) {
+        log.info("[AuthController.loginKakao] params: {}", params);
+        AuthResponse authResponse = authService.ownerLogin(params);
 
         return ResponseEntity.ok(authResponse);
     }

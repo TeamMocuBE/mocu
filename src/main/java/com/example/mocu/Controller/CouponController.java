@@ -2,11 +2,12 @@ package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dao.OwnerDao;
+import com.example.mocu.Dto.Push.PushRequestToOwner;
 import com.example.mocu.Dto.coupon.*;
 import com.example.mocu.Service.CouponService;
+import com.example.mocu.Service.PushService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 public class CouponController {
     private final CouponService couponService;
     private final OwnerDao ownerDao;
+    private final PushService pushService;
 
     /**
      * 쿠폰 사용 요청(유저 앱 -> 점주 앱)
@@ -33,10 +35,20 @@ public class CouponController {
 
             // TODO 2. postCouponResponse의 storeId값을 가지고 있는 owner 정보 get
             long ownerId = ownerDao.getOwnerId(postCouponResponse.getStoreId());
+            String ownerUuid = ownerDao.getOwnerUuid(ownerId);
 
             // TODO 3. 푸시 알림 전송 요청 보내기
+            PushRequestToOwner pushRequestToOwner = new PushRequestToOwner(
+                    ownerUuid,
+                    postCouponResponse.getCouponRequestId(),
+                    postCouponResponse.getUserId(),
+                    postCouponResponse.getStoreId(),
+                    postCouponResponse.getCreatedDate(),
+                    postCouponResponse.getStoreAddress(),
+                    postCouponResponse.getUserName()
+            );
 
-
+            pushService.sendPushMessageToOwner(pushRequestToOwner);
 
 
             return new BaseResponse<>("쿠폰 사용 요청 성공");
