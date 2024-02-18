@@ -15,4 +15,5 @@ public class GetCustomerStampResponse {
     private int numOfStamp;
     private int maxStamp;
     private int useCount;
+    private boolean isRegular;
 }

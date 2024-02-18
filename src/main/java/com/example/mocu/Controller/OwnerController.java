@@ -76,8 +76,8 @@ public class OwnerController {
      */
     @GetMapping("/{ownerId}/stamp-of-customer")
     public BaseResponse<List<GetCustomerStampResponse>> getCustomerStamp(@PathVariable Long ownerId,
-                                                                         @RequestParam(required = false, defaultValue = "false") boolean isCustomerRegular,
-                                                                         @RequestParam(defaultValue = "적립 많은 순") String sort) {
+                                                                         @RequestParam(name = "isCustomerRegular", required = false, defaultValue = "false") boolean isCustomerRegular,
+                                                                         @RequestParam(name = "sort", defaultValue = "적립 많은 순") String sort) {
         log.info("[OwnerController.getCustomerStamp]");
 
         return new BaseResponse<>(ownerService.getCustomerStamp(ownerId, isCustomerRegular, sort));

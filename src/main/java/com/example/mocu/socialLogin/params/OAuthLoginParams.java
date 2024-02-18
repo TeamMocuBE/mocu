@@ -7,4 +7,8 @@ public interface OAuthLoginParams {
     OAuthProvider oAuthProvider();
 
     MultiValueMap<String, String> makeBody();
+
+    String getDeviceId();
+
+    String getDeviceToken();
 }

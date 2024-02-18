@@ -10,7 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewForUser {
-    // user 이름, user 프로필 이미지, 평점, 리뷰내용, 최종 수정 시각
+    // reviewId, user 이름, user 프로필 이미지, 평점, 리뷰내용, 최종 수정 시각
+    private long reviewId;
     private String name;
     private String userImage;            // null 가능
     private int rate;
