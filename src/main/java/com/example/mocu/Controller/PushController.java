@@ -26,7 +26,7 @@ public class PushController {
 
             return ResponseEntity.ok("푸시 알림 전송 완료.");
         } catch (RuntimeException e){
-            return ResponseEntity.ok("푸시 알림 전송 중 에러 발생.");
+            return ResponseEntity.ok("푸시 알림 전송 실패.");
         }
 
     }
