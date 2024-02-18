@@ -7,7 +7,7 @@ spring:
           kakao:
             client-id: 3161a6ee6bf6b756c91d77d4f6003094
             client-secret: 3P0D0Tw8MeKiBN6NcY64sMlUBVvoSYux
-            redirect-uri: http://localhost:9000/login/oauth2/code/kakao
+            redirect-uri: https://mocu.netlify.app/login/oauth
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
             client-name: Kakao
