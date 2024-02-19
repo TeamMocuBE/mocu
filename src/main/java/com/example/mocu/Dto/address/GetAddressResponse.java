@@ -13,4 +13,6 @@ public class GetAddressResponse {
     private long addressId;
     private String name;
     private String address;
+    private double latitude;
+    private double longitude;
 }
