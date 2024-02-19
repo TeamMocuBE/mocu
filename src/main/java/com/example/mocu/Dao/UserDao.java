@@ -76,11 +76,11 @@ public class UserDao {
                 "JOIN Stores S ON R.storeId = S.storeId " +
                 "WHERE R.status = 'request' AND R.userId = :userId";
         String sqlCurrentAddress = "select address from Addresses " +
-                "where status = 'selected'";
+                "where status = 'select'";
         String sqlRecentCouponUsage = "SELECT S.name AS storeName, S.reward AS benefit " +
                 "FROM CouponsRequest CR " +
                 "JOIN Stores S ON CR.storeId = S.storeId " +
-                "WHERE CR.userId = :userId AND CR.status = 'accepted' " +
+                "WHERE CR.userId = :userId AND CR.status = 'accept' " +
                 "AND CR.createdDate >= CURDATE() - INTERVAL 1 MONTH " +
                 "ORDER BY CR.createdDate DESC " +
                 "limit 5";
@@ -281,7 +281,7 @@ public class UserDao {
                     break;
                 }
                 case "별점 높은 순" -> {
-                    sql += "order by s.rate";
+                    sql += "order by s.rating";
                     break;
                 }
                 case "거리순" -> {

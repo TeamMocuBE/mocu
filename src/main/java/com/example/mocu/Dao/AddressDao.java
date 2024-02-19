@@ -86,12 +86,12 @@ public class AddressDao {
 
     public SelectUserAddressResponse selectAddress(Long userId, PatchUserSetAddress patchUserSetAddress) {
         // 사용자의 모든 주소 상태를 '선택되지 않음'으로 초기화
-        String sqlResetStatus = "UPDATE Addresses SET status = 'not selected' WHERE userId = :userId";
+        String sqlResetStatus = "UPDATE Addresses SET status = 'not-select' WHERE userId = :userId";
         Map<String, Object> paramReset = Map.of("userId", userId);
         jdbcTemplate.update(sqlResetStatus, paramReset);
 
         // 지정된 주소의 상태를 '선택됨'으로 설정
-        String sqlSelectAddress = "UPDATE Addresses SET status = 'selected' WHERE userId = :userId AND name = :addressName";
+        String sqlSelectAddress = "UPDATE Addresses SET status = 'select' WHERE userId = :userId AND name = :addressName";
         Map<String, Object> paramSelect = Map.of(
                 "userId", userId,
                 "addressName", patchUserSetAddress.getAddressName()
