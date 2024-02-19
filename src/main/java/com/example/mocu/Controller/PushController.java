@@ -44,7 +44,7 @@ public class PushController {
 
             return new BaseResponse<>("푸시 알림 전송 완료.");
         } catch (RuntimeException e){
-            return ResponseEntity.ok("푸시 알림 전송 실패.");
+            return new BaseResponse<>("푸시 알림 전송 실패.");
         }
 
     }
