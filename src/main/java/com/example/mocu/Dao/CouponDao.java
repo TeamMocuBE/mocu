@@ -146,11 +146,11 @@ public class CouponDao {
                     break;
                 }
                 case "적립 많은 순" -> {
-                    sql += "st.numOfStamp";
+                    sql += "st.numOfStamp desc";
                     break;
                 }
                 case "별점 높은 순" -> {
-                    sql += "s.rating";
+                    sql += "s.rating desc";
                     break;
                 }
                 //TODO: 정렬 조건 추가하기

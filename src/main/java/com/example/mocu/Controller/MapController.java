@@ -28,11 +28,12 @@ public class MapController {
             @RequestParam(name = "longitude") double longitude,
             @RequestParam(name = "categoryOption", required = false, defaultValue = "업종 전체") String categoryOption,
             @RequestParam(name = "eventOption", required = false, defaultValue = "false") boolean eventOption,
-            @RequestParam(name = "dueDateOption", required = false, defaultValue = "false") boolean dueDateOption){
+            @RequestParam(name = "dueDateOption", required = false, defaultValue = "false") boolean dueDateOption,
+            @RequestParam(name = "visitOption", required = false, defaultValue = "false") boolean visitOption){
 
         log.info("[MapController.getStoreMapList]");
 
-        return new BaseResponse<>(mapService.getMapStoreList(userId, latitude, longitude, categoryOption, eventOption, dueDateOption));
+        return new BaseResponse<>(mapService.getMapStoreList(userId, latitude, longitude, categoryOption, eventOption, dueDateOption, visitOption));
     }
 
     /**

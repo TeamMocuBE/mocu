@@ -12,7 +12,7 @@ import org.springframework.web.util.pattern.PathPattern;
 @AllArgsConstructor
 public class GetMapStoreResponse {
     // isDueDate : true -> 유저가 해당 가게에 쿠폰 사용 임박 상태임 / false -> X
-    // isVisited : true -> 유저가 해당 가게에 스탬ㅍ 적립 한적 있음 / false -> X
+    // isVisited : true -> 유저가 해당 가게에 스탬프 적립 한적 있음 / false -> X
     private long storeId;
     private double latitude;
     private double longitude;

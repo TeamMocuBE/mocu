@@ -277,11 +277,11 @@ public class UserDao {
                     break;
                 }
                 case "적립 많은 순" -> {
-                    sql += "order by st.numOfStamp";
+                    sql += "order by st.numOfStamp desc";
                     break;
                 }
                 case "별점 높은 순" -> {
-                    sql += "order by s.rating";
+                    sql += "order by s.rating desc";
                     break;
                 }
                 case "거리순" -> {

@@ -21,7 +21,7 @@ public class MapDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public List<GetMapStoreResponse> getMapStoreList(long userId, double latitude, double longitude, int distance, String categoryOption, boolean eventOption, boolean dueDateOption) {
+    public List<GetMapStoreResponse> getMapStoreList(long userId, double latitude, double longitude, int distance, String categoryOption, boolean eventOption, boolean dueDateOption, boolean visitOption) {
         log.info("[MapDao.getMapStoreList]");
 
         // TODO 1. 해당 유저 근방 가게의 storeId get
@@ -74,6 +74,13 @@ public class MapDao {
             if(dueDateOption){
                 selectSql += "and st.dueDate is true ";
             }
+
+            log.info("가본 곳만 필터링");
+            // 4. visitOption에 따라 가본 곳만 여부 필터링
+            if(visitOption){
+                selectSql += "and (st.numOfStamp!=0 or st.numOfCouponAvailable!=0 or st.useCount!=0) ";
+            }
+
             selectSql += "ORDER BY ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude))";
             selectParam.addValue("userLongitude", longitude);
             selectParam.addValue("userLatitude", latitude);
