@@ -150,7 +150,7 @@ public class CouponDao {
                     break;
                 }
                 case "별점 높은 순" -> {
-                    sql += "s.rate";
+                    sql += "s.rating";
                     break;
                 }
                 //TODO: 정렬 조건 추가하기
