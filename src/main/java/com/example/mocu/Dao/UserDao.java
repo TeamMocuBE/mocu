@@ -1,5 +1,7 @@
 package com.example.mocu.Dao;
 
+import com.example.mocu.Dto.owner.GetOwnerResponse;
+import com.example.mocu.Dto.owner.PostOwnerRequest;
 import com.example.mocu.Dto.search.Search;
 import com.example.mocu.Dto.store.DueDateStoreInfo;
 import com.example.mocu.Dto.store.RecentlyVisitedStoreInfo;
@@ -29,7 +31,7 @@ public class UserDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public List<GetUserResponse> getUsers(String name, String email, String status) {
+    public List<GetUserResponse> getUsers_v1(String name, String email, String status) {
         String sql = "select userId, name, email, userImage, status, provider from Users " +
                 "where name like :name and email like :email and status like :status";
 
@@ -41,6 +43,46 @@ public class UserDao {
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetUserResponse(
                         rs.getLong("userId"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("userImage"),
+                        rs.getString("status"),
+                        rs.getString("provider")
+                )
+        );
+    }
+
+    public List<GetUserResponse> getUsers(String name, String status) {
+        String sql = "select userId, name, email, userImage, status, provider from Users " +
+                "where name like :name and status like :status";
+
+        Map<String, Object> param = Map.of(
+                "name", "%" + name + "%",
+                "status", "%" + status + "%");
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetUserResponse(
+                        rs.getLong("userId"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("userImage"),
+                        rs.getString("status"),
+                        rs.getString("provider")
+                )
+        );
+    }
+
+    public List<GetOwnerResponse> getOwners(String name, String status) {
+        String sql = "select ownerId, name, email, userImage, status, provider from Users " +
+                "where name like :name and status like :status";
+
+        Map<String, Object> param = Map.of(
+                "name", "%" + name + "%",
+                "status", "%" + status + "%");
+
+        return jdbcTemplate.query(sql, param,
+                (rs, rowNum) -> new GetOwnerResponse(
+                        rs.getLong("ownerId"),
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("userImage"),
@@ -67,6 +109,16 @@ public class UserDao {
         return Objects.requireNonNull(keyHolder.getKey()).longValue();
     }
 
+    public long createOwner(PostOwnerRequest postOwnerRequest) {
+        String sql = "insert into users(email, name, provider, userImage) " +
+                "values(:email, :name, :provider, :profileImage)";
+
+        SqlParameterSource param = new BeanPropertySqlParameterSource(postOwnerRequest);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sql, param, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+    }
 
     public GetMyPageResponse getMypage(Long userId) {
         String sqlUsableCoupon = "SELECT SUM(numOfCouponAvailable) FROM Stamps " +
