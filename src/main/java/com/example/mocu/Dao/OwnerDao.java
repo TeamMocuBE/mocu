@@ -360,14 +360,15 @@ public class OwnerDao {
     }
 
 
-    public void registerDeviceInfo(Long ownerId, String deviceId, String deviceToken) {
+    public void registerOwnerUuid(long ownerId) {
         // 카카오 로그인 한 유저에 한해서 디바이스 아이디, 디바이스 토큰 등록
         log.info("[UserDao.registerDeviceToken]");
 
-        String sql = "update Owners set deviceId=:deviceId, deviceToken=:deviceToken where ownerId=:ownerId";
+        String ownerUuid = String.valueOf(ownerId);
+
+        String sql = "update Owners set ownerUuid=:ownerUuid where ownerId=:ownerId";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("deviceId", deviceId);
-        params.addValue("deviceToken", deviceToken);
+        params.addValue("ownerUuid", ownerUuid);
         params.addValue("ownerId", ownerId);
 
         jdbcTemplate.update(sql, params);
