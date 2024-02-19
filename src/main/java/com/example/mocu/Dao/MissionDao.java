@@ -232,5 +232,11 @@ public class MissionDao {
     }
 
 
+    public String getStatusForMissionMap(long userId) {
+        String sql = "select status from MissionStamps where userId=:userId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("userId", userId);
 
+        return jdbcTemplate.queryForObject(sql, params, String.class);
+    }
 }

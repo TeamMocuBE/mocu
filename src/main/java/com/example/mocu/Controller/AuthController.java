@@ -1,5 +1,7 @@
 package com.example.mocu.Controller;
 
+import com.example.mocu.Common.response.BaseResponse;
+import com.example.mocu.Dto.Push.PostRegisterPushTokenRequest;
 import com.example.mocu.Dto.user.AuthResponse;
 import com.example.mocu.Service.AuthService;
 import com.example.mocu.socialLogin.params.KakaoLoginParams;
@@ -32,5 +34,19 @@ public class AuthController {
         AuthResponse authResponse = authService.ownerLogin(params);
 
         return ResponseEntity.ok(authResponse);
+    }
+
+    // 프론트한테서 디바이스ID, 디바이스토큰, userId 값 받아오기
+    @PostMapping("/register/push-token")
+    public BaseResponse<String> registerPushToken(@RequestBody PostRegisterPushTokenRequest postRegisterPushTokenRequest){
+        log.info("[AuthController.registerPushToken]");
+
+        try {
+            authService.registerPushToken(postRegisterPushTokenRequest);
+            return new BaseResponse<>("푸시 토큰 등록 성공.");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("푸시 토큰 등록 중 에러 발생.");
+        }
+
     }
 }

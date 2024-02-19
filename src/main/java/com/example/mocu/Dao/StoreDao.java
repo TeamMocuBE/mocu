@@ -87,8 +87,8 @@ public class StoreDao {
         int limit = 10;
         int offset = page * limit;
 
-        String sql = "SELECT s.name, s.reward, s.latitude, s.longitude, s.rating, s.maxStamp, ST_Distance_Sphere(point(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) AS distance "
-                + ", COALESCE(st.numOfStamp, 0) AS numOfStamp "
+        String sql = "SELECT s.name, s.reward, s.latitude, s.longitude, s.rating, s.maxStamp, ST_Distance_Sphere(point(s.longitude, s.latitude), point(:userLongitude, :userLatitude)) AS distance, "
+                + "COALESCE(st.numOfStamp, 0) AS numOfStamp "
                 + "FROM Stores s "
                 + "LEFT JOIN (SELECT storeId, userId, numOfStamp FROM Stamps WHERE userId = :userId) st ON s.storeId = st.storeId "
                 + "LEFT JOIN (SELECT storeId, COUNT(*) as reviewCount FROM Reviews GROUP BY storeId) rv ON s.storeId = rv.storeId ";

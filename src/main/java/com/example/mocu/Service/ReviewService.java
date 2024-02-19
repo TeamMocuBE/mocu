@@ -48,13 +48,8 @@ public class ReviewService {
         /**
          * 2. 리뷰 작성 O -> status = '작성이후'
          */
-        // TODO 1. 글자수 체크
-        // 10자 이상이어야 리뷰로 등록
-        if(postReviewRequest.getContent().length() < 10){
-            throw new ReviewException(INVALID_REVIEW_LENGTH);
-        }
 
-        // TODO 2. reviewId 생성
+        // TODO 1. reviewId 생성
         long reviewId = reviewDao.createReviewId(
                 postReviewRequest.getUserId(),
                 postReviewRequest.getStoreId(),
@@ -62,7 +57,7 @@ public class ReviewService {
                 postReviewRequest.getContent(),
                 "작성이후");
 
-        // TODO 3. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
+        // TODO 2. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
         // 오늘의 미션 중 '리뷰 작성하기' 가 있는지 체크
         List<IsTodayMission> todayMissionList = new ArrayList<>();
         if(missionDao.isTodayMissionAssigned(postReviewRequest.getUserId(), "리뷰 작성하기")){
@@ -75,10 +70,10 @@ public class ReviewService {
             missionDao.updateTodayMissionToDone(todayMissionId);
         }
 
-        // TODO 4. 가게 평점 update
+        // TODO 3. 가게 평점 update
         storeDao.updateStoreRating(postReviewRequest.getStoreId(), postReviewRequest.getRate());
 
-        // TODO 5. return
+        // TODO 4. return
         return new PostReviewResponse(reviewId, todayMissionList);
     }
 
@@ -107,16 +102,10 @@ public class ReviewService {
     public PatchReviewResponse correctReview(PatchReviewRequest patchReviewRequest) {
         log.info("[ReviewService.correctReview]");
 
-        // TODO 1. 글자수 체크
-        // 10자 이상이어야 리뷰로 등록
-        if(patchReviewRequest.getContent().length() < 10){
-            throw new ReviewException(INVALID_REVIEW_LENGTH);
-        }
-
-        // TODO 2. review update
+        // TODO 1. review update
         reviewDao.updateReview(patchReviewRequest);
 
-        // TODO 3. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
+        // TODO 2. '리뷰 작성하기' 가 오늘의 미션에 해당되는지 체크
         // 오늘의 미션 중 '리뷰 작성하기' 가 있는지 체크
         List<IsTodayMission> todayMissionList = new ArrayList<>();
         if(missionDao.isTodayMissionAssigned(patchReviewRequest.getUserId(), "리뷰 작성하기")){
@@ -129,10 +118,10 @@ public class ReviewService {
             missionDao.updateTodayMissionToDone(todayMissionId);
         }
 
-        // TODO 4. 가게 평점 update
+        // TODO 3. 가게 평점 update
         storeDao.updateStoreRating(patchReviewRequest.getStoreId(), patchReviewRequest.getRate());
 
-        // TODO 5. return
+        // TODO 4. return
         return new PatchReviewResponse(todayMissionList);
     }
 

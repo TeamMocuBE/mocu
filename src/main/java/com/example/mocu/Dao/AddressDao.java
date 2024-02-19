@@ -61,7 +61,7 @@ public class AddressDao {
     }
 
     public long modifyAddress(Long userId, PatchUserAddressRequest patchUserAddressRequest, Long addressId) {
-        String sql = "UPDATE Addresses SET address = :address, latitude = :latitude, longitude = :longitude WHERE userId = :userId and name = :name and addressId = :addressId";
+        String sql = "UPDATE Addresses SET name =:name, address = :address, latitude = :latitude, longitude = :longitude WHERE userId = :userId and addressId = :addressId";
 
         Map<String, Object> param = Map.of(
                 "userId", userId,

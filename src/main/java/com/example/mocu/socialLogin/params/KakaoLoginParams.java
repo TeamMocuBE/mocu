@@ -16,8 +16,8 @@ public class KakaoLoginParams implements OAuthLoginParams {
     private String authorizationCode;
 
     // push token 등록
-    private String deviceId;
-    private String deviceToken;
+    //private String deviceId;
+    //private String deviceToken;
 
     @Override
     public OAuthProvider oAuthProvider() {

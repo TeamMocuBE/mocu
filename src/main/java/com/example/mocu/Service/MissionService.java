@@ -85,7 +85,10 @@ public class MissionService {
         // TODO 2. reward 조회
         String reward = missionDao.getRewardForMissionMap(patchMissionMapCompleteRequest.getUserId());
 
-        return new PatchMissionMapCompleteResponse(reward);
+        // TODO 3. status 조회
+        String status = missionDao.getStatusForMissionMap(patchMissionMapCompleteRequest.getUserId());
+
+        return new PatchMissionMapCompleteResponse(reward, status);
     }
 
     /**

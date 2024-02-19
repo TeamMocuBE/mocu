@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.mission;
+package com.example.mocu.Dto.Push;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchMissionMapCompleteResponse {
-    private String reward;
-    private String status;
+public class PostRegisterPushTokenRequest {
+    private long userId;
+    private String deviceId;
+    private String deviceToken;
 }

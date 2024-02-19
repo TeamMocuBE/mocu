@@ -109,4 +109,10 @@ public class OwnerService {
 
         return ownerDao.getCustomerStamp(ownerId, isCustomerRegular, sort);
     }
+
+    public GetStoreIdResponse getStoreId(long ownerId) {
+        log.info("[OwnerService.getStoreId]");
+
+        return ownerDao.getStoreId(ownerId);
+    }
 }
