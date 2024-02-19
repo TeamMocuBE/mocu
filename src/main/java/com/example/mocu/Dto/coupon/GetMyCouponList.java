@@ -25,4 +25,6 @@ public class GetMyCouponList {
     private double longitude;
 
     private String event;
+
+    private float rating;
 }
