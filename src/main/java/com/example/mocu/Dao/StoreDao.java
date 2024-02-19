@@ -63,7 +63,7 @@ public class StoreDao {
 
         int limit = 5;
 
-        String sql = "select name as storeName, mainImageUrl from Stores s " +
+        String sql = "select storeId, name as storeName, mainImageUrl from Stores s " +
                 "where event is not null " +
                 "order by ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) limit :limit";
 
@@ -74,6 +74,7 @@ public class StoreDao {
 
         List<StoreInEventInfo> storeInEventInfoList = jdbcTemplate.query(sql, params, (rs, rowNul) -> {
             StoreInEventInfo storeInEventInfo = new StoreInEventInfo();
+            storeInEventInfo.setStoreId(rs.getLong("storeId"));
             storeInEventInfo.setStoreName(rs.getString("storeName"));
             storeInEventInfo.setMainImageUrl(rs.getString("mainImageUrl"));
             return storeInEventInfo;
@@ -126,16 +127,16 @@ public class StoreDao {
         if (sort != null && !sort.isEmpty()) {
             sql += " order by ";
             switch (sort) {
-                case "별점 높은 순":
+                case "별점 높은순":
                     sql += "s.rating DESC";
                     break;
-                case "리뷰 많은 순":
+                case "리뷰 많은순":
                     sql += "rv.reviewCount DESC";
                     break;
                 case "거리순":
                     sql += "distance";
                     break;
-                case "적립률 순":
+                case "적립률순":
                     sql += "(CASE WHEN s.maxStamp > 0 THEN COALESCE(st.numOfStamp, 0) / s.maxStamp ELSE 0 END) DESC";
                     break;
             }

@@ -40,7 +40,7 @@ public class RecommendDao {
         log.info("todo2");
 
         String inClausePlaceholders = storeIds.stream().map(id -> ":storeId_" + id).collect(Collectors.joining(", "));
-        String selectSql = "select name as storeName, " +
+        String selectSql = "select storeId, name as storeName, " +
                 "case when event is null then false else true end as hasEvent, mainImageUrl," +
                 "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(longitude, latitude)) as distance " +
                 "from Stores where storeId in (" + inClausePlaceholders + ") " +
@@ -55,6 +55,7 @@ public class RecommendDao {
 
         List<RecommendStoreInfo> recommendStoreInfoList = jdbcTemplate.query(selectSql, selectParams, (rs, rowNum) -> {
             RecommendStoreInfo recommendStoreInfo = new RecommendStoreInfo();
+            recommendStoreInfo.setStoreId(rs.getLong("storeId"));
             recommendStoreInfo.setStoreName(rs.getString("storeName"));
             recommendStoreInfo.setHasEvent(rs.getBoolean("hasEvent"));
             recommendStoreInfo.setMainImageUrl(rs.getString("mainImageUrl"));
@@ -88,7 +89,7 @@ public class RecommendDao {
     public RecommendStoreInfo getRecommendStoreInfo(String category, double latitude, double longitude, int recommendLimit) {
         log.info("[RecommendDao.getRecommendStoreInfo]");
 
-        String sql = "select s.name as storeName, " +
+        String sql = "select s.storeId, s.name as storeName, " +
                 "case when s.event is null then false else true end as hasEvent, " +
                 "s.mainImageUrl, " +
                 "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) as distance " +
@@ -102,6 +103,7 @@ public class RecommendDao {
 
         return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
                 new RecommendStoreInfo(
+                        rs.getLong("storeId"),
                         rs.getString("storeName"),
                         rs.getBoolean("hasEvent"),
                         rs.getString("mainImageUrl"),

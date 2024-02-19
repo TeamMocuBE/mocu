@@ -257,7 +257,7 @@ public class OwnerDao {
             if (sort != null && !sort.isEmpty()) {
                 sql += "order by ";
                 switch (sort) {
-                    case("적립 많은 순") -> {
+                    case("적립 높은 순") -> {
                         sql += "st.numOfStamp, st.useCount DESC";
                         break;
                     }

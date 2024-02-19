@@ -91,7 +91,8 @@ public class StoreService {
         // 없으면 모든 멤벼변수가 null로 초기화된 Search 하나를 가진 list return
         List<Search> recentSearches = userDao.getRecentSearchesForUser(userId);
         if(recentSearches == null){
-            recentSearches = Collections.singletonList(new Search());
+            // recentSearches = Collections.singletonList(new Search());
+            recentSearches = null;
         }
 
         // TODO 2. 최근 방문한 가게 LIST 조회
@@ -113,7 +114,8 @@ public class StoreService {
         // 없으면 모든 멤벼변수가 null로 초기화된 StoreInEventInfo 하나를 가진 list return
         List<StoreInEventInfo> storeInEventInfoList = storeDao.getStoreInEventInfoList(latitude, longitude);
         if(storeInEventInfoList == null){
-            storeInEventInfoList = Collections.singletonList(new StoreInEventInfo());
+            // storeInEventInfoList = Collections.singletonList(new StoreInEventInfo());
+            storeInEventInfoList = null;
         }
 
         // TODO 4. 쿠폰 사용 임박 가게 LIST 조회
