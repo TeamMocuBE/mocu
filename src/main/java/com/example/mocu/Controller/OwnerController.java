@@ -83,4 +83,13 @@ public class OwnerController {
         return new BaseResponse<>(ownerService.getCustomerStamp(ownerId, isCustomerRegular, sort));
     }
 
+    /**
+     * ownerId -> storeId get
+     */
+    @GetMapping("/change-to-storeId/{ownerId}")
+    public BaseResponse<GetStoreIdResponse> getStoreId(@PathVariable long ownerId){
+        log.info("[OwnerController.getStoreId]");
+
+        return new BaseResponse<>(ownerService.getStoreId(ownerId));
+    }
 }

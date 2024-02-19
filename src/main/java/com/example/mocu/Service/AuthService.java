@@ -2,6 +2,7 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dao.UserDao;
+import com.example.mocu.Dto.Push.PostRegisterPushTokenRequest;
 import com.example.mocu.Dto.user.AuthResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Dto.user.PostUserRequest;
@@ -33,15 +34,11 @@ public class AuthService {
 
         AuthTokens authTokens = authTokensGenerator.generate(userId);
 
-        // TODO 1. 디바이스 토큰, 디바이스 아이디 값 등록하기
-        userDao.registerDeviceInfo(userId, params.getDeviceId(), params.getDeviceToken());
-
-        // TODO 2. uuid 값 발급받기 (-> 카카오에서)
-        //String userUuid = ,,, ;
+        // TODO 1. redirect URL localhost:3000 으로 변경
 
 
-        // TODO 3. 푸시 토큰 등록하기
-        //pushService.registerPushToken(userUuid, params.getDeviceId(), params.getDeviceToken());
+        // TODO 2. accessToken 으로 카카오에서 uuid 얻어와서 user table에 저장
+
 
         return new AuthResponse(userId, authTokens);
     }
@@ -53,15 +50,12 @@ public class AuthService {
 
         AuthTokens authTokens = authTokensGenerator.generate(userId);
 
-        // TODO 1. 디바이스 토큰, 디바이스 아이디 값 등록하기
-        ownerDao.registerDeviceInfo(userId, params.getDeviceId(), params.getDeviceToken());
-
-        // TODO 2. uuid 값 발급받기 (-> 카카오에서)
-        //String ownerUuid = ,,, ;
+        // TODO 1. redirect URL localhost:3000 으로 변경
 
 
-        // TODO 3. 푸시 토큰 등록하기
-        //pushService.registerPushToken(ownerUuid, params.getDeviceId(), params.getDeviceToken());
+        // TODO 2. accessToken 으로 카카오에서 uuid 얻어와서 owner table에 저장
+
+
 
         return new AuthResponse(userId, authTokens);
     }
@@ -86,5 +80,10 @@ public class AuthService {
         postUserRequest.setProfileImage(oAuthInfoResponse.getProfileImageUrl());
 
         return userDao.createUser(postUserRequest);
+    }
+
+    public void registerPushToken(PostRegisterPushTokenRequest postRegisterPushTokenRequest) {
+
+
     }
 }

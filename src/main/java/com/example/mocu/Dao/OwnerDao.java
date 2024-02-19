@@ -372,4 +372,16 @@ public class OwnerDao {
 
         jdbcTemplate.update(sql, params);
     }
+
+    public GetStoreIdResponse getStoreId(long ownerId) {
+        String sql = "select storeId from Stores where ownerId=:ownerId";
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("ownerId", ownerId);
+
+        return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
+                new GetStoreIdResponse(
+                        rs.getLong("storeId")
+                )
+        );
+    }
 }

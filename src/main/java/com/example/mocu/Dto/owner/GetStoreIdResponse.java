@@ -1,4 +1,4 @@
-package com.example.mocu.Dto.mission;
+package com.example.mocu.Dto.owner;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchMissionMapCompleteResponse {
-    private String reward;
-    private String status;
+public class GetStoreIdResponse {
+    private long storeId;
 }
