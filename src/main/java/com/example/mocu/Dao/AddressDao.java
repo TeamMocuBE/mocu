@@ -44,7 +44,7 @@ public class AddressDao {
     }
 
     public List<GetAddressResponse> getAddress(Long userId) {
-        String sql = "select name, address from Addresses " +
+        String sql = "select addressId, name, address from Addresses " +
                 "where userId like :userId";
 
         Map<String, Object> param = Map.of(
@@ -52,6 +52,7 @@ public class AddressDao {
 
         return jdbcTemplate.query(sql, param,
                 (rs, rowNum) -> new GetAddressResponse(
+                        rs.getLong("addressId"),
                         rs.getString("name"),
                         rs.getString("address")
                 ));
