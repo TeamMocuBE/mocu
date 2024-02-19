@@ -21,7 +21,8 @@ public class UserService {
 
     public List<GetUserResponse> getUsers(String name, String email, String status) {
         log.info("[UserService.getUsers]");
-        return userDao.getUsers(name, email, status);
+        //return userDao.getUsers(name, email, status);
+        return userDao.getUsers(name, status);
     }
 
     public GetMyPageResponse getMypage(Long userId) {
