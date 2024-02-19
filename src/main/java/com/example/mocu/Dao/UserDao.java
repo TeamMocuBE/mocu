@@ -479,14 +479,15 @@ public class UserDao {
         return jdbcTemplate.queryForObject(sql, params, Long.class);
     }
 
-    public void registerDeviceInfo(Long userId, String deviceId, String deviceToken) {
+    public void registerUserUuid(long userId) {
         // 카카오 로그인 한 유저에 한해서 디바이스 아이디, 디바이스 토큰 등록
         log.info("[UserDao.registerDeviceToken]");
 
-        String sql = "update Users set deviceId=:deviceId, deviceToken=:deviceToken where userId=:userId";
+        String userUuid = String.valueOf(userId*1000);
+
+        String sql = "update Users set userUuid=:userUuid where userId=:userId";
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("deviceId", deviceId);
-        params.addValue("deviceToken", deviceToken);
+        params.addValue("userUuid", userUuid);
         params.addValue("userId", userId);
 
         jdbcTemplate.update(sql, params);

@@ -4,7 +4,6 @@ import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.Push.PostOwnerPushTokenRequest;
 import com.example.mocu.Dto.Push.PostUserPushTokenRequest;
-import com.example.mocu.Dto.Push.PostRegisterPushTokenRequest;
 import com.example.mocu.Dto.owner.GetOwnerResponse;
 import com.example.mocu.Dto.owner.PostOwnerRequest;
 import com.example.mocu.Dto.user.AuthResponse;
@@ -38,9 +37,8 @@ public class AuthService {
 
         AuthTokens authTokens = authTokensGenerator.generate(userId);
 
-
-        // TODO 2. accessToken 으로 카카오에서 uuid 얻어와서 user table에 저장
-
+        // TODO 1. user table에 userUuid 저장
+        userDao.registerUserUuid(userId);
 
         return new AuthResponse(userId, authTokens);
     }
@@ -52,10 +50,8 @@ public class AuthService {
 
         AuthTokens authTokens = authTokensGenerator.generate(ownerId);
 
-
-        // TODO 2. accessToken 으로 카카오에서 uuid 얻어와서 owner table에 저장
-
-
+        // TODO 1. owner table에 ownerUuid 저장
+        ownerDao.registerOwnerUuid(ownerId);
 
         return new AuthResponse(ownerId, authTokens);
     }
