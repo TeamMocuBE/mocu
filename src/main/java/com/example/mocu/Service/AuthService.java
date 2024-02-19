@@ -2,7 +2,8 @@ package com.example.mocu.Service;
 
 import com.example.mocu.Dao.OwnerDao;
 import com.example.mocu.Dao.UserDao;
-import com.example.mocu.Dto.Push.PostRegisterPushTokenRequest;
+import com.example.mocu.Dto.Push.PostOwnerPushTokenRequest;
+import com.example.mocu.Dto.Push.PostUserPushTokenRequest;
 import com.example.mocu.Dto.user.AuthResponse;
 import com.example.mocu.Dto.user.GetUserResponse;
 import com.example.mocu.Dto.user.PostUserRequest;
@@ -82,8 +83,23 @@ public class AuthService {
         return userDao.createUser(postUserRequest);
     }
 
-    public void registerPushToken(PostRegisterPushTokenRequest postRegisterPushTokenRequest) {
+    public void registerUserPushToken(PostUserPushTokenRequest postUserPushTokenRequest) {
+        log.info("[AuthService.registerUserPushToken]");
 
+        // TODO 1. user의 uuid 값 get
+        String uuid = userDao.getUserUuid(postUserPushTokenRequest.getUserId());
 
+        // TODO 2. uuid, deviceId, deviceToken 값으로 푸시토큰등록요청 보내기
+        pushService.registerPushToken(uuid, postUserPushTokenRequest.getDeviceId(), postUserPushTokenRequest.getDeviceToken());
+    }
+
+    public void registerOwnerPushToken(PostOwnerPushTokenRequest postOwnerPushTokenRequest) {
+        log.info("[AuthService.registerOwnerPushToken]");
+
+        // TODO 1. owner의 uuid 값 get
+        String uuid = ownerDao.getOwnerUuid(postOwnerPushTokenRequest.getOwnerId());
+
+        // TODO 2. uuid, deviceId, deviceToken 값으로 푸시토큰등록요청 보내기
+        pushService.registerPushToken(uuid, postOwnerPushTokenRequest.getDeviceId(), postOwnerPushTokenRequest.getDeviceToken());
     }
 }

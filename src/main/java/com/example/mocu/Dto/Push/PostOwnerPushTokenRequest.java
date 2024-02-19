@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostRegisterPushTokenRequest {
-    private long userId;
+public class PostOwnerPushTokenRequest {
+    private long ownerId;
     private String deviceId;
     private String deviceToken;
 }

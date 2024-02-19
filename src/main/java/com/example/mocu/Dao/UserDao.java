@@ -161,7 +161,7 @@ public class UserDao {
     public RecentlyVisitedStoreInfo getRecentlyVisitedStoreInfoForUser(long storeId, long userId, double latitude, double longitude) {
         log.info("[UserDao.getRecentlyVisitedStoreInfoForUser]");
 
-        String sql = "select s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, " +
+        String sql = "select s.storeId, s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, " +
                 "case when s.event is null then false else true end as hasEvent, " +
                 "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) as distance " +
                 "from Stores s join Stamps st on s.storeId=st.storeId where s.storeId=:storeId and st.userId=:userId";
@@ -174,6 +174,7 @@ public class UserDao {
         try {
             return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
                     new RecentlyVisitedStoreInfo(
+                            rs.getLong("storeId"),
                             rs.getString("storeName"),
                             rs.getInt("numOfStamp"),
                             rs.getInt("numOfCouponAvailable"),
@@ -190,7 +191,7 @@ public class UserDao {
     public DueDateStoreInfo getDueDateStoreInfoForUser(long storeId, long userId, double latitude, double longitude) {
         log.info("[UserDao.getDueDateStoreInfoListForUser]");
 
-        String sql = "select s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, s.maxStamp, " +
+        String sql = "select s.storeId, s.name as storeName, st.numOfStamp, st.numOfCouponAvailable, s.maxStamp, " +
                 "case when s.event is null then false else true end as hasEvent, " +
                 "ST_DISTANCE_SPHERE(POINT(:userLongitude, :userLatitude), POINT(s.longitude, s.latitude)) as distance " +
                 "from Stores s join Stamps st on s.storeId=st.storeId where s.storeId=:storeId and st.userId=:userId and st.dueDate=true";
@@ -203,6 +204,7 @@ public class UserDao {
         try {
             return jdbcTemplate.queryForObject(sql, params, (rs, rowNum) ->
                     new DueDateStoreInfo(
+                            rs.getLong("storeId"),
                             rs.getString("storeName"),
                             rs.getInt("numOfStamp"),
                             rs.getInt("numOfCouponAvailable"),

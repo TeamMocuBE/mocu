@@ -10,7 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreInEventInfo {
-    // 이벤트 중인 가게의 storeName, 대표이미지 return
+    // storeId, 이벤트 중인 가게의 storeName, 대표이미지 return
+    private long storeId;
     private String storeName;
     private String mainImageUrl;
 }
