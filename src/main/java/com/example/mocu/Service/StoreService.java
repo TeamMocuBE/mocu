@@ -131,6 +131,7 @@ public class StoreService {
             }
         }
 
+        /*
         // TODO 5. 유저별 맞춤 가게 LIST 조회
         // 1. user가 적립한 가게들을 카테고리를 기준으로 정렬하여 상위 카테고리 numOfCategory 개 선정
         // 2. 1의 결과에 해당하는 가게들을 가게 평점 높은순으로 각 카테고리별 recommendLimit 개수만큼 return
@@ -153,15 +154,16 @@ public class StoreService {
             // 2. 1의 결과에 해당하는 카테고리들의 가게들을 가게 평점 높은순으로 각 카테고리별 recommendLimit 개수만큼 return
             /**
               *-> 해당 user가 적립한 적이 없는 가게들을 추천해주지는 못함 -> 마지막에 도전해볼것
-              */
+
             recommendStoreInfoList = new ArrayList<>();
             for(String category : categories){
                 RecommendStoreInfo recommendStoreInfo = recommendDao.getRecommendStoreInfo(category, latitude, longitude, recommendLimit);
                 recommendStoreInfoList.add(recommendStoreInfo);
             }
         }
+        */
 
         // TODO 6. RETURN
-        return new GetStoreSearchResponse(recentSearches, recentlyVisitedStoreInfoList, storeInEventInfoList, dueDateStoreInfoList, recommendStoreInfoList);
+        return new GetStoreSearchResponse(recentSearches, recentlyVisitedStoreInfoList, storeInEventInfoList, dueDateStoreInfoList);
     }
 }

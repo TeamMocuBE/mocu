@@ -73,7 +73,7 @@ public class UserDao {
     }
 
     public List<GetOwnerResponse> getOwners(String name, String status) {
-        String sql = "select ownerId, name, email, userImage, status, provider from Users " +
+        String sql = "select ownerId, name, email, userImage, status, provider from owners " +
                 "where name like :name and status like :status";
 
         Map<String, Object> param = Map.of(
@@ -110,7 +110,7 @@ public class UserDao {
     }
 
     public long createOwner(PostOwnerRequest postOwnerRequest) {
-        String sql = "insert into users(email, name, provider, userImage) " +
+        String sql = "insert into owners(email, name, provider, userImage) " +
                 "values(:email, :name, :provider, :profileImage)";
 
         SqlParameterSource param = new BeanPropertySqlParameterSource(postOwnerRequest);

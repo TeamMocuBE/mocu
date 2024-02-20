@@ -19,5 +19,5 @@ public class GetStoreSearchResponse {
     private List<RecentlyVisitedStoreInfo> recentlyVisitedStoreInfoList;
     private List<StoreInEventInfo> storeInEventInfoList;
     private List<DueDateStoreInfo> dueDateStoreInfoList;
-    private List<RecommendStoreInfo> recommendStoreInfoList;
+    //private List<RecommendStoreInfo> recommendStoreInfoList;
 }

@@ -2,7 +2,9 @@ package com.example.mocu.Controller;
 
 import com.example.mocu.Common.response.BaseResponse;
 import com.example.mocu.Dao.OwnerDao;
+import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.Push.PushRequestToOwner;
+import com.example.mocu.Dto.Push.PushRequestToUser;
 import com.example.mocu.Dto.coupon.*;
 import com.example.mocu.Service.CouponService;
 import com.example.mocu.Service.PushService;
@@ -19,6 +21,7 @@ import java.util.List;
 public class CouponController {
     private final CouponService couponService;
     private final OwnerDao ownerDao;
+    private final UserDao userDao;
     private final PushService pushService;
 
     /**
@@ -64,10 +67,35 @@ public class CouponController {
      * -> OK
      */
     @PostMapping("/owner-accept")
-    public BaseResponse<PostCouponAcceptResponse> couponRequestAccept(@RequestBody PostCouponAcceptRequest postCouponAcceptRequest) {
+    public BaseResponse<String> couponRequestAccept(@RequestBody PostCouponAcceptRequest postCouponAcceptRequest) {
         log.info("[CouponController.couponRequestAccept]");
 
-        return new BaseResponse<>(couponService.couponRequestAccept(postCouponAcceptRequest));
+        try {
+            // TODO 1. PostCouponAcceptResponse return
+            PostCouponAcceptResponse postCouponAcceptResponse = couponService.couponRequestAccept(postCouponAcceptRequest);
+
+            // TODO 2. userId get
+            long userId = userDao.getUserId(postCouponAcceptResponse.getStampId());
+            String userUuid = userDao.getUserUuid(userId);
+
+            // TODO 3. 푸시 알림 전송 요청 보내기 (to user)
+            PushRequestToUser pushRequestToUser = new PushRequestToUser(
+                    userUuid,
+                    postCouponAcceptResponse.getStampId(),
+                    postCouponAcceptResponse.getNumOfStamp(),
+                    postCouponAcceptResponse.getMaxStamp(),
+                    postCouponAcceptResponse.getStoreName(),
+                    postCouponAcceptResponse.isDueDate(),
+                    postCouponAcceptResponse.getNumOfCouponAvailable()
+            );
+
+            pushService.sendPushMessageToUser(pushRequestToUser);
+
+            return new BaseResponse<>("쿠폰 적립 요청 수락 성공 처리 완료.");
+        } catch (RuntimeException e){
+            return new BaseResponse<>("쿠폰 적립 요청 수락 성공 처리 중 오류 발생");
+        }
+
     }
 
 

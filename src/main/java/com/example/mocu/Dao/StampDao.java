@@ -35,16 +35,20 @@ public class StampDao {
         params.addValue("userId", postStampRequest.getUserId());
         params.addValue("storeId", postStampRequest.getStoreId());
 
-        jdbcTemplate.update(sql, params);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(sql, params, keyHolder);
+
+        long stampRequestId = Objects.requireNonNull(keyHolder.getKey()).longValue();
 
         String selectSql = "select sr.stampRequestId, sr.createdDate, " +
                 "(select s.address from Stores s where s.storeId=:storeId) as storeAddress, " +
                 "(select u.name from Users u where u.userId=:userId) as userName " +
-                "from StampsRequest sr where sr.userId=:userId and sr.storeId=:storeId";
+                "from StampsRequest sr where sr.stampRequestId=:stampRequestId";
 
         MapSqlParameterSource selectParams = new MapSqlParameterSource();
         selectParams.addValue("userId", postStampRequest.getUserId());
         selectParams.addValue("storeId", postStampRequest.getStoreId());
+        selectParams.addValue("stampRequestId", stampRequestId);
 
         return jdbcTemplate.queryForObject(selectSql, selectParams, (rs, rowNum) ->
                 new PostStampResponse(

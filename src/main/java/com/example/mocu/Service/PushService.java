@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -48,9 +50,11 @@ public class PushService {
         httpHeaders.set("Authorization", "KakaoAK " + clientId);
 
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        log.info("owner의 카카오 uuid 붙이기");
-        // -> uuid 값으로 바꿔야 함
-        body.add("uuids", pushRequestToOwner.getOwnerUuid());
+        log.info("owner의 uuid 붙이기");
+        //String[] uuids = new String[]{pushRequestToOwner.getOwnerUuid()};
+        List<String> uuids = new ArrayList<>();
+        //uuids.add(pushRequestToOwner.getOwnerUuid());
+        body.put("uuids", uuids);
 
         log.info("body작성 시작");
         body.add("push_message", makeMessageBodyToOwner(pushRequestToOwner));
