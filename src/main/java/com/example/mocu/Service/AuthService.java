@@ -86,7 +86,8 @@ public class AuthService {
         if (!owners.isEmpty()) {
             return owners.get(0).getOwnerId();
         } else {
-            return createUser(oAuthInfoResponse);
+            //return createUser(oAuthInfoResponse);
+            return createOwner(oAuthInfoResponse);
         }
     }
 

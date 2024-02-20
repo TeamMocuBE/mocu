@@ -4,13 +4,24 @@ spring:
     oauth2:
       client:
         registration:
-          kakao:
+          kakao1:
             client-id: 3161a6ee6bf6b756c91d77d4f6003094
             client-secret: 3P0D0Tw8MeKiBN6NcY64sMlUBVvoSYux
-            redirect-uri: http://localhost:3000/login/oauth
+            redirect-uri: http://192.168.105.176:3000/login/user/oauth
             authorization-grant-type: authorization_code
             client-authentication-method: client_secret_post
-            client-name: Kakao
+            client-name: Kakao1
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
+          kakao2:
+            client-id: 3161a6ee6bf6b756c91d77d4f6003094
+            client-secret: 3P0D0Tw8MeKiBN6NcY64sMlUBVvoSYux
+            redirect-uri: http://192.168.105.176:3000/login/owner/oauth
+            authorization-grant-type: authorization_code
+            client-authentication-method: client_secret_post
+            client-name: Kakao2
             scope:
               - profile_nickname
               - profile_image
@@ -27,8 +38,10 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/mocu
     username: root
-    password: smartsj@0907
+    password: tjdwns1105!
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+#  profiles: local
 
   #jwt:
   #  secret-key: Z29nby10bS1zZXJ2ZXItZGxyamVvYW9yb3JodG9kZ290c3Atam9vbmdhbmduaW0teWVvbHNpbWhpaGFsZ2VveW8K
@@ -61,5 +74,12 @@ oauth:
 #    password: tjdwns1105!
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
+
 server:
+#  ssl:
+#    enabled : true
+#    key-store : keystore.p12
+#    key-store-passward : tjdwns1105!
+#    key-store-type : PKCS12
+#    key-alias : spring
   port: 9000
