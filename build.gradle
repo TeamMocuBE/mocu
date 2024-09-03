@@ -25,6 +25,10 @@ repositories {
 	mavenCentral()
 }
 
+jar {
+	enabled = false
+}
+
 dependencies {
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '5.0.0-alpha.3'
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
