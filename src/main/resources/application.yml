@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: local
   security:
     oauth2:
       client:
@@ -45,17 +47,25 @@ spring:
   #jwt:
   #  secret-key: Z29nby10bS1zZXJ2ZXItZGxyamVvYW9yb3JodG9kZ290c3Atam9vbmdhbmduaW0teWVvbHNpbWhpaGFsZ2VveW8K
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/mocu
+    username: root
+    password: smartsj@0907
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
 #  datasource:
-#    url: jdbc:mysql://localhost:3306/mocu
-#    username: root
-#    password: smartsj@0907
+#    url: jdbc:mysql://mocu-database-1.ctw2m0kuqfdp.ap-northeast-2.rds.amazonaws.com:3306/mocu?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+#    username: mocuadmin
+#    password: mocuadmin
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 
-  datasource:
-    url: jdbc:mysql://mocu-database-1.ctw2m0kuqfdp.ap-northeast-2.rds.amazonaws.com:3306/mocu?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: mocuadmin
-    password: mocuadmin
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
 
 oauth:
   kakao:
