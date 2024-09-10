@@ -1,17 +1,15 @@
 package com.example.mocu.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.Objects;
 
 @Entity
 @Getter
 @Setter
-public class Address extends BaseEntity {
+public class CouponsRequest extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -20,20 +18,14 @@ public class Address extends BaseEntity {
     @JoinColumn(name = "userId")
     private User user;
 
-    @ColumnDefault("기타")
-    private String name;
-
-    private String address;
-
-    @NotEmpty
-    private Double latitude;
-    @NotEmpty
-    private Double longitude;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "storeId")
+    private Store store;
 
     @PrePersist
     protected void onCreate() {
         if (Objects.equals(getStatus(), "active")) {
-            setStatus("not select");
+            setStatus("not-accept");
         }
     }
 }
