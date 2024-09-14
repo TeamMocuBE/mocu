@@ -58,8 +58,8 @@ public class AuthService {
 
     private Long findOrCreateUser(OAuthInfoResponse oAuthInfoResponse) {
         log.info("[AuthService.findOrCreateUser]");
-        //List<GetUserResponse> users = userDao.getUsers(oAuthInfoResponse.getName(), oAuthInfoResponse.getEmail(), "active");
-        List<GetUserResponse> users = userDao.getUsers(oAuthInfoResponse.getName(), "active");
+        //List<GetUserResponse> users = userDao.getUsersV1(oAuthInfoResponse.getName(), oAuthInfoResponse.getEmail(), "active");
+        List<GetUserResponse> users = userDao.getUsersV2(oAuthInfoResponse.getName(), "active");
         if (!users.isEmpty()) {
             return users.get(0).getUserId();
         } else {

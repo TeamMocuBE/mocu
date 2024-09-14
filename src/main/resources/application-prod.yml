@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:mysql://mocu-database-1.ctw2m0kuqfdp.ap-northeast-2.rds.amazonaws.com:3306/mocu?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: mocuadmin
+    password: mocuadmin
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
