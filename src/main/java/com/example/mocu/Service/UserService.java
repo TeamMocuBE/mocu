@@ -4,10 +4,13 @@ import com.example.mocu.Dao.MissionDao;
 import com.example.mocu.Dao.UserDao;
 import com.example.mocu.Dto.user.*;
 import com.example.mocu.Exception.DatabaseException;
+import com.example.mocu.jpaRepository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABASE_ERROR;
@@ -15,19 +18,78 @@ import static com.example.mocu.Common.response.status.BaseResponseStatus.DATABAS
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
     private final UserDao userDao;
     private final MissionDao missionDao;
+    //---------------------------------//
+    private final JpaUserRepository userRepository;
+    private final JpaStampRepository stampRepository;
+    private final JpaRegularRepository regularRepository;
+    private final JpaAddressRepository addressRepository;
+    private final JpaCouponRequestRepository couponRequestRepository;
+    private final JpaReviewRepository reviewRepository;
+    private final JpaMissionStampRepository missionStampRepository;
 
-    public List<GetUserResponse> getUsers(String name, String email, String status) {
+    public List<GetUserResponse> getUsersV1(String name, String email, String status) {
         log.info("[UserService.getUsers]");
         //return userDao.getUsers(name, email, status);
-        return userDao.getUsers(name, status);
+        return userDao.getUsersV2(name, status);
     }
 
-    public GetMyPageResponse getMypage(Long userId) {
+    public List<GetUserResponse> getUsersV2(String name, String email, String status) {
+        log.info("[UserService.getUsersV2]");
+
+/*        List<User> users = jpaUserRepository.findUsers(name, email, status);
+
+        return users.stream()
+                .map(GetUserResponse::new)
+                .collect(Collectors.toList());*/
+
+        return userRepository.findUsersDto(name, email, status);
+    }
+
+    public GetMyPageResponse getMypageV1(Long userId) {
         log.info(("[UserService.getMypage]"));
         return userDao.getMypage(userId);
+    }
+
+    public GetMyPageResponse getMypageV2(Long userId) {
+        log.info(("[UserService.getMypageV2]"));
+
+        Integer usableCoupon = stampRepository.findUsableCouponsById(userId);
+        if (usableCoupon == null) {
+            usableCoupon = 0;
+        }
+
+        Integer availableFavoriteCount = regularRepository.countAvailableFavoriteStores(userId);
+        if (availableFavoriteCount == null) {
+            availableFavoriteCount = 0;
+        }
+
+        String currentAddress = addressRepository.findCurrentAddress().orElse("");
+
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        List<GetMyPageResponse.CouponUsageDetail> recentCouponUsage = couponRequestRepository.findRecentCouponUsage(userId, oneMonthAgo);
+
+        Integer availableReviewCount = reviewRepository.findAvailableReviewCount(userId);
+        if (availableReviewCount == null) {
+            availableReviewCount = 0;
+        }
+
+        Integer missionStampCount = missionStampRepository.findMissionStampCount(userId);
+        if (missionStampCount == null) {
+            missionStampCount = 0;
+        }
+
+        return new GetMyPageResponse(
+                usableCoupon,
+                availableFavoriteCount,
+                currentAddress,
+                recentCouponUsage,
+                availableReviewCount,
+                missionStampCount
+        );
     }
 
     public PatchUserRegularResponse handleRegularRequest(PatchUserRegularRequest patchUserRegularRequest) {

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -33,6 +34,7 @@ public class Store extends BaseEntity {
 
     private String mainImageUrl;
 
+    @ColumnDefault("0.0")
     private Float rating;
 
     private String reward;

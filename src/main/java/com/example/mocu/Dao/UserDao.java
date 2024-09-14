@@ -31,7 +31,7 @@ public class UserDao {
         this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 
-    public List<GetUserResponse> getUsers_v1(String name, String email, String status) {
+/*    public List<GetUserResponse> getUsersV1(String name, String email, String status) {
         String sql = "select userId, name, email, userImage, status, provider from Users " +
                 "where name like :name and email like :email and status like :status";
 
@@ -50,9 +50,9 @@ public class UserDao {
                         rs.getString("provider")
                 )
         );
-    }
+    }*/
 
-    public List<GetUserResponse> getUsers(String name, String status) {
+    public List<GetUserResponse> getUsersV2(String name, String status) {
         String sql = "select userId, name, email, userImage, status, provider from Users " +
                 "where name like :name and status like :status";
 

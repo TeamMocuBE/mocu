@@ -6,6 +6,7 @@ import com.example.mocu.Exception.UserException;
 import com.example.mocu.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,16 +24,16 @@ public class UserController {
      * 회원 목록 조회
      */
     @GetMapping("")
-    public BaseResponse<List<GetUserResponse>> getUsers(
+    public BaseResponse<List<GetUserResponse>> getUsersV1(
             @RequestParam(name = "nickname", required = false, defaultValue = "") String nickname,
             @RequestParam(name = "email", required = false, defaultValue = "") String email,
             @RequestParam(name = "status", required = false, defaultValue = "active") String status) {
-        log.info("[UserController.getUsers]");
+        log.info("[UserController.getUsersV1]");
         if (!status.equals("active") && !status.equals("dormant") && !status.equals("deleted")) {
             throw new UserException(INVALID_USER_STATUS);
         }
 
-        List<GetUserResponse> result = userService.getUsers(nickname, email, status);
+        List<GetUserResponse> result = userService.getUsersV1(nickname, email, status);
 
         if (result.isEmpty()) {
             throw new UserException(USER_NOT_FOUND);
@@ -41,18 +42,45 @@ public class UserController {
         return new BaseResponse<>(result);
     }
 
+    @GetMapping("/v2")
+    public ResponseEntity<List<GetUserResponse>> getUsersV2(
+            @RequestParam(name = "nickname", required = false, defaultValue = "") String nickname,
+            @RequestParam(name = "email", required = false, defaultValue = "") String email,
+            @RequestParam(name = "status", required = false, defaultValue = "") String status
+    ) {
+        log.info("[UserController.getUsersV2]");
+
+        if (!status.equals("active") && !status.equals("dormant") && !status.equals("deleted")) {
+            throw new UserException(INVALID_USER_STATUS);
+        }
+
+        List<GetUserResponse> result = userService.getUsersV2(nickname, email, status);
+
+        return ResponseEntity.ok(result);
+    }
+
     /**
      * my page 조회
      */
     @GetMapping("/{userId}/mypage")
-    public BaseResponse<GetMyPageResponse> getMypage(@PathVariable Long userId) {
+    public BaseResponse<GetMyPageResponse> getMypageV1(@PathVariable Long userId) {
         log.info("[UserController.getMypage] - userId: {}", userId);
         //TODO: userID 검증 로직
-        if (!isUserIdCorrect(userId)) {
+        if (isUserIdCorrect(userId)) {
             throw new UserException(USER_NOT_FOUND);
         }
 
-        return new BaseResponse<>(userService.getMypage(userId));
+        return new BaseResponse<>(userService.getMypageV1(userId));
+    }
+
+    @GetMapping("/{userId}/mypage")
+    public ResponseEntity<GetMyPageResponse> getMypageV2(@PathVariable Long userId) {
+        log.info("[UserController.getMypageV2] - userId: {}", userId);
+        if (isUserIdCorrect(userId)) {
+            throw new UserException(USER_NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(userService.getMypageV2(userId));
     }
 
     /**
@@ -82,7 +110,7 @@ public class UserController {
                                                                @RequestParam(name = "page", defaultValue = "0") int page) {
         log.info("[UserController.getMyStoreList]");
 
-        if (!isUserIdCorrect(userId)) {
+        if (isUserIdCorrect(userId)) {
             throw new UserException(USER_NOT_FOUND);
         }
 
